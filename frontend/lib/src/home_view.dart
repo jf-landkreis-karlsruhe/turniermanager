@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tournament_manager/src/views/overview.dart';
 import 'package:watch_it/watch_it.dart';
 
 class HomeView extends StatelessWidget {
@@ -28,8 +29,35 @@ class MainContentView extends StatelessWidget with WatchItMixin {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text("Turniermanager"),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.of(context).pushNamed(Overview.routeName);
+            },
+            label: const Text("Spielübersicht"),
+            icon: const Icon(Icons.view_list),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.of(context).pushNamed("");
+            },
+            label: const Text("Spielleiter"),
+            icon: const Icon(Icons.sports_esports),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.of(context).pushNamed("");
+            },
+            label: const Text("Admin"),
+            icon: const Icon(Icons.admin_panel_settings),
+          ),
+        ],
+      ),
     );
   }
 }

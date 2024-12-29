@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tournament_manager/src/views/overview.dart';
 import 'home_view.dart';
 
 /// The Widget that configures your application.
@@ -24,6 +25,8 @@ class MainWidget extends StatelessWidget {
           settings: routeSettings,
           builder: (BuildContext context) {
             switch (routeSettings.name) {
+              case Overview.routeName:
+                return const Overview();
               case HomeView.routeName:
               default:
                 return const HomeView();
