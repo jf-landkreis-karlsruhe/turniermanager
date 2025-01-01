@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tournament_manager/src/views/schedule.dart';
+import 'package:tournament_manager/src/views/schedule_view.dart';
 import 'home_view.dart';
 
 /// The Widget that configures your application.
@@ -26,14 +26,16 @@ class MainWidget extends StatelessWidget {
             builder: (context, state) => const HomeView(),
           ),
           GoRoute(
-            path: Schedule.routeName,
+            path: ScheduleView.routeName,
             builder: (context, state) {
               var ageGroup =
-                  state.uri.queryParameters[Schedule.ageGroupQueryParam] ?? "1";
+                  state.uri.queryParameters[ScheduleView.ageGroupQueryParam] ??
+                      "1";
               var league =
-                  state.uri.queryParameters[Schedule.leagueQueryParam] ?? "1";
+                  state.uri.queryParameters[ScheduleView.leagueQueryParam] ??
+                      "1";
 
-              return Schedule(ageGroup, league);
+              return ScheduleView(ageGroup, league);
             },
           ),
         ],

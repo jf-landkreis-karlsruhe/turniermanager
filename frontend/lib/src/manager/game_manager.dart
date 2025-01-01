@@ -34,7 +34,7 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
       (input) async {
         var result = await _gameRestApi.getSchedule(input.$1, input.$2);
         if (result == null) {
-          return;
+          return; //TODO: error handling
         }
 
         schedule = _scheduleMapper.map(result);

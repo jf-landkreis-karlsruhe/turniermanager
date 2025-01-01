@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tournament_manager/src/views/schedule.dart';
+import 'package:tournament_manager/src/views/schedule_view.dart';
 import 'package:watch_it/watch_it.dart';
 
 class HomeView extends StatelessWidget {
@@ -36,13 +36,13 @@ class MainContentView extends StatelessWidget with WatchItMixin {
         children: [
           ElevatedButton.icon(
             onPressed: () {
-              context.go(Schedule.routeName);
+              context.go(ScheduleView.routeName);
               context.go(
                 Uri(
-                  path: Schedule.routeName,
+                  path: ScheduleView.routeName,
                   queryParameters: {
-                    Schedule.ageGroupQueryParam: '1',
-                    Schedule.leagueQueryParam: '1',
+                    ScheduleView.ageGroupQueryParam: '1',
+                    ScheduleView.leagueQueryParam: '1',
                   },
                 ).toString(),
               );

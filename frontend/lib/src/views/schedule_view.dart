@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class Schedule extends StatelessWidget {
-  const Schedule(
+class ScheduleView extends StatelessWidget {
+  const ScheduleView(
     this.ageGroup,
     this.league, {
     super.key,
