@@ -7,7 +7,7 @@ import 'package:tournament_manager/src/serialization/match_schedule_entry_dto.da
 
 class MatchScheduleMapper {
   MatchSchedule map(MatchScheduleDto dto) {
-    return MatchSchedule()
+    return MatchSchedule(dto.matchRound)
       ..leagueSchedules =
           dto.leagueSchedules.map((entry) => mapLeague(entry)).toList();
   }

@@ -6,8 +6,9 @@ part 'match_schedule_dto.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class MatchScheduleDto {
-  MatchScheduleDto();
+  MatchScheduleDto(this.matchRound);
 
+  int matchRound;
   List<LeagueDto> leagueSchedules = [];
 
   factory MatchScheduleDto.fromJson(Map<String, dynamic> json) =>

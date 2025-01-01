@@ -18,7 +18,7 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
   @override
   late Command<String, void> getGameDataCommand;
 
-  MatchSchedule _schedule = MatchSchedule();
+  MatchSchedule _schedule = MatchSchedule(1);
   @override
   MatchSchedule get schedule => _schedule;
   set schedule(MatchSchedule value) {

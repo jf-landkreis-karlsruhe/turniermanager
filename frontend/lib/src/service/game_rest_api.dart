@@ -18,7 +18,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   @override
   Future<MatchScheduleDto?> getSchedule(String ageGroup) async {
     //TODO: remove test data
-    return MatchScheduleDto()
+    return MatchScheduleDto(1)
       ..leagueSchedules = [
         LeagueDto(1)
           ..scheduledGames = [
