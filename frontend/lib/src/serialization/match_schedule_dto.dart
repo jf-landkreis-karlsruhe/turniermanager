@@ -8,7 +8,7 @@ part 'match_schedule_dto.g.dart';
 class MatchScheduleDto {
   MatchScheduleDto();
 
-  List<LeagueDto> entries = [];
+  List<LeagueDto> leagueSchedules = [];
 
   factory MatchScheduleDto.fromJson(Map<String, dynamic> json) =>
       _$MatchScheduleDtoFromJson(json);

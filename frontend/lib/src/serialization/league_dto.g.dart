@@ -8,11 +8,11 @@ part of 'league_dto.dart';
 
 LeagueDto _$LeagueDtoFromJson(Map<String, dynamic> json) => LeagueDto(
       (json['leagueNo'] as num).toInt(),
-    )..entries = (json['entries'] as List<dynamic>)
+    )..scheduledGames = (json['scheduledGames'] as List<dynamic>)
         .map((e) => MatchScheduleEntryDto.fromJson(e as Map<String, dynamic>))
         .toList();
 
 Map<String, dynamic> _$LeagueDtoToJson(LeagueDto instance) => <String, dynamic>{
       'leagueNo': instance.leagueNo,
-      'entries': instance.entries.map((e) => e.toJson()).toList(),
+      'scheduledGames': instance.scheduledGames.map((e) => e.toJson()).toList(),
     };

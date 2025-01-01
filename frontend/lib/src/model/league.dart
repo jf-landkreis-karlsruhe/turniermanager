@@ -4,5 +4,5 @@ class League {
   League(this.leagueNo);
 
   int leagueNo;
-  List<MatchScheduleEntry> entries = [];
+  List<MatchScheduleEntry> scheduledGames = [];
 }

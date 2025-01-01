@@ -22,9 +22,9 @@ class ScheduleView extends StatelessWidget with WatchItMixin {
         watchPropertyValue((GameManager manager) => manager.schedule);
 
     return ListView.builder(
-      itemCount: schedule.entries.length,
+      itemCount: schedule.leagueSchedules.length,
       itemBuilder: (context, index) {
-        var entry = schedule.entries[0].entries[index];
+        var entry = schedule.leagueSchedules[0].scheduledGames[index];
 
         return Row(
           children: [

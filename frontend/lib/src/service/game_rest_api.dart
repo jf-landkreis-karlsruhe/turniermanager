@@ -19,14 +19,14 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   Future<MatchScheduleDto?> getSchedule(String ageGroup, String league) async {
     //TODO: remove test data
     return MatchScheduleDto()
-      ..entries = [
+      ..leagueSchedules = [
         LeagueDto(1)
-          ..entries = [
+          ..scheduledGames = [
             MatchScheduleEntryDto("1", "team1", 1, "team2", 2, "startTime1"),
             MatchScheduleEntryDto("2", "team3", 1, "team4", 2, "startTime2"),
           ],
         LeagueDto(2)
-          ..entries = [
+          ..scheduledGames = [
             MatchScheduleEntryDto("1", "team1", 1, "team2", 2, "startTime1"),
             MatchScheduleEntryDto("2", "team3", 1, "team4", 2, "startTime2"),
           ],
