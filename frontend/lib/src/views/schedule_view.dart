@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
+import 'package:tournament_manager/src/model/league.dart';
 import 'package:watch_it/watch_it.dart';
 
 class ScheduleView extends StatelessWidget with WatchItMixin {
@@ -38,12 +39,50 @@ class ScheduleView extends StatelessWidget with WatchItMixin {
             ],
           ),
         ),
-        Expanded(
-          child: Center(
+        SizedBox(
+          height: 500,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: schedule.leagueSchedules.length,
+            itemBuilder: (context, index) {
+              var entry = schedule.leagueSchedules[index];
+              return LeagueView(league: entry);
+            },
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class LeagueView extends StatelessWidget {
+  const LeagueView({
+    super.key,
+    required this.league,
+  });
+
+  final League league;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Column(
+        children: [
+          SizedBox(
+            height: 20,
+            child: Row(
+              children: [
+                Text('Liga ${league.leagueNo}'),
+                const SizedBox(width: 10),
+                const Icon(Icons.gamepad),
+              ],
+            ),
+          ),
+          Expanded(
             child: Text('Test'),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
