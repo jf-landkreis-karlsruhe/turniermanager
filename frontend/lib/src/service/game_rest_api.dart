@@ -18,19 +18,49 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   @override
   Future<MatchScheduleDto?> getSchedule(String ageGroup) async {
     //TODO: remove test data
+    int fieldCount = 1;
+    int teamCount = 1;
+    int hourCount = 10;
+    int timeCount = 10;
+
+    var scheduleList = List.generate(
+      10,
+      (innerIndex) {
+        var result = MatchScheduleEntryDto(
+          "$fieldCount",
+          "team${teamCount++}",
+          1,
+          "team${teamCount++}",
+          2,
+          "$hourCount:$timeCount Uhr",
+        );
+
+        fieldCount++;
+        if (fieldCount > 3) {
+          fieldCount = 1;
+        }
+
+        if (teamCount > 4) {
+          teamCount = 1;
+        }
+
+        timeCount += 10;
+        if (timeCount >= 60) {
+          timeCount = 10;
+          hourCount++;
+        }
+
+        return result;
+      },
+    );
+
     return MatchScheduleDto(1)
-      ..leagueSchedules = [
-        LeagueDto(1)
-          ..scheduledGames = [
-            MatchScheduleEntryDto("1", "team1", 1, "team2", 2, "09:00 Uhr"),
-            MatchScheduleEntryDto("2", "team3", 1, "team4", 2, "09:20 Uhr"),
-          ],
-        LeagueDto(2)
-          ..scheduledGames = [
-            MatchScheduleEntryDto("1", "team1", 1, "team2", 2, "09:00 Uhr"),
-            MatchScheduleEntryDto("2", "team3", 1, "team4", 2, "09:20 Uhr"),
-          ],
-      ];
+      ..leagueSchedules = List.generate(
+        3,
+        (index) {
+          return LeagueDto(index + 1)..scheduledGames = scheduleList;
+        },
+      );
 
     final uri = getScheduleUri.replace(
       queryParameters: {
