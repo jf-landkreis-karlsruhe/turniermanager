@@ -1,31 +1,34 @@
 import 'dart:convert';
-
+import 'package:tournament_manager/src/serialization/match_schedule_dto.dart';
 import 'package:tournament_manager/src/service/rest_client.dart';
 
 abstract class GameRestApi {
-  Future<String> getGameData(); //TODO: correct return value
+  Future<MatchScheduleDto?> getSchedule(String ageGroup, String league);
 }
 
 class GameRestApiImplementation extends RestClient implements GameRestApi {
-  late final Uri getGameDataUri;
+  late final Uri getScheduleUri;
 
   GameRestApiImplementation() {
-    getGameDataUri = Uri.parse('$baseUri/getGameData'); //TODO: correct endpoint
+    getScheduleUri = Uri.parse('$baseUri/schedule');
   }
 
   @override
-  Future<String> getGameData() async {
-    final uri = getGameDataUri.replace(
-        queryParameters: {'paramName': 'paramValue'}); //TODO: correct values
+  Future<MatchScheduleDto?> getSchedule(String ageGroup, String league) async {
+    final uri = getScheduleUri.replace(
+      queryParameters: {
+        'ageGroup': ageGroup,
+        'league': league,
+      },
+    );
 
     final response = await client.get(uri, headers: headers);
 
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
-      //TODO: deserialize
-      return 'success';
+      return MatchScheduleDto.fromJson(json);
     }
 
-    return 'error';
+    return null;
   }
 }
