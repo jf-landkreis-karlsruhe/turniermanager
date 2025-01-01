@@ -29,9 +29,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
         var result = MatchScheduleEntryDto(
           "$fieldCount",
           "team${teamCount++}",
-          1,
           "team${teamCount++}",
-          2,
           "$hourCount:$timeCount Uhr",
         );
 

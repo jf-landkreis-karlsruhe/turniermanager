@@ -22,9 +22,7 @@ class MatchScheduleMapper {
     return MatchScheduleEntry(
       dto.field,
       dto.team1,
-      dto.pointsTeam1,
       dto.team2,
-      dto.pointsTeam2,
       dto.startTime,
     );
   }
