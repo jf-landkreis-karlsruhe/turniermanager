@@ -37,6 +37,15 @@ class MainContentView extends StatelessWidget with WatchItMixin {
           ElevatedButton.icon(
             onPressed: () {
               context.go(Schedule.routeName);
+              context.go(
+                Uri(
+                  path: Schedule.routeName,
+                  queryParameters: {
+                    Schedule.ageGroupQueryParam: '1',
+                    Schedule.leagueQueryParam: '1',
+                  },
+                ).toString(),
+              );
             },
             label: const Text("Spielplan"),
             icon: const Icon(Icons.view_list),

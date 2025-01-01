@@ -27,7 +27,14 @@ class MainWidget extends StatelessWidget {
           ),
           GoRoute(
             path: Schedule.routeName,
-            builder: (context, state) => const Schedule(),
+            builder: (context, state) {
+              var ageGroup =
+                  state.uri.queryParameters[Schedule.ageGroupQueryParam] ?? "1";
+              var league =
+                  state.uri.queryParameters[Schedule.leagueQueryParam] ?? "1";
+
+              return Schedule(ageGroup, league);
+            },
           ),
         ],
       ),
