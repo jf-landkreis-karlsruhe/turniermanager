@@ -77,12 +77,12 @@ class LeagueView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: SizedBox(
               height: 40,
               child: Row(
                 children: [
@@ -95,10 +95,13 @@ class LeagueView extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: SizedBox(
-                width: 500,
+          ),
+          Expanded(
+            child: Container(
+              color: Colors.grey,
+              width: 500,
+              child: Padding(
+                padding: const EdgeInsets.all(10),
                 child: ListView.separated(
                   itemBuilder: (context, index) {
                     var element = league.scheduledGames[index];
@@ -108,9 +111,9 @@ class LeagueView extends StatelessWidget {
                   itemCount: league.scheduledGames.length,
                 ),
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
   }
@@ -132,23 +135,42 @@ class ScheduleEntry extends StatelessWidget {
           width: 150,
           child: Row(
             children: [
-              Text('Platz ${matchScheduleEntry.field}'),
+              Text(
+                'Platz ${matchScheduleEntry.field}',
+                style: const TextStyle(color: Colors.black),
+              ),
               const SizedBox(width: 5),
-              const Text('|'),
+              const Text(
+                '|',
+                style: TextStyle(color: Colors.black),
+              ),
               const SizedBox(width: 5),
-              Text(matchScheduleEntry.startTime),
+              Text(
+                matchScheduleEntry.startTime,
+                style: const TextStyle(color: Colors.black),
+              ),
             ],
           ),
         ),
+        const SizedBox(width: 5),
         Expanded(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(matchScheduleEntry.team1),
+              Text(
+                matchScheduleEntry.team1,
+                style: const TextStyle(color: Colors.black),
+              ),
               const SizedBox(width: 5),
-              const Text(':'),
+              const Text(
+                ':',
+                style: TextStyle(color: Colors.black),
+              ),
               const SizedBox(width: 5),
-              Text(matchScheduleEntry.team2),
+              Text(
+                matchScheduleEntry.team2,
+                style: const TextStyle(color: Colors.black),
+              ),
             ],
           ),
         ),
