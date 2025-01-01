@@ -39,8 +39,8 @@ class ScheduleView extends StatelessWidget with WatchItMixin {
             ],
           ),
         ),
-        SizedBox(
-          height: 500,
+        const SizedBox(height: 10),
+        Expanded(
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: schedule.leagueSchedules.length,
