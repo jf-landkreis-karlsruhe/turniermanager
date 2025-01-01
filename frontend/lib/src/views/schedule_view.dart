@@ -20,38 +20,30 @@ class ScheduleView extends StatelessWidget with WatchItMixin {
     var schedule =
         watchPropertyValue((GameManager manager) => manager.schedule);
 
-    return Column(
-      children: [
-        SizedBox(
-          height: 50,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Spielplan'),
-              Row(
-                children: [
-                  Text('Altersklasse $ageGroup'),
-                  const SizedBox(width: 5),
-                  const Text('|'),
-                  const SizedBox(width: 5),
-                  Text('Spielrunde ${schedule.matchRound}'),
-                ],
-              ),
-            ],
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        leading: const Center(child: Text('Spielplan')),
+        leadingWidth: 100,
+        actions: [
+          Text('Altersklasse $ageGroup'),
+          const SizedBox(width: 5),
+          const Text('|'),
+          const SizedBox(width: 5),
+          Text('Spielrunde ${schedule.matchRound}'),
+          const SizedBox(width: 10),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(10),
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: schedule.leagueSchedules.length,
+          itemBuilder: (context, index) {
+            var entry = schedule.leagueSchedules[index];
+            return LeagueView(league: entry);
+          },
         ),
-        const SizedBox(height: 10),
-        Expanded(
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: schedule.leagueSchedules.length,
-            itemBuilder: (context, index) {
-              var entry = schedule.leagueSchedules[index];
-              return LeagueView(league: entry);
-            },
-          ),
-        )
-      ],
+      ),
     );
   }
 }
