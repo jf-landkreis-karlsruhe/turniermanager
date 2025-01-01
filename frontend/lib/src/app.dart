@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tournament_manager/src/views/overview.dart';
 import 'home_view.dart';
 
@@ -10,7 +11,7 @@ class MainWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       // Providing a restorationScopeId allows the Navigator built by the
       // MaterialApp to restore the navigation stack when a user leaves and
       // returns to the app after it has been killed while running in the
@@ -18,22 +19,18 @@ class MainWidget extends StatelessWidget {
       restorationScopeId: 'app',
       title: "Turniermanager",
       theme: ThemeData.dark(),
-      // Define a function to handle named routes in order to support
-      // Flutter web url navigation and deep linking.
-      onGenerateRoute: (RouteSettings routeSettings) {
-        return MaterialPageRoute<void>(
-          settings: routeSettings,
-          builder: (BuildContext context) {
-            switch (routeSettings.name) {
-              case Overview.routeName:
-                return const Overview();
-              case HomeView.routeName:
-              default:
-                return const HomeView();
-            }
-          },
-        );
-      },
+      routerConfig: GoRouter(
+        routes: [
+          GoRoute(
+            path: HomeView.routeName,
+            builder: (context, state) => const HomeView(),
+          ),
+          GoRoute(
+            path: Overview.routeName,
+            builder: (context, state) => const Overview(),
+          ),
+        ],
+      ),
     );
   }
 }

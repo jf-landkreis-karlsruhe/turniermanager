@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tournament_manager/src/views/overview.dart';
 import 'package:watch_it/watch_it.dart';
 
@@ -35,7 +36,7 @@ class MainContentView extends StatelessWidget with WatchItMixin {
         children: [
           ElevatedButton.icon(
             onPressed: () {
-              Navigator.of(context).pushNamed(Overview.routeName);
+              context.go(Overview.routeName);
             },
             label: const Text("Spielübersicht"),
             icon: const Icon(Icons.view_list),
@@ -43,7 +44,7 @@ class MainContentView extends StatelessWidget with WatchItMixin {
           const SizedBox(height: 10),
           ElevatedButton.icon(
             onPressed: () {
-              Navigator.of(context).pushNamed("");
+              context.go("");
             },
             label: const Text("Spielleiter"),
             icon: const Icon(Icons.sports_esports),
@@ -51,7 +52,7 @@ class MainContentView extends StatelessWidget with WatchItMixin {
           const SizedBox(height: 10),
           ElevatedButton.icon(
             onPressed: () {
-              Navigator.of(context).pushNamed("");
+              context.go("");
             },
             label: const Text("Admin"),
             icon: const Icon(Icons.admin_panel_settings),
