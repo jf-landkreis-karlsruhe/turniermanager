@@ -78,11 +78,13 @@ class LeagueView extends StatelessWidget {
             Expanded(
               child: SizedBox(
                 width: 500,
-                child: ListView(
-                  children: league.scheduledGames
-                      .map((element) =>
-                          ScheduleEntry(matchScheduleEntry: element))
-                      .toList(),
+                child: ListView.separated(
+                  itemBuilder: (context, index) {
+                    var element = league.scheduledGames[index];
+                    return ScheduleEntry(matchScheduleEntry: element);
+                  },
+                  separatorBuilder: (context, index) => const Divider(),
+                  itemCount: league.scheduledGames.length,
                 ),
               ),
             )

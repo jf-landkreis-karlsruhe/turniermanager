@@ -22,13 +22,13 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
       ..leagueSchedules = [
         LeagueDto(1)
           ..scheduledGames = [
-            MatchScheduleEntryDto("1", "team1", 1, "team2", 2, "startTime1"),
-            MatchScheduleEntryDto("2", "team3", 1, "team4", 2, "startTime2"),
+            MatchScheduleEntryDto("1", "team1", 1, "team2", 2, "09:00 Uhr"),
+            MatchScheduleEntryDto("2", "team3", 1, "team4", 2, "09:20 Uhr"),
           ],
         LeagueDto(2)
           ..scheduledGames = [
-            MatchScheduleEntryDto("1", "team1", 1, "team2", 2, "startTime1"),
-            MatchScheduleEntryDto("2", "team3", 1, "team4", 2, "startTime2"),
+            MatchScheduleEntryDto("1", "team1", 1, "team2", 2, "09:00 Uhr"),
+            MatchScheduleEntryDto("2", "team3", 1, "team4", 2, "09:20 Uhr"),
           ],
       ];
 
