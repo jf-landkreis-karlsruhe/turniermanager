@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tournament_manager/src/views/overview.dart';
+import 'package:tournament_manager/src/views/schedule.dart';
 import 'home_view.dart';
 
 /// The Widget that configures your application.
@@ -26,8 +26,8 @@ class MainWidget extends StatelessWidget {
             builder: (context, state) => const HomeView(),
           ),
           GoRoute(
-            path: Overview.routeName,
-            builder: (context, state) => const Overview(),
+            path: Schedule.routeName,
+            builder: (context, state) => const Schedule(),
           ),
         ],
       ),

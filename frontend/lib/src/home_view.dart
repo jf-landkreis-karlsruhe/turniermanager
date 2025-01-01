@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tournament_manager/src/views/overview.dart';
+import 'package:tournament_manager/src/views/schedule.dart';
 import 'package:watch_it/watch_it.dart';
 
 class HomeView extends StatelessWidget {
@@ -36,9 +36,9 @@ class MainContentView extends StatelessWidget with WatchItMixin {
         children: [
           ElevatedButton.icon(
             onPressed: () {
-              context.go(Overview.routeName);
+              context.go(Schedule.routeName);
             },
-            label: const Text("Spielübersicht"),
+            label: const Text("Spielplan"),
             icon: const Icon(Icons.view_list),
           ),
           const SizedBox(height: 10),

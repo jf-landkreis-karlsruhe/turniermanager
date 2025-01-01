@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class Overview extends StatelessWidget {
-  const Overview({super.key});
+class Schedule extends StatelessWidget {
+  const Schedule({super.key});
 
-  static const routeName = '/overview';
+  static const routeName = '/schedule';
 
   @override
   Widget build(BuildContext context) {
