@@ -5,7 +5,7 @@ import 'package:tournament_manager/src/serialization/match_schedule_entry_dto.da
 import 'package:tournament_manager/src/service/rest_client.dart';
 
 abstract class GameRestApi {
-  Future<MatchScheduleDto?> getSchedule(String ageGroup, String league);
+  Future<MatchScheduleDto?> getSchedule(String ageGroup);
 }
 
 class GameRestApiImplementation extends RestClient implements GameRestApi {
@@ -16,7 +16,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   }
 
   @override
-  Future<MatchScheduleDto?> getSchedule(String ageGroup, String league) async {
+  Future<MatchScheduleDto?> getSchedule(String ageGroup) async {
     //TODO: remove test data
     return MatchScheduleDto()
       ..leagueSchedules = [
@@ -35,7 +35,6 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
     final uri = getScheduleUri.replace(
       queryParameters: {
         'ageGroup': ageGroup,
-        'league': league,
       },
     );
 

@@ -4,17 +4,14 @@ import 'package:watch_it/watch_it.dart';
 
 class ScheduleView extends StatelessWidget with WatchItMixin {
   const ScheduleView(
-    this.ageGroup,
-    this.league, {
+    this.ageGroup, {
     super.key,
   });
 
   final String ageGroup;
-  final String league;
 
   static const routeName = '/schedule';
   static const ageGroupQueryParam = 'ageGroup';
-  static const leagueQueryParam = 'league';
 
   @override
   Widget build(BuildContext context) {

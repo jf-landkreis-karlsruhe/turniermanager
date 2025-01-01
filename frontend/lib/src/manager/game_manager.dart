@@ -6,7 +6,7 @@ import 'package:tournament_manager/src/service/game_rest_api.dart';
 import 'package:watch_it/watch_it.dart';
 
 abstract class GameManager extends ChangeNotifier {
-  late Command<(String ageGroup, String league), void> getGameDataCommand;
+  late Command<String, void> getGameDataCommand;
 
   MatchSchedule get schedule;
 }
@@ -16,7 +16,7 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
   late final MatchScheduleMapper _scheduleMapper;
 
   @override
-  late Command<(String ageGroup, String league), void> getGameDataCommand;
+  late Command<String, void> getGameDataCommand;
 
   MatchSchedule _schedule = MatchSchedule();
   @override
@@ -32,7 +32,7 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
 
     getGameDataCommand = Command.createAsyncNoResult(
       (input) async {
-        var result = await _gameRestApi.getSchedule(input.$1, input.$2);
+        var result = await _gameRestApi.getSchedule(input);
         if (result == null) {
           return; //TODO: error handling
         }

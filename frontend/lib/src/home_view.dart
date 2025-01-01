@@ -38,15 +38,12 @@ class MainContentView extends StatelessWidget with WatchItMixin {
           ElevatedButton.icon(
             onPressed: () {
               final GameManager gameManager = di<GameManager>();
-              gameManager.getGameDataCommand(("1", "1"));
+              gameManager.getGameDataCommand("1");
 
               context.go(
                 Uri(
                   path: ScheduleView.routeName,
-                  queryParameters: {
-                    ScheduleView.ageGroupQueryParam: '1',
-                    ScheduleView.leagueQueryParam: '1',
-                  },
+                  queryParameters: {ScheduleView.ageGroupQueryParam: '1'},
                 ).toString(),
               );
             },

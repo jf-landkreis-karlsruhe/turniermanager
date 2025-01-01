@@ -31,11 +31,8 @@ class MainWidget extends StatelessWidget {
               var ageGroup =
                   state.uri.queryParameters[ScheduleView.ageGroupQueryParam] ??
                       "1";
-              var league =
-                  state.uri.queryParameters[ScheduleView.leagueQueryParam] ??
-                      "1";
 
-              return ScheduleView(ageGroup, league);
+              return ScheduleView(ageGroup);
             },
           ),
         ],
