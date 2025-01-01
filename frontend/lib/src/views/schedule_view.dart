@@ -24,7 +24,7 @@ class ScheduleView extends StatelessWidget with WatchItMixin {
     return ListView.builder(
       itemCount: schedule.entries.length,
       itemBuilder: (context, index) {
-        var entry = schedule.entries[index];
+        var entry = schedule.entries[0].entries[index];
 
         return Row(
           children: [

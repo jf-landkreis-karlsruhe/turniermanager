@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:tournament_manager/src/serialization/league_dto.dart';
 import 'package:tournament_manager/src/serialization/match_schedule_dto.dart';
 import 'package:tournament_manager/src/serialization/match_schedule_entry_dto.dart';
 import 'package:tournament_manager/src/service/rest_client.dart';
@@ -19,8 +20,16 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
     //TODO: remove test data
     return MatchScheduleDto()
       ..entries = [
-        MatchScheduleEntryDto("1", "team1", 2, "team2", 3, "startTime1"),
-        MatchScheduleEntryDto("1", "team3", 2, "team4", 3, "startTime2"),
+        LeagueDto(1)
+          ..entries = [
+            MatchScheduleEntryDto("1", "team1", 1, "team2", 2, "startTime1"),
+            MatchScheduleEntryDto("2", "team3", 1, "team4", 2, "startTime2"),
+          ],
+        LeagueDto(2)
+          ..entries = [
+            MatchScheduleEntryDto("1", "team1", 1, "team2", 2, "startTime1"),
+            MatchScheduleEntryDto("2", "team3", 1, "team4", 2, "startTime2"),
+          ],
       ];
 
     final uri = getScheduleUri.replace(

@@ -1,7 +1,7 @@
-import 'package:tournament_manager/src/model/match_schedule_entry.dart';
+import 'package:tournament_manager/src/model/league.dart';
 
 class MatchSchedule {
   MatchSchedule();
 
-  List<MatchScheduleEntry> entries = [];
+  List<League> entries = [];
 }
