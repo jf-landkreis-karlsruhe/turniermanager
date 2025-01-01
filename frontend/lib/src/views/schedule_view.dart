@@ -15,6 +15,8 @@ class ScheduleView extends StatelessWidget with WatchItMixin {
   static const routeName = '/schedule';
   static const ageGroupQueryParam = 'ageGroup';
 
+  static const double _headerFontSize = 26;
+
   @override
   Widget build(BuildContext context) {
     var schedule =
@@ -22,14 +24,28 @@ class ScheduleView extends StatelessWidget with WatchItMixin {
 
     return Scaffold(
       appBar: AppBar(
-        leading: const Center(child: Text('Spielplan')),
-        leadingWidth: 100,
+        leading: const Center(
+          child: Text(
+            'Spielplan',
+            style: TextStyle(fontSize: _headerFontSize),
+          ),
+        ),
+        leadingWidth: 150,
         actions: [
-          Text('Altersklasse $ageGroup'),
+          Text(
+            'Altersklasse $ageGroup',
+            style: const TextStyle(fontSize: _headerFontSize),
+          ),
           const SizedBox(width: 5),
-          const Text('|'),
+          const Text(
+            '|',
+            style: TextStyle(fontSize: _headerFontSize),
+          ),
           const SizedBox(width: 5),
-          Text('Spielrunde ${schedule.matchRound}'),
+          Text(
+            'Spielrunde ${schedule.matchRound}',
+            style: const TextStyle(fontSize: _headerFontSize),
+          ),
           const SizedBox(width: 10),
         ],
       ),
@@ -56,6 +72,8 @@ class LeagueView extends StatelessWidget {
 
   final League league;
 
+  static const double _headerFontSize = 20;
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -65,10 +83,13 @@ class LeagueView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 20,
+              height: 40,
               child: Row(
                 children: [
-                  Text('Liga ${league.leagueNo}'),
+                  Text(
+                    'Liga ${league.leagueNo}',
+                    style: const TextStyle(fontSize: _headerFontSize),
+                  ),
                   const SizedBox(width: 10),
                   const Icon(Icons.sports_volleyball),
                 ],
