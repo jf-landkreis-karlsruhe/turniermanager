@@ -70,6 +70,7 @@ class LeagueView extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(10),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
               height: 20,
@@ -81,6 +82,7 @@ class LeagueView extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 20),
             Expanded(
               child: SizedBox(
                 width: 500,
