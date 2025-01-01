@@ -78,7 +78,7 @@ class LeagueView extends StatelessWidget {
                 children: [
                   Text('Liga ${league.leagueNo}'),
                   const SizedBox(width: 10),
-                  const Icon(Icons.gamepad),
+                  const Icon(Icons.sports_volleyball),
                 ],
               ),
             ),
