@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:tournament_manager/src/serialization/results/result_entry_dto.dart';
 import 'package:tournament_manager/src/serialization/results/results_dto.dart';
 import 'package:tournament_manager/src/serialization/schedule/league_dto.dart';
@@ -88,28 +89,34 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   Future<ResultsDto?> getResults(String ageGroup) async {
     //TODO: remove test data
 
-    var scheduleList = List.generate(
+    var resultList = List.generate(
       10,
-      (innerIndex) {
+      (index) {
+        var randomGenerator = Random(index);
         var result = ResultEntryDto(
-          'teamName',
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
+          'Team$index',
+          randomGenerator.nextInt(100),
+          randomGenerator.nextInt(100),
+          randomGenerator.nextInt(100),
+          randomGenerator.nextInt(100),
+          randomGenerator.nextInt(100),
+          randomGenerator.nextInt(100),
         );
 
         return result;
       },
     );
 
+    resultList.sort(
+      (a, b) => a.points.compareTo(b.points),
+    );
+
     return ResultsDto(1)
       ..leagueResults = List.generate(
         3,
         (index) {
-          return resultleague.LeagueDto(index + 1)..gameResults = scheduleList;
+          return resultleague.LeagueDto(index + 1)
+            ..gameResults = resultList.reversed.toList();
         },
       );
 
