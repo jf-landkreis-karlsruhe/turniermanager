@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:tournament_manager/src/serialization/results/results_dto.dart';
 import 'package:tournament_manager/src/serialization/schedule/league_dto.dart';
 import 'package:tournament_manager/src/serialization/schedule/match_schedule_dto.dart';
 import 'package:tournament_manager/src/serialization/schedule/match_schedule_entry_dto.dart';
@@ -6,13 +7,17 @@ import 'package:tournament_manager/src/service/rest_client.dart';
 
 abstract class GameRestApi {
   Future<MatchScheduleDto?> getSchedule(String ageGroup);
+
+  Future<ResultsDto?> getResults(String ageGroup);
 }
 
 class GameRestApiImplementation extends RestClient implements GameRestApi {
   late final Uri getScheduleUri;
+  late final Uri getResultsUri;
 
   GameRestApiImplementation() {
     getScheduleUri = Uri.parse('$baseUri/schedule');
+    getResultsUri = Uri.parse('$baseUri/results');
   }
 
   @override
@@ -71,6 +76,24 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
       return MatchScheduleDto.fromJson(json);
+    }
+
+    return null;
+  }
+
+  @override
+  Future<ResultsDto?> getResults(String ageGroup) async {
+    final uri = getResultsUri.replace(
+      queryParameters: {
+        'ageGroup': ageGroup,
+      },
+    );
+
+    final response = await client.get(uri, headers: headers);
+
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+      return ResultsDto.fromJson(json);
     }
 
     return null;
