@@ -17,14 +17,13 @@ class ScheduleView extends StatefulWidget with WatchItStatefulWidgetMixin {
   static const routeName = '/schedule';
   static const ageGroupQueryParam = 'ageGroup';
 
-  static const double _headerFontSize = 26;
-
   @override
   State<ScheduleView> createState() => _ScheduleViewState();
 }
 
 class _ScheduleViewState extends State<ScheduleView> {
   Timer? refreshTimer;
+  final double _headerFontSize = 26;
 
   @override
   void initState() {
@@ -55,27 +54,27 @@ class _ScheduleViewState extends State<ScheduleView> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: const Center(
+        leading: Center(
           child: Text(
             'Spielplan',
-            style: TextStyle(fontSize: ScheduleView._headerFontSize),
+            style: TextStyle(fontSize: _headerFontSize),
           ),
         ),
         leadingWidth: 150,
         actions: [
           Text(
             'Altersklasse ${widget.ageGroup}',
-            style: const TextStyle(fontSize: ScheduleView._headerFontSize),
+            style: TextStyle(fontSize: _headerFontSize),
           ),
           const SizedBox(width: 5),
-          const Text(
+          Text(
             '|',
-            style: TextStyle(fontSize: ScheduleView._headerFontSize),
+            style: TextStyle(fontSize: _headerFontSize),
           ),
           const SizedBox(width: 5),
           Text(
             'Spielrunde ${schedule.matchRound}',
-            style: const TextStyle(fontSize: ScheduleView._headerFontSize),
+            style: TextStyle(fontSize: _headerFontSize),
           ),
           const SizedBox(width: 10),
         ],
