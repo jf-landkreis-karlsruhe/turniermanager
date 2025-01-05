@@ -50,6 +50,17 @@ class _ResultsViewState extends State<ResultsView> {
   Widget build(BuildContext context) {
     var results = watchPropertyValue((GameManager manager) => manager.results);
 
+    var screenSize = MediaQuery.sizeOf(context);
+    var amountLeagues = results.leagueResults.length;
+    var enclosingPadding = 20;
+    var leaguePadding = amountLeagues > 1 ? 10 : 0;
+    var displayFactor = amountLeagues > 1 ? 2 : 1;
+    var leagueWidgetSize =
+        (screenSize.width - enclosingPadding - leaguePadding) / displayFactor;
+    leagueWidgetSize = leagueWidgetSize < 750
+        ? screenSize.width - enclosingPadding
+        : leagueWidgetSize;
+
     return Scaffold(
       appBar: AppBar(
         leading: Center(
@@ -78,13 +89,16 @@ class _ResultsViewState extends State<ResultsView> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.all(enclosingPadding / 2),
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: results.leagueResults.length,
           itemBuilder: (context, index) {
             var entry = results.leagueResults[index];
-            return LeagueView(league: entry);
+            return LeagueView(
+              league: entry,
+              width: leagueWidgetSize,
+            );
           },
         ),
       ),
@@ -96,9 +110,11 @@ class LeagueView extends StatelessWidget {
   const LeagueView({
     super.key,
     required this.league,
+    required this.width,
   });
 
   final League league;
+  final double width;
 
   static const double _headerFontSize = 20;
 
@@ -274,7 +290,7 @@ class LeagueView extends StatelessWidget {
           Expanded(
             child: Container(
               color: Colors.grey,
-              width: 750,
+              width: width,
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: DataTable(columns: columns, rows: rows),
