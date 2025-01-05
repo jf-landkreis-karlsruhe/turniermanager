@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'package:tournament_manager/src/serialization/results/result_entry_dto.dart';
 import 'package:tournament_manager/src/serialization/results/results_dto.dart';
 import 'package:tournament_manager/src/serialization/schedule/league_dto.dart';
+import 'package:tournament_manager/src/serialization/results/league_dto.dart'
+    as resultleague;
 import 'package:tournament_manager/src/serialization/schedule/match_schedule_dto.dart';
 import 'package:tournament_manager/src/serialization/schedule/match_schedule_entry_dto.dart';
 import 'package:tournament_manager/src/service/rest_client.dart';
@@ -83,6 +86,33 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
 
   @override
   Future<ResultsDto?> getResults(String ageGroup) async {
+    //TODO: remove test data
+
+    var scheduleList = List.generate(
+      10,
+      (innerIndex) {
+        var result = ResultEntryDto(
+          'teamName',
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+        );
+
+        return result;
+      },
+    );
+
+    return ResultsDto(1)
+      ..leagueResults = List.generate(
+        3,
+        (index) {
+          return resultleague.LeagueDto(index + 1)..gameResults = scheduleList;
+        },
+      );
+
     final uri = getResultsUri.replace(
       queryParameters: {
         'ageGroup': ageGroup,
