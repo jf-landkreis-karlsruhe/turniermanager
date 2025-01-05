@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/model/schedule/league.dart';
 import 'package:tournament_manager/src/model/schedule/match_schedule_entry.dart';
@@ -25,6 +26,10 @@ class _ScheduleViewState extends State<ScheduleView> {
   Timer? refreshTimer;
   final double _headerFontSize = 26;
 
+  final ItemScrollController itemScrollController = ItemScrollController();
+  var currentScrollIndex = 1;
+  var amountItems = 0;
+
   @override
   void initState() {
     if (refreshTimer != null) {
@@ -35,6 +40,18 @@ class _ScheduleViewState extends State<ScheduleView> {
     refreshTimer ??= Timer.periodic(const Duration(seconds: 10), (timer) {
       final GameManager gameManager = di<GameManager>();
       gameManager.getScheduleCommand(widget.ageGroup);
+
+      if (amountItems >= 0) {
+        itemScrollController.scrollTo(
+            index: currentScrollIndex,
+            duration: const Duration(seconds: 2),
+            curve: Curves.easeInOutCubic);
+
+        currentScrollIndex++;
+      }
+      if (currentScrollIndex >= amountItems) {
+        currentScrollIndex = 0;
+      }
     });
 
     super.initState();
@@ -51,6 +68,7 @@ class _ScheduleViewState extends State<ScheduleView> {
   Widget build(BuildContext context) {
     var schedule =
         watchPropertyValue((GameManager manager) => manager.schedule);
+    amountItems = schedule.leagueSchedules.length;
 
     return Scaffold(
       appBar: AppBar(
@@ -81,7 +99,8 @@ class _ScheduleViewState extends State<ScheduleView> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
-        child: ListView.builder(
+        child: ScrollablePositionedList.builder(
+          itemScrollController: itemScrollController,
           scrollDirection: Axis.horizontal,
           itemCount: schedule.leagueSchedules.length,
           itemBuilder: (context, index) {

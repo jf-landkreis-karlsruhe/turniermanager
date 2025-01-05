@@ -63,7 +63,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
 
     return MatchScheduleDto(1)
       ..leagueSchedules = List.generate(
-        3,
+        8,
         (index) {
           return LeagueDto(index + 1)..scheduledGames = scheduleList;
         },
