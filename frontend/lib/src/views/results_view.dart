@@ -157,11 +157,12 @@ class LeagueView extends StatelessWidget {
 
     List<DataRow> rows = [];
     for (var result in league.gameResults) {
+      var index = league.gameResults.indexOf(result) + 1;
       List<DataCell> cells = [];
       cells.add(
         DataCell(
           Text(
-            '1', //TODO
+            index.toString(),
             style: const TextStyle(color: Colors.black),
           ),
         ),
