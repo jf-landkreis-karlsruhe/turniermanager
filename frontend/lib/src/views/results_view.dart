@@ -106,6 +106,12 @@ class _ResultsViewState extends State<ResultsView> {
   }
 }
 
+enum LeagueWidgetSize {
+  small,
+  medium,
+  large,
+}
+
 class LeagueView extends StatelessWidget {
   const LeagueView({
     super.key,
@@ -120,26 +126,37 @@ class LeagueView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<DataColumn> columns = [
-      const DataColumn(
-        label: Text(
-          '#',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
+    LeagueWidgetSize leagueWidgetSize = LeagueWidgetSize.large;
+    if (width < 750 && width > 500) {
+      leagueWidgetSize = LeagueWidgetSize.medium;
+    } else if (width <= 500) {
+      leagueWidgetSize = LeagueWidgetSize.small;
+    }
+
+    List<DataColumn> columns = [];
+    columns.add(const DataColumn(
+      label: Text(
+        '#',
+        style: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
         ),
       ),
-      const DataColumn(
-        label: Text(
-          'Mannschaft',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
+    ));
+
+    columns.add(const DataColumn(
+      label: Text(
+        'Mannschaft',
+        style: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
         ),
       ),
-      const DataColumn(
+    ));
+
+    if (leagueWidgetSize == LeagueWidgetSize.large ||
+        leagueWidgetSize == LeagueWidgetSize.medium) {
+      columns.add(const DataColumn(
         label: Text(
           'S',
           style: TextStyle(
@@ -147,8 +164,9 @@ class LeagueView extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-      ),
-      const DataColumn(
+      ));
+
+      columns.add(const DataColumn(
         label: Text(
           'U',
           style: TextStyle(
@@ -156,8 +174,9 @@ class LeagueView extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-      ),
-      const DataColumn(
+      ));
+
+      columns.add(const DataColumn(
         label: Text(
           'N',
           style: TextStyle(
@@ -165,8 +184,11 @@ class LeagueView extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-      ),
-      const DataColumn(
+      ));
+    }
+
+    if (leagueWidgetSize == LeagueWidgetSize.large) {
+      columns.add(const DataColumn(
         label: Text(
           'Sätze',
           style: TextStyle(
@@ -174,8 +196,9 @@ class LeagueView extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-      ),
-      const DataColumn(
+      ));
+
+      columns.add(const DataColumn(
         label: Text(
           'Diff.',
           style: TextStyle(
@@ -183,22 +206,24 @@ class LeagueView extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-      ),
-      const DataColumn(
-        label: Text(
-          'Pkt.',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
+      ));
+    }
+
+    columns.add(const DataColumn(
+      label: Text(
+        'Pkt.',
+        style: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
         ),
       ),
-    ];
+    ));
 
     List<DataRow> rows = [];
     for (var result in league.gameResults) {
       var index = league.gameResults.indexOf(result) + 1;
       List<DataCell> cells = [];
+
       cells.add(
         DataCell(
           Text(
@@ -207,6 +232,7 @@ class LeagueView extends StatelessWidget {
           ),
         ),
       );
+
       cells.add(
         DataCell(
           Text(
@@ -215,46 +241,57 @@ class LeagueView extends StatelessWidget {
           ),
         ),
       );
-      cells.add(
-        DataCell(
-          Text(
-            result.amountWins.toString(),
-            style: const TextStyle(color: Colors.black),
+
+      if (leagueWidgetSize == LeagueWidgetSize.large ||
+          leagueWidgetSize == LeagueWidgetSize.medium) {
+        cells.add(
+          DataCell(
+            Text(
+              result.amountWins.toString(),
+              style: const TextStyle(color: Colors.black),
+            ),
           ),
-        ),
-      );
-      cells.add(
-        DataCell(
-          Text(
-            result.amountDraws.toString(),
-            style: const TextStyle(color: Colors.black),
+        );
+
+        cells.add(
+          DataCell(
+            Text(
+              result.amountDraws.toString(),
+              style: const TextStyle(color: Colors.black),
+            ),
           ),
-        ),
-      );
-      cells.add(
-        DataCell(
-          Text(
-            result.amountDefeats.toString(),
-            style: const TextStyle(color: Colors.black),
+        );
+
+        cells.add(
+          DataCell(
+            Text(
+              result.amountDefeats.toString(),
+              style: const TextStyle(color: Colors.black),
+            ),
           ),
-        ),
-      );
-      cells.add(
-        DataCell(
-          Text(
-            '${result.goals} : ${result.goalsConceded}',
-            style: const TextStyle(color: Colors.black),
+        );
+      }
+
+      if (leagueWidgetSize == LeagueWidgetSize.large) {
+        cells.add(
+          DataCell(
+            Text(
+              '${result.goals} : ${result.goalsConceded}',
+              style: const TextStyle(color: Colors.black),
+            ),
           ),
-        ),
-      );
-      cells.add(
-        DataCell(
-          Text(
-            (result.goals - result.goalsConceded).toString(),
-            style: const TextStyle(color: Colors.black),
+        );
+
+        cells.add(
+          DataCell(
+            Text(
+              (result.goals - result.goalsConceded).toString(),
+              style: const TextStyle(color: Colors.black),
+            ),
           ),
-        ),
-      );
+        );
+      }
+
       cells.add(
         DataCell(
           Text(
