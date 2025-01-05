@@ -135,7 +135,7 @@ class LeagueView extends StatelessWidget {
                 child: ListView.separated(
                   itemBuilder: (context, index) {
                     var element = league.scheduledGames[index];
-                    return ScheduleEntry(matchScheduleEntry: element);
+                    return ScheduleEntryView(matchScheduleEntry: element);
                   },
                   separatorBuilder: (context, index) => const Divider(),
                   itemCount: league.scheduledGames.length,
@@ -149,8 +149,8 @@ class LeagueView extends StatelessWidget {
   }
 }
 
-class ScheduleEntry extends StatelessWidget {
-  const ScheduleEntry({
+class ScheduleEntryView extends StatelessWidget {
+  const ScheduleEntryView({
     super.key,
     required this.matchScheduleEntry,
   });
