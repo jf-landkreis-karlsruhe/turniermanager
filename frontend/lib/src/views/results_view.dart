@@ -40,7 +40,7 @@ class _ResultsViewState extends State<ResultsView> {
       final GameManager gameManager = di<GameManager>();
       gameManager.getResultsCommand(widget.ageGroup);
 
-      if (amountItems >= 0) {
+      if (amountItems > 0) {
         itemScrollController.scrollTo(
             index: currentScrollIndex,
             duration: const Duration(seconds: 2),

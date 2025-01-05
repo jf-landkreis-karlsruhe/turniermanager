@@ -41,7 +41,7 @@ class _ScheduleViewState extends State<ScheduleView> {
       final GameManager gameManager = di<GameManager>();
       gameManager.getScheduleCommand(widget.ageGroup);
 
-      if (amountItems >= 0) {
+      if (amountItems > 0) {
         itemScrollController.scrollTo(
             index: currentScrollIndex,
             duration: const Duration(seconds: 2),
