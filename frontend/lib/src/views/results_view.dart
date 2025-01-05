@@ -209,7 +209,7 @@ class LeagueView extends StatelessWidget {
       cells.add(
         DataCell(
           Text(
-            '1', //TODO
+            (result.goals - result.goalsConceded).toString(),
             style: const TextStyle(color: Colors.black),
           ),
         ),
