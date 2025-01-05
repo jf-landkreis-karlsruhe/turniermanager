@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_command/flutter_command.dart';
 import 'package:tournament_manager/src/mapper/match_schedule_mapper.dart';
-import 'package:tournament_manager/src/model/match_schedule.dart';
+import 'package:tournament_manager/src/model/schedule/match_schedule.dart';
 import 'package:tournament_manager/src/service/game_rest_api.dart';
 import 'package:watch_it/watch_it.dart';
 

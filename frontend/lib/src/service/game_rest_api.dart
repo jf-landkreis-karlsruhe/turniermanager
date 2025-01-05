@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:tournament_manager/src/serialization/league_dto.dart';
-import 'package:tournament_manager/src/serialization/match_schedule_dto.dart';
-import 'package:tournament_manager/src/serialization/match_schedule_entry_dto.dart';
+import 'package:tournament_manager/src/serialization/schedule/league_dto.dart';
+import 'package:tournament_manager/src/serialization/schedule/match_schedule_dto.dart';
+import 'package:tournament_manager/src/serialization/schedule/match_schedule_entry_dto.dart';
 import 'package:tournament_manager/src/service/rest_client.dart';
 
 abstract class GameRestApi {

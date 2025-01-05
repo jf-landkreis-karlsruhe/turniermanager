@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
-import 'package:tournament_manager/src/model/league.dart';
-import 'package:tournament_manager/src/model/match_schedule_entry.dart';
+import 'package:tournament_manager/src/model/schedule/league.dart';
+import 'package:tournament_manager/src/model/schedule/match_schedule_entry.dart';
 import 'package:watch_it/watch_it.dart';
 
 class ScheduleView extends StatefulWidget with WatchItStatefulWidgetMixin {
