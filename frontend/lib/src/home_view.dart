@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/views/schedule_view.dart';
 import 'package:watch_it/watch_it.dart';
 
@@ -51,10 +50,6 @@ class MainContentView extends StatelessWidget with WatchItMixin {
                     const SizedBox(height: 5),
                     ElevatedButton.icon(
                       onPressed: () {
-                        final GameManager gameManager = di<GameManager>();
-                        gameManager.getGameDataCommand(
-                            scheduleAgeGroupTextController.text);
-
                         context.go(
                           Uri(
                             path: ScheduleView.routeName,
