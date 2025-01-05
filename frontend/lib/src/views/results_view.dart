@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/model/results/league.dart';
 import 'package:watch_it/watch_it.dart';
@@ -24,6 +25,10 @@ class _ResultsViewState extends State<ResultsView> {
   Timer? refreshTimer;
   final double _headerFontSize = 26;
 
+  final ItemScrollController itemScrollController = ItemScrollController();
+  var currentScrollIndex = 1;
+  var amountItems = 0;
+
   @override
   void initState() {
     if (refreshTimer != null) {
@@ -34,6 +39,18 @@ class _ResultsViewState extends State<ResultsView> {
     refreshTimer ??= Timer.periodic(const Duration(seconds: 10), (timer) {
       final GameManager gameManager = di<GameManager>();
       gameManager.getResultsCommand(widget.ageGroup);
+
+      if (amountItems >= 0) {
+        itemScrollController.scrollTo(
+            index: currentScrollIndex,
+            duration: const Duration(seconds: 2),
+            curve: Curves.easeInOutCubic);
+
+        currentScrollIndex++;
+      }
+      if (currentScrollIndex >= amountItems) {
+        currentScrollIndex = 0;
+      }
     });
 
     super.initState();
@@ -49,6 +66,7 @@ class _ResultsViewState extends State<ResultsView> {
   @override
   Widget build(BuildContext context) {
     var results = watchPropertyValue((GameManager manager) => manager.results);
+    amountItems = results.leagueResults.length;
 
     var screenSize = MediaQuery.sizeOf(context);
     var amountLeagues = results.leagueResults.length;
@@ -90,7 +108,8 @@ class _ResultsViewState extends State<ResultsView> {
       ),
       body: Padding(
         padding: EdgeInsets.all(enclosingPadding / 2),
-        child: ListView.builder(
+        child: ScrollablePositionedList.builder(
+          itemScrollController: itemScrollController,
           scrollDirection: Axis.horizontal,
           itemCount: results.leagueResults.length,
           itemBuilder: (context, index) {
