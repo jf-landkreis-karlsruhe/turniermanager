@@ -34,7 +34,7 @@ class _ScheduleViewState extends State<ScheduleView> {
 
     refreshTimer ??= Timer.periodic(const Duration(seconds: 10), (timer) {
       final GameManager gameManager = di<GameManager>();
-      gameManager.getGameDataCommand(widget.ageGroup);
+      gameManager.getScheduleCommand(widget.ageGroup);
     });
 
     super.initState();

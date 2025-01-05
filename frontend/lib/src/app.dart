@@ -35,7 +35,7 @@ class MainWidget extends StatelessWidget {
                       "1";
 
               final GameManager gameManager = di<GameManager>();
-              gameManager.getGameDataCommand(ageGroup);
+              gameManager.getScheduleCommand(ageGroup);
 
               return ScheduleView(ageGroup);
             },
