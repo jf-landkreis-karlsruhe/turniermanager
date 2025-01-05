@@ -21,13 +21,15 @@ class HomeView extends StatelessWidget {
         ),
         leadingWidth: 80,
       ),
-      body: const MainContentView(),
+      body: MainContentView(),
     );
   }
 }
 
 class MainContentView extends StatelessWidget with WatchItMixin {
-  const MainContentView({super.key});
+  MainContentView({super.key});
+
+  final scheduleAgeGroupTextController = TextEditingController(text: '1');
 
   @override
   Widget build(BuildContext context) {
@@ -35,20 +37,41 @@ class MainContentView extends StatelessWidget with WatchItMixin {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ElevatedButton.icon(
-            onPressed: () {
-              final GameManager gameManager = di<GameManager>();
-              gameManager.getGameDataCommand("1");
+          SizedBox(
+            width: 200,
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: scheduleAgeGroupTextController,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 5),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        final GameManager gameManager = di<GameManager>();
+                        gameManager.getGameDataCommand(
+                            scheduleAgeGroupTextController.text);
 
-              context.go(
-                Uri(
-                  path: ScheduleView.routeName,
-                  queryParameters: {ScheduleView.ageGroupQueryParam: '1'},
-                ).toString(),
-              );
-            },
-            label: const Text("Spielplan"),
-            icon: const Icon(Icons.view_list),
+                        context.go(
+                          Uri(
+                            path: ScheduleView.routeName,
+                            queryParameters: {
+                              ScheduleView.ageGroupQueryParam:
+                                  scheduleAgeGroupTextController.text
+                            },
+                          ).toString(),
+                        );
+                      },
+                      label: const Text("Spielplan"),
+                      icon: const Icon(Icons.view_list),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
           const SizedBox(height: 10),
           ElevatedButton.icon(
