@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/turnierverwaltung")
-public class GameController {
+public class TournamentGameController {
 
 	@Autowired
 	private GameControllerRepository gameControllerRepository;
@@ -79,7 +79,4 @@ public class GameController {
 	        
 		return null;
 	}
-	
-	
-	
 }
