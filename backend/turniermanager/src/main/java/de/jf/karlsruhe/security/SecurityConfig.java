@@ -12,7 +12,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()  // Deaktiviert CSRF-Schutz (nur für Tests geeignet)
             .authorizeHttpRequests()  // Hier verwenden wir authorizeHttpRequests() für die Konfiguration
-                .requestMatchers("/gamecontrol/**").permitAll()  // Erlaubt unautorisierte Zugriffe auf den Endpunkt
+                .requestMatchers("/**").permitAll()
                 .anyRequest().authenticated()  // Erfordert Authentifizierung für alle anderen Endpunkte
             .and()
             .httpBasic();  // Optional: Basic Authentication, falls benötigt

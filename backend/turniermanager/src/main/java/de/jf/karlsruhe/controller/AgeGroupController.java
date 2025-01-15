@@ -19,4 +19,14 @@ public class AgeGroupController {
         AgeGroup savedAgeGroup = ageGroupRepository.save(ageGroup);
         return ResponseEntity.ok(savedAgeGroup);
     }
+
+    @DeleteMapping("/agegroup/{id}")
+    public ResponseEntity<Void> deleteAgeGroup(@PathVariable Long id) {
+        if (ageGroupRepository.existsById(id)) {
+            ageGroupRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

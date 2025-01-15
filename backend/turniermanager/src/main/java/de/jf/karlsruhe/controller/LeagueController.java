@@ -37,7 +37,17 @@ public class LeagueController {
 		League savedLeague = leagueRepository.save(league);
 		return ResponseEntity.ok(savedLeague);
 	}
-
+	
+	@DeleteMapping("/league/{id}")
+    public ResponseEntity<Void> deleteLeague(@PathVariable Long id) {
+        if (leagueRepository.existsById(id)) {
+            leagueRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+	
 	// Teams zu einer einzelnen Liga hinzufügen
 	@PostMapping("/league/{leagueId}/addTeams")
 	public ResponseEntity<League> addTeamsToLeague(@PathVariable Long leagueId, @RequestBody List<Long> teamIds) {

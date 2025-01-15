@@ -27,4 +27,14 @@ public class PitchController {
         Pitch savedPitch = pitchRepository.save(pitch);
         return ResponseEntity.ok(savedPitch);
     }
+    
+    @DeleteMapping("/pitch/{id}")
+    public ResponseEntity<Void> deletePitch(@PathVariable Long id) {
+        if (pitchRepository.existsById(id)) {
+            pitchRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
