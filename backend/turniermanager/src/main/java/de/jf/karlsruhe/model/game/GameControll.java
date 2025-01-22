@@ -15,7 +15,8 @@ public class GameControll {
 
 	@OneToOne
 	private GameSettings settings;
-
+	
+	
 	public GameControll() {
 	}
 

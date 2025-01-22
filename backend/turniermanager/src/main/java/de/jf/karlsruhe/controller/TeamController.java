@@ -1,9 +1,9 @@
 package de.jf.karlsruhe.controller;
 
-import de.jf.karlsruhe.model.base.AgeGroup;
 import de.jf.karlsruhe.model.base.Team;
-import de.jf.karlsruhe.model.repos.AgeGroupRepository;
 import de.jf.karlsruhe.model.repos.TeamRepository;
+
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,15 +16,15 @@ public class TeamController {
     @Autowired
     private TeamRepository teamRepository;
     
-    @Autowired
-    private AgeGroupRepository ageGroupRepository;
-
     @PostMapping("/team")
     public ResponseEntity<Team> createTeam(@RequestBody Team team) {
-        AgeGroup ageGroup = team.getAgegroup();
-        AgeGroup savedAgeGroup = ageGroupRepository.save(ageGroup);
-        team.setAgegroup(savedAgeGroup);
         Team savedTeam = teamRepository.save(team);
+        return ResponseEntity.ok(savedTeam);
+    }
+    
+    @PostMapping("/teams")
+    public ResponseEntity<List<Team>> createTeam(@RequestBody List<Team> teams) {
+        List<Team> savedTeam = teamRepository.saveAll(teams);
         return ResponseEntity.ok(savedTeam);
     }
     

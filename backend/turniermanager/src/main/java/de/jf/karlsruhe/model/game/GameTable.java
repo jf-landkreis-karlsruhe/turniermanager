@@ -2,8 +2,8 @@ package de.jf.karlsruhe.model.game;
 
 import java.util.List;
 
+import de.jf.karlsruhe.model.base.Game;
 import de.jf.karlsruhe.model.base.League;
-import de.jf.karlsruhe.model.repos.GameTableEntryRepository;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,15 +22,15 @@ public class GameTable {
 	private League league;
 
 	@OneToMany
-	private List<TableEntry> entries;
+	private List<Game> games;
 
 	public GameTable() {
 	}
 
-	public GameTable(Long id, League league, List<TableEntry> entries) {
+	public GameTable(Long id, League league, List<Game> games) {
 		this.id = id;
 		this.league = league;
-		this.entries = entries;
+		this.games = games;
 	}
 
 	public Long getId() {
@@ -49,12 +49,12 @@ public class GameTable {
 		this.league = league;
 	}
 
-	public List<TableEntry> getEntries() {
-		return entries;
+	public List<Game> getGames() {
+		return games;
 	}
 
-	public void setEntries(List<TableEntry> entries) {
-		this.entries = entries;
+	public void setGames(List<Game> games) {
+		this.games = games;
 	}
 
 }

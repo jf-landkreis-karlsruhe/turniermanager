@@ -1,5 +1,7 @@
 package de.jf.karlsruhe.model.base;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,8 +16,10 @@ public class Game {
 	private Long id;
 
 	private int points;
-	
+
 	private int againstPoints;
+
+	private LocalDateTime startTime;
 
 	@OneToOne
 	private Pitch pitch;
@@ -29,11 +33,12 @@ public class Game {
 	public Game() {
 	}
 
-	public Game(Long id, Pitch pitch, Team teamOne, Team teamTwo) {
+	public Game(Long id, Pitch pitch, Team teamOne, Team teamTwo, LocalDateTime startTime) {
 		this.id = id;
 		this.pitch = pitch;
 		this.teamOne = teamOne;
 		this.teamTwo = teamTwo;
+		this.startTime = startTime;
 	}
 
 	public Long getId() {
@@ -82,5 +87,13 @@ public class Game {
 
 	public void setAgainstPoints(int againstPoints) {
 		this.againstPoints = againstPoints;
+	}
+
+	public LocalDateTime getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(LocalDateTime startTime) {
+		this.startTime = startTime;
 	}
 }
