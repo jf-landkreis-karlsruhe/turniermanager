@@ -1,13 +1,13 @@
 package de.jf.karlsruhe.controller;
 
-import de.jf.karlsruhe.model.base.AgeGroup;
+import de.jf.karlsruhe.model.base.Game;
 import de.jf.karlsruhe.model.base.League;
-import de.jf.karlsruhe.model.base.Team;
+import de.jf.karlsruhe.model.game.GameTable;
 import de.jf.karlsruhe.model.repos.AgeGroupRepository;
+import de.jf.karlsruhe.model.repos.GameRepository;
 import de.jf.karlsruhe.model.repos.LeagueRepository;
 import de.jf.karlsruhe.model.repos.TeamRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,102 +15,52 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/turniersetup")
+@RequestMapping("/league")
 public class LeagueController {
-
-	@Autowired
-	private TeamRepository teamRepository;
 
 	@Autowired
 	private LeagueRepository leagueRepository;
 
 	@Autowired
-	private AgeGroupRepository ageGroupRepository;
+	private GameRepository gameRepository;
 
-	// Erstellen einer Liga ohne Teams
-	@PostMapping("/league")
-	public ResponseEntity<League> createLeague(@RequestBody League league) {
-		AgeGroup ageGroup = league.getAgeGroup();
-		AgeGroup savedAgeGroup = ageGroupRepository.save(ageGroup);
-		league.setAgeGroup(savedAgeGroup);
+	@GetMapping("/table")
+	public ResponseEntity<List<GameTable>> getAllLeaguesTable() {
 
-		League savedLeague = leagueRepository.save(league);
-		return ResponseEntity.ok(savedLeague);
-	}
-	
-	@DeleteMapping("/league/{id}")
-    public ResponseEntity<Void> deleteLeague(@PathVariable Long id) {
-        if (leagueRepository.existsById(id)) {
-            leagueRepository.deleteById(id);
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-	
-	// Teams zu einer einzelnen Liga hinzufügen
-	@PostMapping("/league/{leagueId}/addTeams")
-	public ResponseEntity<League> addTeamsToLeague(@PathVariable Long leagueId, @RequestBody List<Long> teamIds) {
-		League league = leagueRepository.findById(leagueId).orElseThrow(() -> new RuntimeException("League not found"));
+		// Alle Ligen abrufen
+		List<League> leagues = leagueRepository.findAll();
 
-		List<Team> teams = new ArrayList<>();
-		for (Long teamId : teamIds) {
-			Team team = teamRepository.findById(teamId).orElseThrow(() -> new RuntimeException("Team not found"));
-			teams.add(team);
-		}
+		// Alle GameTables erstellen
+		List<GameTable> gameTables = leagues.stream()
+				.map(league -> {
+					// Altersgruppe und Ligainformationen
+					String leagueName = league.getName();
+					String ageGroupName = league.getAgeGroup().getName();
 
-		league.setTeams(teams);
-		League updatedLeague = leagueRepository.save(league);
-		return ResponseEntity.ok(updatedLeague);
+					// Spiele in dieser Liga abrufen
+					List<Game> games = gameRepository.findByLeagueId(league.getId());
+
+					// GameInfo-Einträge erstellen
+					List<GameTable.GameInfo> gameInfos = games.stream()
+							.map(game -> new GameTable.GameInfo(
+									game.getId(),
+									game.getTeamA().getName() + " vs " + game.getTeamB().getName(),
+									game.getTeamAScore() != 0 && game.getTeamBScore() != 0
+											? game.getTeamAScore() + " : " + game.getTeamBScore()
+											: "Noch offen",
+									game.getPitch().getName(),
+									game.getStartTime().toLocalTime().toString()))
+							.toList();
+
+					return new GameTable(league.getId(), leagueName, ageGroupName, gameInfos);
+				})
+				.toList();
+
+		return ResponseEntity.ok(gameTables);
 	}
 
-	// Teams aus einer Liga entfernen
-	@PostMapping("/league/{leagueId}/removeTeams")
-	public ResponseEntity<League> removeTeamsFromLeague(@PathVariable Long leagueId, @RequestBody List<Long> teamIds) {
-		League league = leagueRepository.findById(leagueId).orElseThrow(() -> new RuntimeException("League not found"));
 
-		List<Team> currentTeams = league.getTeams();
-		currentTeams.removeIf(team -> teamIds.contains(team.getId()));
 
-		league.setTeams(currentTeams);
-		League updatedLeague = leagueRepository.save(league);
-		return ResponseEntity.ok(updatedLeague);
-	}
 
-	// Alle Teams für eine Liga festlegen
-	@PostMapping("/league/{leagueId}/setTeams")
-	public ResponseEntity<League> setTeamsForLeague(@PathVariable Long leagueId, @RequestBody List<Team> teams) {
-		League league = leagueRepository.findById(leagueId).orElseThrow(() -> new RuntimeException("League not found"));
-
-		league.setTeams(teams);
-		League updatedLeague = leagueRepository.save(league);
-		return ResponseEntity.ok(updatedLeague);
-	}
-
-	// Ein einzelnes Team zu einer Liga hinzufügen
-	@PostMapping("/league/{leagueId}/addTeam/{teamId}")
-	public ResponseEntity<League> addTeamToLeague(@PathVariable Long leagueId, @PathVariable Long teamId) {
-		League league = leagueRepository.findById(leagueId).orElseThrow(() -> new RuntimeException("League not found"));
-
-		Team team = teamRepository.findById(teamId).orElseThrow(() -> new RuntimeException("Team not found"));
-
-		league.getTeams().add(team);
-
-		League updatedLeague = leagueRepository.save(league);
-		return ResponseEntity.ok(updatedLeague);
-	}
-
-	// Ein einzelnes Team aus einer Liga entfernen
-	@PostMapping("/league/{leagueId}/removeTeam/{teamId}")
-	public ResponseEntity<League> removeTeamFromLeague(@PathVariable Long leagueId, @PathVariable Long teamId) {
-		League league = leagueRepository.findById(leagueId).orElseThrow(() -> new RuntimeException("League not found"));
-
-		Team team = teamRepository.findById(teamId).orElseThrow(() -> new RuntimeException("Team not found"));
-
-		league.getTeams().remove(team);
-
-		League updatedLeague = leagueRepository.save(league);
-		return ResponseEntity.ok(updatedLeague);
-	}
 
 }

@@ -17,16 +17,24 @@ public class Pitch {
 
 	private String name;
 
+	public List<AgeGroup> getAgeGroups() {
+		return ageGroups;
+	}
+
+	public void setAgeGroups(List<AgeGroup> ageGroups) {
+		this.ageGroups = ageGroups;
+	}
+
 	@OneToMany
-	private List<AgeGroup> agegroup;
+	private List<AgeGroup> ageGroups;
 
 	public Pitch() {
 	}
 
-	public Pitch(Long id, String name, List<AgeGroup> agegroup) {
+	public Pitch(Long id, String name, List<AgeGroup> ageGroups) {
 		this.id = id;
 		this.name = name;
-		this.agegroup = agegroup;
+		this.ageGroups = ageGroups;
 	}
 
 	public Long getId() {
@@ -43,14 +51,6 @@ public class Pitch {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public List<AgeGroup> getAgegroup() {
-		return agegroup;
-	}
-
-	public void setAgegroup(List<AgeGroup> agegroup) {
-		this.agegroup = agegroup;
 	}
 
 }

@@ -2,98 +2,105 @@ package de.jf.karlsruhe.model.base;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 
 @Entity
 public class Game {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	private int points;
 
-	private int againstPoints;
+    private int teamAScore;
 
-	private LocalDateTime startTime;
+    private int teamBScore;
 
-	@OneToOne
-	private Pitch pitch;
+    private LocalDateTime startTime;
 
-	@OneToOne
-	private Team teamOne;
+    @OneToOne
+    private Pitch pitch;
 
-	@OneToOne
-	private Team teamTwo;
+    @OneToOne
+    private League league;
 
-	public Game() {
+    @OneToOne
+    private Team teamA;
+
+    @OneToOne
+    private Team teamB;
+
+    public Game() {
+    }
+
+    public Game(Long id, Pitch pitch, Team teamA, Team teamB, LocalDateTime startTime) {
+        this.id = id;
+        this.pitch = pitch;
+        this.teamA = teamA;
+        this.teamB = teamB;
+        this.startTime = startTime;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Pitch getPitch() {
+        return pitch;
+    }
+
+    public void setPitch(Pitch pitch) {
+        this.pitch = pitch;
+    }
+
+    public int getTeamAScore() {
+        return teamAScore;
+    }
+
+    public void setTeamAScore(int teamAScore) {
+        this.teamAScore = teamAScore;
+    }
+
+    public int getTeamBScore() {
+        return teamBScore;
+    }
+
+    public void setTeamBScore(int teamBScore) {
+        this.teamBScore = teamBScore;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setLeague(League league) {
+        this.league = league;
+    }
+
+    public League getLeague() {
+        return league;
+    }
+	public Team getTeamA() {
+		return teamA;
 	}
 
-	public Game(Long id, Pitch pitch, Team teamOne, Team teamTwo, LocalDateTime startTime) {
-		this.id = id;
-		this.pitch = pitch;
-		this.teamOne = teamOne;
-		this.teamTwo = teamTwo;
-		this.startTime = startTime;
+	public void setTeamA(Team teamA) {
+		this.teamA = teamA;
 	}
 
-	public Long getId() {
-		return id;
+	public Team getTeamB() {
+		return teamB;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Pitch getPitch() {
-		return pitch;
-	}
-
-	public void setPitch(Pitch pitch) {
-		this.pitch = pitch;
-	}
-
-	public Team getTeamOne() {
-		return teamOne;
-	}
-
-	public void setTeamOne(Team teamOne) {
-		this.teamOne = teamOne;
-	}
-
-	public Team getTeamTwo() {
-		return teamTwo;
-	}
-
-	public void setTeamTwo(Team teamTwo) {
-		this.teamTwo = teamTwo;
-	}
-
-	public int getPoints() {
-		return points;
-	}
-
-	public void setPoints(int points) {
-		this.points = points;
-	}
-
-	public int getAgainstPoints() {
-		return againstPoints;
-	}
-
-	public void setAgainstPoints(int againstPoints) {
-		this.againstPoints = againstPoints;
-	}
-
-	public LocalDateTime getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(LocalDateTime startTime) {
-		this.startTime = startTime;
+	public void setTeamB(Team teamB) {
+		this.teamB = teamB;
 	}
 }

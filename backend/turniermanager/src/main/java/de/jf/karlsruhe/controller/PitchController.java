@@ -23,9 +23,10 @@ public class PitchController {
 
 	@PostMapping("/pitch")
 	public ResponseEntity<Pitch> createPitch(@RequestBody Pitch pitch) {
-		List<AgeGroup> ageGroup = pitch.getAgegroup();
+		List<AgeGroup> ageGroup = pitch.getAgeGroups();
 		List<AgeGroup> savedAgeGroup = ageGroupRepository.saveAll(ageGroup);
-		pitch.setAgegroup(savedAgeGroup);
+
+		pitch.setAgeGroups(savedAgeGroup);
 		Pitch savedPitch = pitchRepository.save(pitch);
 		return ResponseEntity.ok(savedPitch);
 	}

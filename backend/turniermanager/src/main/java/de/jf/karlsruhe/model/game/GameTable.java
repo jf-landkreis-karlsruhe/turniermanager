@@ -1,60 +1,118 @@
 package de.jf.karlsruhe.model.game;
 
+import jakarta.persistence.Entity;
+
 import java.util.List;
 
-import de.jf.karlsruhe.model.base.Game;
-import de.jf.karlsruhe.model.base.League;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-
-@Entity
 public class GameTable {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
 
-	@OneToOne
-	private League league;
 
-	@OneToMany
-	private List<Game> games;
+	private Long leagueId;         // ID der Liga
+	private String leagueName;     // Name der Liga (z. B. "U16 Liga 1")
+	private String ageGroupName;   // Altersgruppe (z. B. "U16")
 
-	public GameTable() {
-	}
+	private List<GameInfo> games;  // Liste aller Spiele in dieser Liga
 
-	public GameTable(Long id, League league, List<Game> games) {
-		this.id = id;
-		this.league = league;
+	public GameTable() {}
+
+	// Konstruktor
+	public GameTable(Long leagueId, String leagueName, String ageGroupName, List<GameInfo> games) {
+		this.leagueId = leagueId;
+		this.leagueName = leagueName;
+		this.ageGroupName = ageGroupName;
 		this.games = games;
 	}
 
-	public Long getId() {
-		return id;
+	// Getter und Setter
+	public Long getLeagueId() {
+		return leagueId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setLeagueId(Long leagueId) {
+		this.leagueId = leagueId;
 	}
 
-	public League getLeague() {
-		return league;
+	public String getLeagueName() {
+		return leagueName;
 	}
 
-	public void setLeague(League league) {
-		this.league = league;
+	public void setLeagueName(String leagueName) {
+		this.leagueName = leagueName;
 	}
 
-	public List<Game> getGames() {
+	public String getAgeGroupName() {
+		return ageGroupName;
+	}
+
+	public void setAgeGroupName(String ageGroupName) {
+		this.ageGroupName = ageGroupName;
+	}
+
+	public List<GameInfo> getGames() {
 		return games;
 	}
 
-	public void setGames(List<Game> games) {
+	public void setGames(List<GameInfo> games) {
 		this.games = games;
 	}
 
+	// Subclass GameInfo - enthält Details für einzelne Spiele
+	public static class GameInfo {
+		private Long gameId;         // ID des Spiels
+		private String match;        // Beschreibung des Spiels (z. B. "Team 1 vs Team 3")
+		private String result;       // Ergebnis des Spiels (z. B. "2 : 2")
+		private String pitch;        // Platz (z. B. "Pitch 1")
+		private String startTime;    // Uhrzeit (z. B. "10:15")
+
+		// Konstruktor
+		public GameInfo(Long gameId, String match, String result, String pitch, String startTime) {
+			this.gameId = gameId;
+			this.match = match;
+			this.result = result;
+			this.pitch = pitch;
+			this.startTime = startTime;
+		}
+
+		// Getter und Setter
+		public Long getGameId() {
+			return gameId;
+		}
+
+		public void setGameId(Long gameId) {
+			this.gameId = gameId;
+		}
+
+		public String getMatch() {
+			return match;
+		}
+
+		public void setMatch(String match) {
+			this.match = match;
+		}
+
+		public String getResult() {
+			return result;
+		}
+
+		public void setResult(String result) {
+			this.result = result;
+		}
+
+		public String getPitch() {
+			return pitch;
+		}
+
+		public void setPitch(String pitch) {
+			this.pitch = pitch;
+		}
+
+		public String getStartTime() {
+			return startTime;
+		}
+
+		public void setStartTime(String startTime) {
+			this.startTime = startTime;
+		}
+	}
 }

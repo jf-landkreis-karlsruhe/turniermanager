@@ -12,57 +12,68 @@ import jakarta.persistence.OneToOne;
 @Entity
 public class League {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@OneToOne
-	private AgeGroup ageGroup;
-	private String name;
+    @OneToOne
+    private AgeGroup ageGroup;
+    private String name;
 
-	@OneToMany
-	private List<Team> teams;
 
-	public League() {
-	}
+    @OneToOne
+    private Round round;
 
-	public League(Long id, AgeGroup ageGroup, String name, List<Team> teams) {
-		this.id = id;
-		this.ageGroup = ageGroup;
-		this.name = name;
-		this.teams = teams;
-	}
+    @OneToMany
+    private List<Team> teams;
 
-	public Long getId() {
-		return id;
-	}
+    public League() {
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public League(Long id, AgeGroup ageGroup, String name, List<Team> teams) {
+        this.id = id;
+        this.ageGroup = ageGroup;
+        this.name = name;
+        this.teams = teams;
+    }
 
-	public AgeGroup getAgeGroup() {
-		return ageGroup;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setAgeGroup(AgeGroup ageGroup) {
-		this.ageGroup = ageGroup;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public AgeGroup getAgeGroup() {
+        return ageGroup;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setAgeGroup(AgeGroup ageGroup) {
+        this.ageGroup = ageGroup;
+    }
 
-	public List<Team> getTeams() {
-		return teams;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setTeams(List<Team> teams) {
-		this.teams = teams;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
+    public List<Team> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(List<Team> teams) {
+        this.teams = teams;
+    }
+
+    public Round getRound() {
+        return round;
+    }
+
+    public void setRound(Round round) {
+        this.round = round;
+    }
 }
