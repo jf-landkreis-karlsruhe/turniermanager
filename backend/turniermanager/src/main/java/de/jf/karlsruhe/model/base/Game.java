@@ -11,23 +11,30 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     private int teamAScore;
 
     private int teamBScore;
 
     private LocalDateTime startTime;
 
-    @OneToOne
+    // Platz ist ein @ManyToOne, weil ein Platz mehrere Spiele hosten kann
+    @ManyToOne
+    @JoinColumn(name = "pitch_id", nullable = false) // Fremdschlüssel "pitch_id" in der Tabelle
     private Pitch pitch;
 
-    @OneToOne
+    // Eine Liga kann viele Spiele haben
+    @ManyToOne
+    @JoinColumn(name = "league_id", nullable = false) // Fremdschlüssel "league_id" in der Tabelle
     private League league;
 
-    @OneToOne
+    // Team A (Fremdschlüssel) - Ein Team spielt in mehreren Spielen
+    @ManyToOne
+    @JoinColumn(name = "teama_id", nullable = false) // Fremdschlüssel "teama_id" in der Tabelle
     private Team teamA;
 
-    @OneToOne
+    // Team B (Fremdschlüssel) - Zweites Team
+    @ManyToOne
+    @JoinColumn(name = "teamb_id", nullable = false) // Fremdschlüssel "teamb_id" in der Tabelle
     private Team teamB;
 
     public Game() {
@@ -88,19 +95,20 @@ public class Game {
     public League getLeague() {
         return league;
     }
-	public Team getTeamA() {
-		return teamA;
-	}
 
-	public void setTeamA(Team teamA) {
-		this.teamA = teamA;
-	}
+    public Team getTeamA() {
+        return teamA;
+    }
 
-	public Team getTeamB() {
-		return teamB;
-	}
+    public void setTeamA(Team teamA) {
+        this.teamA = teamA;
+    }
 
-	public void setTeamB(Team teamB) {
-		this.teamB = teamB;
-	}
+    public Team getTeamB() {
+        return teamB;
+    }
+
+    public void setTeamB(Team teamB) {
+        this.teamB = teamB;
+    }
 }

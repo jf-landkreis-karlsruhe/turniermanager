@@ -1,43 +1,57 @@
 package de.jf.karlsruhe.controller;
 
-import de.jf.karlsruhe.model.base.AgeGroup;
 import de.jf.karlsruhe.model.base.Pitch;
-import de.jf.karlsruhe.model.repos.AgeGroupRepository;
-import de.jf.karlsruhe.model.repos.PitchRepository;
-
-import java.util.List;
+import de.jf.karlsruhe.service.PitchService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/turniersetup")
 public class PitchController {
 
-	@Autowired
-	private PitchRepository pitchRepository;
+	private final PitchService pitchService;
 
 	@Autowired
-	private AgeGroupRepository ageGroupRepository;
+	public PitchController(PitchService pitchService) {
+		this.pitchService = pitchService;
+	}
 
+	// ERSTELLEN eines einzelnen Pitch
 	@PostMapping("/pitch")
 	public ResponseEntity<Pitch> createPitch(@RequestBody Pitch pitch) {
-		List<AgeGroup> ageGroup = pitch.getAgeGroups();
-		List<AgeGroup> savedAgeGroup = ageGroupRepository.saveAll(ageGroup);
-
-		pitch.setAgeGroups(savedAgeGroup);
-		Pitch savedPitch = pitchRepository.save(pitch);
+		Pitch savedPitch = pitchService.createPitch(pitch);
 		return ResponseEntity.ok(savedPitch);
 	}
 
+	// ERSTELLEN mehrerer Pitches
+	@PostMapping("/pitches")
+	public ResponseEntity<List<Pitch>> createMultiplePitches(@RequestBody List<Pitch> pitches) {
+		List<Pitch> savedPitches = pitchService.createMultiplePitches(pitches);
+		return ResponseEntity.ok(savedPitches);
+	}
+
+	// LÖSCHEN eines Pitch nach ID
 	@DeleteMapping("/pitch/{id}")
 	public ResponseEntity<Void> deletePitch(@PathVariable Long id) {
-		if (pitchRepository.existsById(id)) {
-			pitchRepository.deleteById(id);
-			return ResponseEntity.ok().build();
-		} else {
-			return ResponseEntity.notFound().build();
-		}
+		pitchService.deletePitch(id);
+		return ResponseEntity.ok().build();
+	}
+
+	// LADEN aller Pitches
+	@GetMapping("/pitches")
+	public ResponseEntity<List<Pitch>> getAllPitches() {
+		List<Pitch> pitches = pitchService.getAllPitches();
+		return ResponseEntity.ok(pitches);
+	}
+
+	// LADEN eines einzelnen Pitch nach ID
+	@GetMapping("/pitch/{id}")
+	public ResponseEntity<Pitch> getPitchById(@PathVariable Long id) {
+		Pitch pitch = pitchService.getPitchById(id);
+		return ResponseEntity.ok(pitch);
 	}
 }

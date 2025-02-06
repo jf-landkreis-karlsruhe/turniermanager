@@ -2,11 +2,7 @@ package de.jf.karlsruhe.model.base;
 
 import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 @Entity
 public class Pitch {
@@ -25,7 +21,7 @@ public class Pitch {
 		this.ageGroups = ageGroups;
 	}
 
-	@OneToMany
+	@ManyToMany
 	private List<AgeGroup> ageGroups;
 
 	public Pitch() {

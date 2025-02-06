@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/turniersetup")
 public class AgeGroupController {
@@ -28,5 +30,11 @@ public class AgeGroupController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping("/agegroups")
+    public ResponseEntity<Iterable<AgeGroup>> createMultipleAgeGroups(@RequestBody List<AgeGroup> ageGroups) {
+        List<AgeGroup> savedAgeGroups = ageGroupRepository.saveAll(ageGroups);
+        return ResponseEntity.ok(savedAgeGroups);
     }
 }
