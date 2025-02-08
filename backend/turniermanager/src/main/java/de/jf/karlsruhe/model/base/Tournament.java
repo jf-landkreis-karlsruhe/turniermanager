@@ -1,9 +1,12 @@
 package de.jf.karlsruhe.model.base;
 
+import de.jf.karlsruhe.model.game.GameSettings;
 import jakarta.persistence.*;
 import lombok.*;
+
 import org.hibernate.annotations.GenericGenerator;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -11,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class League {
+public class Tournament {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -23,10 +26,12 @@ public class League {
 
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "tournament_id", nullable = false)
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude // Verhindert rekursive Schleifen in toString()
-    @EqualsAndHashCode.Exclude
-    private Tournament tournament; // Zugehöriges Turnier
+    @EqualsAndHashCode.Exclude // Beziehung wird von Equals/HashCode ausgeschlossen
+    private List<League> leagues;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_settings_id", referencedColumnName = "id")
+    private GameSettings gameSettings;
 }

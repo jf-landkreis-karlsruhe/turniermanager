@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import de.jf.karlsruhe.model.base.League;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface LeagueRepository extends JpaRepository<League, Long>{
-        List<League> findByAgeGroupIdAndRoundId(Long ageGroupId, Long roundId);
+public interface LeagueRepository extends JpaRepository<League, UUID> {
 }

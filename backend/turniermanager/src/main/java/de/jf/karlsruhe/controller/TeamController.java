@@ -4,6 +4,7 @@ import de.jf.karlsruhe.model.base.Team;
 import de.jf.karlsruhe.model.repos.TeamRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class TeamController {
     }
     
     @DeleteMapping("/team/{id}")
-    public ResponseEntity<Void> deleteTeam(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTeam(@PathVariable UUID id) {
         if (teamRepository.existsById(id)) {
             teamRepository.deleteById(id);
             return ResponseEntity.ok().build();

@@ -1,73 +1,40 @@
 package de.jf.karlsruhe.model.base;
 
 import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
+
+import java.util.UUID;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Team {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    private UUID id;
 
     private String name;
 
     private int points;
-
     private int goalDifference;
 
-
+    // Beziehung zu einer Altersgruppe
     @ManyToOne
-    @JoinColumn(name = "age_group_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private AgeGroup ageGroup;
 
-
-    public Team() {
-    }
-
-    public Team(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getPoints() {
-        return points;
-    }
-
-    public void setPoints(int points) {
-        this.points = points;
-    }
-
-    public int getGoalDifference() {
-        return goalDifference;
-    }
-
-    public void setGoalDifference(int goalDifference) {
-        this.goalDifference = goalDifference;
-    }
-
-    public AgeGroup getAgeGroup() {
-        return ageGroup;
-    }
-
-    public void setAgeGroup(AgeGroup ageGroup) {
-        this.ageGroup = ageGroup;
-    }
-
-
+    // Beziehung zur Liga
+    @ManyToOne
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private League league;
 }

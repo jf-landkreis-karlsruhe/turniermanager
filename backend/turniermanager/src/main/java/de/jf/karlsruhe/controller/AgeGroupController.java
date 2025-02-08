@@ -8,22 +8,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/turniersetup")
+@RequestMapping("/turniersetup/agegroup")
 public class AgeGroupController {
 
     @Autowired
     private AgeGroupRepository ageGroupRepository;
 
-    @PostMapping("/agegroup")
+    @PostMapping("/create")
     public ResponseEntity<AgeGroup> createAgeGroup(@RequestBody AgeGroup ageGroup) {
         AgeGroup savedAgeGroup = ageGroupRepository.save(ageGroup);
         return ResponseEntity.ok(savedAgeGroup);
     }
 
-    @DeleteMapping("/agegroup/{id}")
-    public ResponseEntity<Void> deleteAgeGroup(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAgeGroup(@PathVariable UUID id) {
         if (ageGroupRepository.existsById(id)) {
             ageGroupRepository.deleteById(id);
             return ResponseEntity.ok().build();
@@ -32,7 +33,7 @@ public class AgeGroupController {
         }
     }
 
-    @PostMapping("/agegroups")
+    @PostMapping("/createMultiple")
     public ResponseEntity<Iterable<AgeGroup>> createMultipleAgeGroups(@RequestBody List<AgeGroup> ageGroups) {
         List<AgeGroup> savedAgeGroups = ageGroupRepository.saveAll(ageGroups);
         return ResponseEntity.ok(savedAgeGroups);
