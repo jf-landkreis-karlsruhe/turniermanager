@@ -6,7 +6,5 @@ import de.jf.karlsruhe.model.base.AgeGroup;
 
 import java.util.UUID;
 
-public interface AgeGroupRepository extends JpaRepository<AgeGroup, UUID>{
-
-    AgeGroup findByTournamentIdAndLeagueId(UUID id, UUID id1);
+public interface AgeGroupRepository extends JpaRepository<AgeGroup, UUID> {
 }

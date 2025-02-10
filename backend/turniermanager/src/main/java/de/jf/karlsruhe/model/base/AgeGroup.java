@@ -22,6 +22,7 @@ public class AgeGroup {
             strategy = "org.hibernate.id.UUIDGenerator"
     )
     private UUID id;
-
     private String name;
+
+
 }

@@ -29,7 +29,7 @@ public class Tournament {
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude // Verhindert rekursive Schleifen in toString()
     @EqualsAndHashCode.Exclude // Beziehung wird von Equals/HashCode ausgeschlossen
-    private List<League> leagues;
+    private List<Round> rounds;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "game_settings_id", referencedColumnName = "id")

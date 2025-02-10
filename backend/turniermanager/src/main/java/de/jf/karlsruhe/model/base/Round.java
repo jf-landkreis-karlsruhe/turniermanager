@@ -24,10 +24,10 @@ public class Round {
 
 	private String name;
 
-	@ManyToOne
+	@OneToMany(mappedBy = "round", cascade = CascadeType.ALL, orphanRemoval = true)
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
-	private League league;
+	private List<League> leagues;
 
 	@OneToMany(mappedBy = "round", cascade = CascadeType.ALL, orphanRemoval = true)
 	@ToString.Exclude

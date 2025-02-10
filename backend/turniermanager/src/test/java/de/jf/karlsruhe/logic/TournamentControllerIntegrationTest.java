@@ -13,8 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,17 +61,21 @@ public class TournamentControllerIntegrationTest {
         AgeGroup u16 = ageGroupRepository.save(AgeGroup.builder().name("U16").build());
         AgeGroup u18 = ageGroupRepository.save(AgeGroup.builder().name("U18").build());
 
-        // Erstellen von Pitches
-        Pitch pitch1 = Pitch.builder().name("Pitch 1").ageGroups(List.of(u16, u18)).build();
-        Pitch pitch2 = Pitch.builder().name("Pitch 2").ageGroups(List.of(u16)).build();
-        pitchRepository.saveAll(List.of(pitch1, pitch2));
+        for (int i = 0; i <5 ; i++) {
+            // Erstellen von Pitches
+            Pitch pitch1 = Pitch.builder().name("Pitch 1" + i).ageGroups(List.of(u16, u18)).build();
+            Pitch pitch2 = Pitch.builder().name("Pitch 2" + i).ageGroups(List.of(u18)).build();
+            pitchRepository.saveAll(List.of(pitch1,pitch2));
+        }
 
         // Erstellen von Teams für verschiedene Altersgruppen
-        Team team1 = Team.builder().name("Team A").ageGroup(u16).build();
-        Team team2 = Team.builder().name("Team B").ageGroup(u16).build();
-        Team team3 = Team.builder().name("Team C").ageGroup(u18).build();
-        Team team4 = Team.builder().name("Team D").ageGroup(u18).build();
-        teamRepository.saveAll(List.of(team1, team2, team3, team4));
+        List<Team> teams = new ArrayList<>();
+        for (int i = 1; i < 12; i++) {
+            Team team1 = Team.builder().name("Team " + i).ageGroup(u16).build();
+            teams.add(team1);
+        }
+
+        teamRepository.saveAll(teams);
     }
 
     @Test
@@ -79,7 +83,7 @@ public class TournamentControllerIntegrationTest {
         // Turnier-Erstellungs-Request an den Controller senden
         String tournamentName = "Indiaca Cup";
         LocalDateTime startTime = LocalDateTime.now();
-        int playTime = 30;  // 30 Minuten pro Spiel
+        int playTime = 15;  // 30 Minuten pro Spiel
         int breakTime = 10; // 10 Minuten Pause zwischen Spielen
 
         mockMvc.perform(post("/api/tournament/create")
@@ -124,8 +128,6 @@ public class TournamentControllerIntegrationTest {
         // JSON-Ausgabe des gesamten Turniers
         printTournamentAsJson(tournament);
 
-        // Tabellarische Darstellung unter Berücksichtigung der Runden
-        printTournamentAsTable(tournament, leagues);
     }
 
     private void printTournamentAsJson(Tournament tournament) throws Exception {
@@ -139,33 +141,5 @@ public class TournamentControllerIntegrationTest {
         System.out.println(json);
     }
 
-    private void printTournamentAsTable(Tournament tournament, List<League> leagues) {
-        System.out.println("\n--- Tournament Table Output ---");
-        System.out.println("TOURNAMENT: " + tournament.getName());
-        System.out.println("--------------------------------");
 
-        for (League league : leagues) {
-            System.out.println("LEAGUE: " + league.getName());
-
-            // Runden für diese Liga finden
-            List<Round> rounds = roundRepository.findByLeague(league);
-            for (Round round : rounds) {
-                System.out.println("  ROUND: " + round.getName());
-
-                // Spiele für diese Runde finden
-                List<Game> games = gameRepository.findByRound(round);
-
-                for (Game game : games) {
-                    System.out.printf(
-                            "    GAME: %s vs %s on %s at %s\n",
-                            game.getTeamA().getName(),
-                            game.getTeamB().getName(),
-                            game.getPitch().getName(),
-                            game.getStartTime()
-                    );
-                }
-            }
-            System.out.println("--------------------------------");
-        }
-    }
 }
