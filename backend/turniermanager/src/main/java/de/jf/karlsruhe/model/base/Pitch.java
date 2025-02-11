@@ -27,5 +27,5 @@ public class Pitch {
 	@ManyToMany
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
-	private List<AgeGroup> ageGroups; // Altersgruppen
+	private List<AgeGroup> ageGroups;
 }

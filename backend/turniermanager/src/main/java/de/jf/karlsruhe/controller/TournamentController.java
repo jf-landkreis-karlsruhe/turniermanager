@@ -72,13 +72,18 @@ public class TournamentController {
         for (League league : all) {
             List<Game> games = generateReducedGamesForLeague(league);
             List<Game> scheduled = pitchScheduler.scheduleGames(games);
+
+            league.getRound().addGames(scheduled);
+            roundRepository.save(league.getRound());
             gameRepository.saveAll(scheduled);
         }
+        roundRepository.flush();
+        gameRepository.flush();
         return tournament;
     }
 
     @PostMapping("/create/round")
-    public Tournament createQualificationTournament(@RequestParam UUID tournamentId, @RequestParam String roundName) {
+    public Tournament createTournamentRound(@RequestParam UUID tournamentId, @RequestParam String roundName) {
         Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow();
         List<AgeGroup> ageGroups = ageGroupRepository.findAll();
         for (AgeGroup ageGroup : ageGroups) {
@@ -88,7 +93,13 @@ public class TournamentController {
                 league.setAgeGroup(ageGroup);
                 league.setTournament(tournament);
                 league.setTeams(teamsInLeague);
+
+                List<Game> games = generateReducedGamesForLeague(league);
+                List<Game> scheduled = pitchScheduler.scheduleGames(games);
+                league.getRound().addGames(scheduled);
+                roundRepository.save(league.getRound());
                 leagueRepository.save(league);
+                gameRepository.saveAll(scheduled);
             });
         }
         return tournament;
@@ -151,7 +162,6 @@ public class TournamentController {
                 gameCount++;
             }
         }
-
         return games;
     }
 

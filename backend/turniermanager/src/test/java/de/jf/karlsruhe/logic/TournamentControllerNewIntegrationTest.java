@@ -85,7 +85,7 @@ class TournamentControllerNewIntegrationTest {
         when(roundRepository.save(any(Round.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
-        Tournament result = tournamentController.createQualificationTournament(tournamentId, roundName);
+        Tournament result = tournamentController.createTournamentRound(tournamentId, roundName);
 
         // Assert
         assertNotNull(result, "Das Ergebnis-Objekt darf nicht null sein");

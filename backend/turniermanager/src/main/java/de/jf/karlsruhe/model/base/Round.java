@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,4 +34,16 @@ public class Round {
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
 	private List<Game> games;
+
+	public void addGames(List<Game> newGames) {
+		if (this.games == null) {
+			this.games = new ArrayList<>();
+		}
+		this.games.addAll(newGames);
+	}
+
+	@ManyToOne
+	@JoinColumn(name = "tournament_id")
+	private Tournament tournament;
+
 }
