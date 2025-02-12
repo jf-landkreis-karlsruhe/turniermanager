@@ -43,6 +43,8 @@ class GameRoundView extends StatefulWidget {
 class _GameRoundViewState extends State<GameRoundView> {
   bool currentlyRunning = false;
 
+  Color selectedTextColor = Colors.black;
+  Color standardTextColor = Colors.white;
   List<String> games = [
     "1",
     "2",
@@ -63,12 +65,22 @@ class _GameRoundViewState extends State<GameRoundView> {
                 height: 40,
                 child: Row(
                   children: [
-                    const Text(
+                    Text(
                       'Spielrunde 1',
-                      style: TextStyle(fontSize: GameRoundView._headerFontSize),
+                      style: TextStyle(
+                          fontSize: GameRoundView._headerFontSize,
+                          color: currentlyRunning
+                              ? selectedTextColor
+                              : standardTextColor),
                     ),
                     const SizedBox(width: 10),
-                    Text('10:00'),
+                    Text(
+                      '10:00',
+                      style: TextStyle(
+                          color: currentlyRunning
+                              ? selectedTextColor
+                              : standardTextColor),
+                    ),
                     const SizedBox(width: 10),
                     IconButton(
                       onPressed: () {
@@ -78,8 +90,18 @@ class _GameRoundViewState extends State<GameRoundView> {
                       },
                       icon: Icon(
                           currentlyRunning ? Icons.stop : Icons.play_arrow),
-                      color: currentlyRunning ? Colors.black : null,
+                      color: currentlyRunning
+                          ? selectedTextColor
+                          : standardTextColor,
                     ),
+                    IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.start,
+                          color: currentlyRunning
+                              ? selectedTextColor
+                              : standardTextColor,
+                        ))
                   ],
                 ),
               ),
@@ -90,7 +112,12 @@ class _GameRoundViewState extends State<GameRoundView> {
                 child: ListView.separated(
                   itemBuilder: (context, index) {
                     var element = games[index];
-                    return GameRoundEntryView(gameRoundEntry: element);
+                    return GameRoundEntryView(
+                      gameRoundEntry: element,
+                      textColor: currentlyRunning
+                          ? selectedTextColor
+                          : standardTextColor,
+                    );
                   },
                   separatorBuilder: (context, index) => const Divider(),
                   itemCount: games.length,
@@ -108,9 +135,11 @@ class GameRoundEntryView extends StatelessWidget {
   const GameRoundEntryView({
     super.key,
     required this.gameRoundEntry,
+    required this.textColor,
   });
 
   final String gameRoundEntry;
+  final Color textColor;
 
   @override
   Widget build(BuildContext context) {
@@ -118,18 +147,30 @@ class GameRoundEntryView extends StatelessWidget {
       children: [
         SizedBox(
           width: 150,
-          child: Text('Platz $gameRoundEntry'),
+          child: Text(
+            'Platz $gameRoundEntry',
+            style: TextStyle(color: textColor),
+          ),
         ),
         const SizedBox(width: 5),
         Expanded(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Team A'),
+              Text(
+                'Team A',
+                style: TextStyle(color: textColor),
+              ),
               const SizedBox(width: 5),
-              const Text(':'),
+              Text(
+                ':',
+                style: TextStyle(color: textColor),
+              ),
               const SizedBox(width: 5),
-              Text('Team B'),
+              Text(
+                'Team B',
+                style: TextStyle(color: textColor),
+              ),
             ],
           ),
         ),
