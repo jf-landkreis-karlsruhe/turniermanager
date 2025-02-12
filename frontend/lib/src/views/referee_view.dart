@@ -46,6 +46,7 @@ class GameRoundView extends StatefulWidget {
 
 class _GameRoundViewState extends State<GameRoundView> {
   bool currentlyRunning = false;
+  bool reset = false;
 
   Color selectedTextColor = Colors.black;
   Color standardTextColor = Colors.white;
@@ -87,12 +88,14 @@ class _GameRoundViewState extends State<GameRoundView> {
                               ? selectedTextColor
                               : standardTextColor,
                           start: currentlyRunning,
+                          refresh: reset,
                         ),
                         const SizedBox(width: 10),
                         if (widget.first)
                           IconButton(
                             onPressed: () {
                               setState(() {
+                                reset = false;
                                 currentlyRunning = !currentlyRunning;
                               });
                             },
@@ -102,18 +105,36 @@ class _GameRoundViewState extends State<GameRoundView> {
                             color: currentlyRunning
                                 ? selectedTextColor
                                 : standardTextColor,
+                            tooltip: "Runde starten",
+                          ),
+                        const SizedBox(width: 10),
+                        if (widget.first)
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                currentlyRunning = false;
+                                reset = true;
+                              });
+                            },
+                            icon: const Icon(Icons.refresh),
+                            color: currentlyRunning
+                                ? selectedTextColor
+                                : standardTextColor,
+                            tooltip: "Runde zurücksetzen",
                           ),
                       ],
                     ),
                     if (widget.first)
                       IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.start,
-                            color: currentlyRunning
-                                ? selectedTextColor
-                                : standardTextColor,
-                          ))
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.start,
+                          color: currentlyRunning
+                              ? selectedTextColor
+                              : standardTextColor,
+                        ),
+                        tooltip: "Runde beenden",
+                      )
                   ],
                 ),
               ),
@@ -149,12 +170,14 @@ class CountDownView extends StatefulWidget {
     required this.timeInMinutes,
     required this.textColor,
     required this.start,
+    required this.refresh,
     this.onEnded,
   });
 
   final int timeInMinutes;
   final Color textColor;
   final bool start;
+  final bool refresh;
   final void Function()? onEnded;
 
   @override
@@ -193,10 +216,14 @@ class _CountDownViewState extends State<CountDownView> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.start) {
-      _stopWatchTimer.onStartTimer();
+    if (widget.refresh) {
+      _stopWatchTimer.onResetTimer();
     } else {
-      _stopWatchTimer.onStopTimer();
+      if (widget.start) {
+        _stopWatchTimer.onStartTimer();
+      } else {
+        _stopWatchTimer.onStopTimer();
+      }
     }
 
     return Text(
