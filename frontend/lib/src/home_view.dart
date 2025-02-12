@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tournament_manager/src/views/referee_view.dart';
 import 'package:tournament_manager/src/views/results_view.dart';
 import 'package:tournament_manager/src/views/schedule_view.dart';
 import 'package:watch_it/watch_it.dart';
@@ -110,7 +111,7 @@ class MainContentView extends StatelessWidget with WatchItMixin {
           const SizedBox(height: 10),
           ElevatedButton.icon(
             onPressed: () {
-              // context.go("");
+              context.go(Uri(path: RefereeView.routeName).toString());
             },
             label: const Text("Spielleiter"),
             icon: const Icon(Icons.sports_esports),

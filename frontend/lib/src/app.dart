@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
+import 'package:tournament_manager/src/views/referee_view.dart';
 import 'package:tournament_manager/src/views/results_view.dart';
 import 'package:tournament_manager/src/views/schedule_view.dart';
 import 'package:watch_it/watch_it.dart';
@@ -53,6 +54,10 @@ class MainWidget extends StatelessWidget {
 
               return ResultsView(ageGroup);
             },
+          ),
+          GoRoute(
+            path: RefereeView.routeName,
+            builder: (context, state) => const RefereeView(),
           ),
         ],
       ),
