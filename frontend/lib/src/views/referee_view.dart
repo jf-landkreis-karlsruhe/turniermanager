@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class RefereeView extends StatelessWidget {
@@ -23,8 +22,8 @@ class RefereeView extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         child: ListView(
           children: [
-            GameRoundView(),
-            GameRoundView(),
+            GameRoundView(first: true),
+            GameRoundView(first: false),
           ],
         ),
       ),
@@ -33,9 +32,13 @@ class RefereeView extends StatelessWidget {
 }
 
 class GameRoundView extends StatefulWidget {
-  const GameRoundView({super.key});
+  const GameRoundView({
+    super.key,
+    required this.first,
+  });
 
   static const double _headerFontSize = 20;
+  final bool first;
 
   @override
   State<GameRoundView> createState() => _GameRoundViewState();
@@ -65,44 +68,52 @@ class _GameRoundViewState extends State<GameRoundView> {
               child: SizedBox(
                 height: 40,
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Spielrunde 1',
-                      style: TextStyle(
-                          fontSize: GameRoundView._headerFontSize,
-                          color: currentlyRunning
-                              ? selectedTextColor
-                              : standardTextColor),
-                    ),
-                    const SizedBox(width: 10),
-                    CountDownView(
-                      timeInMinutes: 10,
-                      textColor: currentlyRunning
-                          ? selectedTextColor
-                          : standardTextColor,
-                      start: currentlyRunning,
-                    ),
-                    const SizedBox(width: 10),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          currentlyRunning = !currentlyRunning;
-                        });
-                      },
-                      icon: Icon(
-                          currentlyRunning ? Icons.pause : Icons.play_arrow),
-                      color: currentlyRunning
-                          ? selectedTextColor
-                          : standardTextColor,
-                    ),
-                    IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.start,
-                          color: currentlyRunning
+                    Row(
+                      children: [
+                        Text(
+                          'Spielrunde 1',
+                          style: TextStyle(
+                              fontSize: GameRoundView._headerFontSize,
+                              color: currentlyRunning
+                                  ? selectedTextColor
+                                  : standardTextColor),
+                        ),
+                        const SizedBox(width: 10),
+                        CountDownView(
+                          timeInMinutes: 10,
+                          textColor: currentlyRunning
                               ? selectedTextColor
                               : standardTextColor,
-                        ))
+                          start: currentlyRunning,
+                        ),
+                        const SizedBox(width: 10),
+                        if (widget.first)
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                currentlyRunning = !currentlyRunning;
+                              });
+                            },
+                            icon: Icon(currentlyRunning
+                                ? Icons.pause
+                                : Icons.play_arrow),
+                            color: currentlyRunning
+                                ? selectedTextColor
+                                : standardTextColor,
+                          ),
+                      ],
+                    ),
+                    if (widget.first)
+                      IconButton(
+                          onPressed: () {},
+                          icon: Icon(
+                            Icons.start,
+                            color: currentlyRunning
+                                ? selectedTextColor
+                                : standardTextColor,
+                          ))
                   ],
                 ),
               ),
