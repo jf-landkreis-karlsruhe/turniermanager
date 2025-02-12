@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class RefereeView extends StatelessWidget {
   const RefereeView({super.key});
@@ -74,12 +75,12 @@ class _GameRoundViewState extends State<GameRoundView> {
                               : standardTextColor),
                     ),
                     const SizedBox(width: 10),
-                    Text(
-                      '10:00',
-                      style: TextStyle(
-                          color: currentlyRunning
-                              ? selectedTextColor
-                              : standardTextColor),
+                    CountDownView(
+                      timeInMinutes: 10,
+                      textColor: currentlyRunning
+                          ? selectedTextColor
+                          : standardTextColor,
+                      start: currentlyRunning,
                     ),
                     const SizedBox(width: 10),
                     IconButton(
@@ -89,7 +90,7 @@ class _GameRoundViewState extends State<GameRoundView> {
                         });
                       },
                       icon: Icon(
-                          currentlyRunning ? Icons.stop : Icons.play_arrow),
+                          currentlyRunning ? Icons.pause : Icons.play_arrow),
                       color: currentlyRunning
                           ? selectedTextColor
                           : standardTextColor,
@@ -127,6 +128,66 @@ class _GameRoundViewState extends State<GameRoundView> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class CountDownView extends StatefulWidget {
+  const CountDownView({
+    super.key,
+    required this.timeInMinutes,
+    required this.textColor,
+    required this.start,
+  });
+
+  final int timeInMinutes;
+  final Color textColor;
+  final bool start;
+
+  @override
+  State<CountDownView> createState() => _CountDownViewState();
+}
+
+class _CountDownViewState extends State<CountDownView> {
+  String currentTime = '';
+
+  late final StopWatchTimer _stopWatchTimer;
+
+  @override
+  void initState() {
+    currentTime = '00:${widget.timeInMinutes}:00.00';
+
+    _stopWatchTimer = StopWatchTimer(
+      mode: StopWatchMode.countDown,
+      presetMillisecond:
+          StopWatchTimer.getMilliSecFromMinute(widget.timeInMinutes),
+      onChange: (value) {
+        final displayTime = StopWatchTimer.getDisplayTime(value);
+        setState(() {
+          currentTime = displayTime;
+        });
+      },
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() async {
+    super.dispose();
+    await _stopWatchTimer.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.start) {
+      _stopWatchTimer.onStartTimer();
+    } else {
+      _stopWatchTimer.onStopTimer();
+    }
+
+    return Text(
+      currentTime,
+      style: TextStyle(color: widget.textColor),
     );
   }
 }
