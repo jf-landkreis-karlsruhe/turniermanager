@@ -149,11 +149,13 @@ class CountDownView extends StatefulWidget {
     required this.timeInMinutes,
     required this.textColor,
     required this.start,
+    this.onEnded,
   });
 
   final int timeInMinutes;
   final Color textColor;
   final bool start;
+  final void Function()? onEnded;
 
   @override
   State<CountDownView> createState() => _CountDownViewState();
@@ -178,6 +180,7 @@ class _CountDownViewState extends State<CountDownView> {
           currentTime = displayTime;
         });
       },
+      onEnded: widget.onEnded,
     );
     super.initState();
   }
