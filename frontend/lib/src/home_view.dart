@@ -48,6 +48,8 @@ class MainContentView extends StatelessWidget with WatchItMixin {
                     TextField(
                       controller: scheduleAgeGroupTextController,
                       textAlign: TextAlign.center,
+                      decoration:
+                          const InputDecoration(label: Text('Altersklasse')),
                     ),
                     const SizedBox(height: 5),
                     ElevatedButton.icon(
@@ -81,6 +83,8 @@ class MainContentView extends StatelessWidget with WatchItMixin {
                     TextField(
                       controller: resultsAgeGroupTextController,
                       textAlign: TextAlign.center,
+                      decoration:
+                          const InputDecoration(label: Text('Altersklasse')),
                     ),
                     const SizedBox(height: 5),
                     ElevatedButton.icon(
