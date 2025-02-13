@@ -17,6 +17,19 @@ class RefereeView extends StatelessWidget {
           ),
         ),
         leadingWidth: 200,
+        actions: [
+          const Text(
+            'Runde 1',
+            style: TextStyle(fontSize: 26),
+          ),
+          const SizedBox(width: 10),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.double_arrow),
+            tooltip: "Runde beenden / Neue Runde starten",
+            iconSize: 40,
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
