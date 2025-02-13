@@ -22,8 +22,8 @@ class RefereeView extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         child: ListView(
           children: [
-            GameRoundView(first: true),
-            GameRoundView(first: false),
+            GameView(first: true),
+            GameView(first: false),
           ],
         ),
       ),
@@ -31,8 +31,8 @@ class RefereeView extends StatelessWidget {
   }
 }
 
-class GameRoundView extends StatefulWidget {
-  const GameRoundView({
+class GameView extends StatefulWidget {
+  const GameView({
     super.key,
     required this.first,
   });
@@ -41,10 +41,10 @@ class GameRoundView extends StatefulWidget {
   final bool first;
 
   @override
-  State<GameRoundView> createState() => _GameRoundViewState();
+  State<GameView> createState() => _GameViewState();
 }
 
-class _GameRoundViewState extends State<GameRoundView> {
+class _GameViewState extends State<GameView> {
   bool currentlyRunning = false;
   bool reset = false;
 
@@ -57,108 +57,108 @@ class _GameRoundViewState extends State<GameRoundView> {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> rows = [];
+
+    for (var game in games) {
+      rows.add(
+        GameEntryView(
+          gameRoundEntry: game,
+          textColor: currentlyRunning ? selectedTextColor : standardTextColor,
+        ),
+      );
+
+      rows.add(const Divider());
+    }
+
+    rows.removeLast();
+
     return Card(
       color: currentlyRunning ? Colors.blue : null,
-      child: SizedBox(
-        height: 315,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: SizedBox(
-                height: 40,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          'Spielrunde 1',
-                          style: TextStyle(
-                              fontSize: GameRoundView._headerFontSize,
-                              color: currentlyRunning
-                                  ? selectedTextColor
-                                  : standardTextColor),
-                        ),
-                        const SizedBox(width: 10),
-                        CountDownView(
-                          timeInMinutes: 10,
-                          textColor: currentlyRunning
-                              ? selectedTextColor
-                              : standardTextColor,
-                          start: currentlyRunning,
-                          refresh: reset,
-                        ),
-                        const SizedBox(width: 10),
-                        if (widget.first)
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                reset = false;
-                                currentlyRunning = !currentlyRunning;
-                              });
-                            },
-                            icon: Icon(currentlyRunning
-                                ? Icons.pause
-                                : Icons.play_arrow),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: SizedBox(
+              height: 40,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'Spiel 1',
+                        style: TextStyle(
+                            fontSize: GameView._headerFontSize,
                             color: currentlyRunning
                                 ? selectedTextColor
-                                : standardTextColor,
-                            tooltip: "Runde starten",
-                          ),
-                        const SizedBox(width: 10),
-                        if (widget.first)
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                currentlyRunning = false;
-                                reset = true;
-                              });
-                            },
-                            icon: const Icon(Icons.refresh),
-                            color: currentlyRunning
-                                ? selectedTextColor
-                                : standardTextColor,
-                            tooltip: "Runde zurücksetzen",
-                          ),
-                      ],
-                    ),
-                    if (widget.first)
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.start,
+                                : standardTextColor),
+                      ),
+                      const SizedBox(width: 10),
+                      CountDownView(
+                        timeInMinutes: 10,
+                        textColor: currentlyRunning
+                            ? selectedTextColor
+                            : standardTextColor,
+                        start: currentlyRunning,
+                        refresh: reset,
+                      ),
+                      const SizedBox(width: 10),
+                      if (widget.first)
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              reset = false;
+                              currentlyRunning = !currentlyRunning;
+                            });
+                          },
+                          icon: Icon(currentlyRunning
+                              ? Icons.pause
+                              : Icons.play_arrow),
                           color: currentlyRunning
                               ? selectedTextColor
                               : standardTextColor,
+                          tooltip: "Spiel starten",
                         ),
-                        tooltip: "Runde beenden",
-                      )
-                  ],
-                ),
+                      const SizedBox(width: 10),
+                      if (widget.first)
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              currentlyRunning = false;
+                              reset = true;
+                            });
+                          },
+                          icon: const Icon(Icons.refresh),
+                          color: currentlyRunning
+                              ? selectedTextColor
+                              : standardTextColor,
+                          tooltip: "Spiel zurücksetzen",
+                        ),
+                    ],
+                  ),
+                  if (widget.first)
+                    IconButton(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.start,
+                        color: currentlyRunning
+                            ? selectedTextColor
+                            : standardTextColor,
+                      ),
+                      tooltip: "Spiel beenden",
+                    )
+                ],
               ),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-                child: ListView.separated(
-                  itemBuilder: (context, index) {
-                    var element = games[index];
-                    return GameRoundEntryView(
-                      gameRoundEntry: element,
-                      textColor: currentlyRunning
-                          ? selectedTextColor
-                          : standardTextColor,
-                    );
-                  },
-                  separatorBuilder: (context, index) => const Divider(),
-                  itemCount: games.length,
-                ),
-              ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+            child: Column(
+              children: rows.toList(),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -233,8 +233,8 @@ class _CountDownViewState extends State<CountDownView> {
   }
 }
 
-class GameRoundEntryView extends StatelessWidget {
-  const GameRoundEntryView({
+class GameEntryView extends StatelessWidget {
+  const GameEntryView({
     super.key,
     required this.gameRoundEntry,
     required this.textColor,
@@ -247,12 +247,33 @@ class GameRoundEntryView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        SizedBox(
-          width: 150,
-          child: Text(
-            'Platz $gameRoundEntry',
-            style: TextStyle(color: textColor),
-          ),
+        Row(
+          children: [
+            Text(
+              'Altersgruppe $gameRoundEntry',
+              style: TextStyle(color: textColor),
+            ),
+            const SizedBox(width: 5),
+            Text(
+              '|',
+              style: TextStyle(color: textColor),
+            ),
+            const SizedBox(width: 5),
+            Text(
+              'Liga $gameRoundEntry',
+              style: TextStyle(color: textColor),
+            ),
+            const SizedBox(width: 5),
+            Text(
+              '|',
+              style: TextStyle(color: textColor),
+            ),
+            const SizedBox(width: 5),
+            Text(
+              'Platz $gameRoundEntry',
+              style: TextStyle(color: textColor),
+            ),
+          ],
         ),
         const SizedBox(width: 5),
         Expanded(
