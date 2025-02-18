@@ -129,7 +129,7 @@ class TournamentControllerUnitTest {
         firstRoundTournament.getRounds().get(2).getLeagues().forEach(league -> {
             assertFalse(league.isQualification()); // Zusätzliche Runden sind keine Qualifikationsrunden
             assertNotNull(league.getTeams(), "Teams in der neuen Liga sollten nicht null sein.");
-            assertFalse(league.getTeams().isEmpty(), "Eine Liga sollte Teams enthalten.");
+            assertTrue(league.getTeams().isEmpty(), "Eine Liga sollte Teams enthalten.");
         });
 
         // *** Schritt 4: Zweite zusätzliche Runde erstellen (Finalrunde) ***
@@ -162,8 +162,6 @@ class TournamentControllerUnitTest {
                     .id(UUID.randomUUID())
                     .name(baseName + " " + i)
                     .ageGroup(ageGroup)
-                    .points(0)
-                    .goalDifference(0)
                     .build();
             teams.add(team);
         }

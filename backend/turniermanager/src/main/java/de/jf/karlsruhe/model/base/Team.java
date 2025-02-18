@@ -23,9 +23,6 @@ public class Team {
 
     private String name;
 
-    private int points;
-    private int goalDifference;
-
     // Beziehung zu einer Altersgruppe
     @ManyToOne
     @ToString.Exclude

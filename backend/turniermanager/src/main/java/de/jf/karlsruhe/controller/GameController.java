@@ -65,7 +65,6 @@ public class GameController {
                 game.getTeamB().getName(), game.getTeamBScore(),
                 game.getPitch() != null ? game.getPitch().getName() : "Kein Spielfeld"
         );
-
         return ResponseEntity.ok(gameDetails);
     }
 
@@ -86,6 +85,5 @@ public class GameController {
 
         return ResponseEntity.ok(games);
     }
-
 
 }

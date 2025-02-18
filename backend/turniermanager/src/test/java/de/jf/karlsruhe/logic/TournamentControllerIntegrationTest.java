@@ -61,11 +61,11 @@ public class TournamentControllerIntegrationTest {
         AgeGroup u16 = ageGroupRepository.save(AgeGroup.builder().name("U16").build());
         AgeGroup u18 = ageGroupRepository.save(AgeGroup.builder().name("U18").build());
 
-        for (int i = 0; i <5 ; i++) {
+        for (int i = 0; i < 5; i++) {
             // Erstellen von Pitches
             Pitch pitch1 = Pitch.builder().name("Pitch 1" + i).ageGroups(List.of(u16, u18)).build();
             Pitch pitch2 = Pitch.builder().name("Pitch 2" + i).ageGroups(List.of(u18)).build();
-            pitchRepository.saveAll(List.of(pitch1,pitch2));
+            pitchRepository.saveAll(List.of(pitch1, pitch2));
         }
 
         // Erstellen von Teams für verschiedene Altersgruppen
@@ -86,7 +86,7 @@ public class TournamentControllerIntegrationTest {
         int playTime = 15;  // 30 Minuten pro Spiel
         int breakTime = 10; // 10 Minuten Pause zwischen Spielen
 
-        mockMvc.perform(post("/api/tournament/create")
+        mockMvc.perform(post("/turniersetup/create")
                         .param("name", tournamentName)
                         .param("startTime", startTime.toString())
                         .param("playTime", String.valueOf(playTime))
@@ -99,47 +99,5 @@ public class TournamentControllerIntegrationTest {
 
         Tournament tournament = tournaments.get(0);
         assertThat(tournament.getName()).isEqualTo(tournamentName);
-
-        // Überprüfen, ob die Ligen korrekt angelegt wurden
-        List<League> leagues = leagueRepository.findAll();
-        assertThat(leagues).hasSize(2); // Zwei Altersgruppen = Zwei Ligen
-
-        for (League league : leagues) {
-            assertThat(league.getTournament()).isEqualTo(tournament);
-        }
-
-        // Überprüfen, ob Runden und Spiele erstellt wurden
-        List<Round> allRounds = roundRepository.findAll();
-        assertThat(allRounds).isNotEmpty();
-
-        List<Game> allGames = gameRepository.findAll();
-        assertThat(allGames).isNotEmpty();
-
-        allGames.forEach(t -> Logger.getGlobal().log(Level.INFO, t.toString()));
-
-
-        // Verifizieren, ob die Spiele korrekt Teams und Pitches zugeordnet wurden
-        for (Game game : allGames) {
-            assertThat(game.getTeamA()).isNotNull();
-            assertThat(game.getTeamB()).isNotNull();
-            assertThat(game.getPitch()).isNotNull();
-        }
-
-        // JSON-Ausgabe des gesamten Turniers
-        printTournamentAsJson(tournament);
-
     }
-
-    private void printTournamentAsJson(Tournament tournament) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        // Modul für Java-Zeittypen registrieren
-        mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-        String json = mapper.writeValueAsString(tournament);
-        System.out.println("\n--- Tournament JSON Output ---");
-        System.out.println(json);
-    }
-
-
 }

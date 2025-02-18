@@ -84,4 +84,17 @@ public class PitchScheduler {
         AgeGroup teamBAgeGroup = game.getTeamB().getAgeGroup();
         return pitch.getAgeGroups().contains(teamAAgeGroup) && pitch.getAgeGroups().contains(teamBAgeGroup);
     }
+
+    public void delayGamesAfter(LocalDateTime afterTime, int minutes) {
+        for (Map.Entry<Pitch, LocalDateTime> entry : pitchSchedules.entrySet()) {
+            LocalDateTime scheduledTime = entry.getValue();
+
+            // Überprüft, ob das Spiel nach der Pausenzeit stattfindet oder genau zur gleichen Stunde und Minute
+            if (scheduledTime.isAfter(afterTime) ||
+                    (scheduledTime.getHour() == afterTime.getHour() && scheduledTime.getMinute() == afterTime.getMinute())) {
+                pitchSchedules.put(entry.getKey(), scheduledTime.plusMinutes(minutes));
+            }
+        }
+    }
+
 }

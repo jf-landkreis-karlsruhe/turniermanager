@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,4 +50,11 @@ public class League {
     @EqualsAndHashCode.Exclude
     private Round round;
 
+    public void addTeam(Team team) {
+        if (this.teams == null) {
+            this.teams = new ArrayList<>();
+        }else{
+            this.teams.add(team);
+        }
+    }
 }

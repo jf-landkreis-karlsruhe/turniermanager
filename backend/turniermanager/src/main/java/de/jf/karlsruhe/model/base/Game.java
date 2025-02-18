@@ -23,8 +23,15 @@ public class Game {
     private UUID id;
 
     private LocalDateTime startTime;
+
+    private LocalDateTime actualStartTime;
+
+    private LocalDateTime actualEndTime;
+
     private int teamAScore;
     private int teamBScore;
+
+    private long gameNumber;
 
     @ManyToOne
     @ToString.Exclude

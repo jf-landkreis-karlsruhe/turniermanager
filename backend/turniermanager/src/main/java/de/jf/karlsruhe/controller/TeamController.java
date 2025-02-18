@@ -11,19 +11,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/turniersetup")
+@RequestMapping("/turniersetup/teams")
 public class TeamController {
 
     @Autowired
     private TeamRepository teamRepository;
     
-    @PostMapping("/team")
+    @PostMapping("/create")
     public ResponseEntity<Team> createTeam(@RequestBody Team team) {
         Team savedTeam = teamRepository.save(team);
         return ResponseEntity.ok(savedTeam);
     }
     
-    @PostMapping("/teams")
+    @PostMapping("/bulk")
     public ResponseEntity<List<Team>> createTeam(@RequestBody List<Team> teams) {
         List<Team> savedTeam = teamRepository.saveAll(teams);
         return ResponseEntity.ok(savedTeam);

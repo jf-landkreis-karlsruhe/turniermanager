@@ -6,6 +6,7 @@ import lombok.*;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,4 +35,12 @@ public class Tournament {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "game_settings_id", referencedColumnName = "id")
     private GameSettings gameSettings;
+
+    public void addRound(Round round) {
+        if (this.rounds == null) {
+            this.rounds = new ArrayList<>();
+        }
+        this.rounds.add(round);
+    }
+
 }

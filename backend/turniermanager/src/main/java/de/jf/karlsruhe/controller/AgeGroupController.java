@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/turniersetup/agegroup")
+@RequestMapping("/turniersetup/agegroups")
 public class AgeGroupController {
 
     @Autowired
@@ -33,7 +33,7 @@ public class AgeGroupController {
         }
     }
 
-    @PostMapping("/createMultiple")
+    @PostMapping("/bulk")
     public ResponseEntity<Iterable<AgeGroup>> createMultipleAgeGroups(@RequestBody List<AgeGroup> ageGroups) {
         List<AgeGroup> savedAgeGroups = ageGroupRepository.saveAll(ageGroups);
         return ResponseEntity.ok(savedAgeGroups);
