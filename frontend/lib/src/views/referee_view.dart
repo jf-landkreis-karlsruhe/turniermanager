@@ -193,6 +193,7 @@ class _GameViewState extends State<GameView> {
                         });
 
                         if (result) {
+                          //TODO: load current round with contained games
                           return;
                         }
 
@@ -333,7 +334,7 @@ class GameEntryView extends StatelessWidget {
             ),
             const SizedBox(width: 5),
             Text(
-              'Platz $gameRoundEntry',
+              'Feld $gameRoundEntry',
               style: TextStyle(color: textColor),
             ),
           ],
