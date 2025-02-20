@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:tournament_manager/src/serialization/referee/round_dto.dart';
 import 'package:tournament_manager/src/serialization/results/result_entry_dto.dart';
 import 'package:tournament_manager/src/serialization/results/results_dto.dart';
 import 'package:tournament_manager/src/serialization/schedule/league_dto.dart';
@@ -19,6 +20,8 @@ abstract class GameRestApi {
   Future<bool?> endCurrentGames();
 
   Future<bool?> startNextRound();
+
+  Future<RoundDto?> getCurrentRound();
 }
 
 class GameRestApiImplementation extends RestClient implements GameRestApi {
@@ -170,5 +173,11 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
     } catch (e) {
       return null;
     }
+  }
+
+  @override
+  Future<RoundDto?> getCurrentRound() {
+    // TODO: implement getCurrentRound
+    throw UnimplementedError();
   }
 }

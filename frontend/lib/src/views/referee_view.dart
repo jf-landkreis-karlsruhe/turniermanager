@@ -32,7 +32,7 @@ class RefereeView extends StatelessWidget {
               var result =
                   await gameManager.startNextRoundCommand.executeWithFuture();
               if (result) {
-                //TODO: load current round with contained games
+                gameManager.getCurrentRoundCommand();
               }
             },
             icon: const Icon(Icons.double_arrow),
@@ -193,7 +193,7 @@ class _GameViewState extends State<GameView> {
                         });
 
                         if (result) {
-                          //TODO: load current round with contained games
+                          gameManager.getCurrentRoundCommand();
                           return;
                         }
 

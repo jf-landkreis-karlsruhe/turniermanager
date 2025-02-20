@@ -11,7 +11,7 @@ import 'package:tournament_manager/src/serialization/referee/pitch_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/round_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/team_dto.dart';
 
-class ResultsMapper {
+class RefereeMapper {
   AgeGroup mapAgeGroup(AgeGroupDto dto) {
     return AgeGroup(dto.name);
   }
