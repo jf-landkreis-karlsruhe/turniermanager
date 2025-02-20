@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:tournament_manager/src/manager/game_manager.dart';
+import 'package:watch_it/watch_it.dart';
 
 class RefereeView extends StatelessWidget {
   const RefereeView({super.key});
@@ -8,6 +10,8 @@ class RefereeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var gameManager = di<GameManager>();
+
     return Scaffold(
       appBar: AppBar(
         leading: const Center(
@@ -24,7 +28,13 @@ class RefereeView extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           IconButton(
-            onPressed: () {},
+            onPressed: () async {
+              var result =
+                  await gameManager.startNextRoundCommand.executeWithFuture();
+              if (result) {
+                //TODO: load current round with contained games
+              }
+            },
             icon: const Icon(Icons.double_arrow),
             tooltip: "Runde beenden / Neue Runde starten",
             iconSize: 40,
@@ -70,6 +80,8 @@ class _GameViewState extends State<GameView> {
 
   @override
   Widget build(BuildContext context) {
+    var gameManager = di<GameManager>();
+
     List<Widget> rows = [];
 
     for (var game in games) {
@@ -119,11 +131,30 @@ class _GameViewState extends State<GameView> {
                       const SizedBox(width: 10),
                       if (widget.first)
                         IconButton(
-                          onPressed: () {
+                          onPressed: () async {
                             setState(() {
                               reset = false;
                               currentlyRunning = !currentlyRunning;
                             });
+
+                            var result = await gameManager
+                                .startCurrentGamesCommand
+                                .executeWithFuture();
+                            if (result) {
+                              return;
+                            }
+
+                            setState(() {
+                              currentlyRunning = false;
+                              reset = true;
+                            });
+
+                            if (!context.mounted) {
+                              return;
+                            }
+
+                            showError(context,
+                                'Spiele konnten nicht gestartet werden');
                           },
                           icon: Icon(currentlyRunning
                               ? Icons.pause
@@ -152,7 +183,26 @@ class _GameViewState extends State<GameView> {
                   ),
                   if (widget.first)
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        var result = await gameManager.endCurrentGamesCommand
+                            .executeWithFuture();
+
+                        setState(() {
+                          currentlyRunning = false;
+                          reset = true;
+                        });
+
+                        if (result) {
+                          return;
+                        }
+
+                        if (!context.mounted) {
+                          return;
+                        }
+
+                        showError(
+                            context, 'Spiele konnten nicht beendet werden');
+                      },
                       icon: Icon(
                         Icons.start,
                         color: currentlyRunning
@@ -313,4 +363,25 @@ class GameEntryView extends StatelessWidget {
       ],
     );
   }
+}
+
+void showError(context, String errorText) {
+  if (!context.mounted) {
+    return;
+  }
+
+  var scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
+
+  scaffoldMessenger?.showSnackBar(
+    SnackBar(
+      content: Center(
+        child: Text(
+          'Fehler: $errorText',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+      backgroundColor: Colors.red,
+      behavior: SnackBarBehavior.floating,
+    ),
+  );
 }

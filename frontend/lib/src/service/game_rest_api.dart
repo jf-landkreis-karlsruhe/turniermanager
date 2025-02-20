@@ -13,6 +13,12 @@ abstract class GameRestApi {
   Future<MatchScheduleDto?> getSchedule(String ageGroup);
 
   Future<ResultsDto?> getResults(String ageGroup);
+
+  Future<bool?> startCurrentGames();
+
+  Future<bool?> endCurrentGames();
+
+  Future<bool?> startNextRound();
 }
 
 class GameRestApiImplementation extends RestClient implements GameRestApi {
@@ -134,5 +140,35 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
     }
 
     return null;
+  }
+
+  @override
+  Future<bool?> endCurrentGames() async {
+    // TODO: implement endCurrentGames
+    try {
+      throw UnimplementedError();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  @override
+  Future<bool?> startCurrentGames() async {
+    // TODO: implement startCurrentGames
+    try {
+      throw UnimplementedError();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  @override
+  Future<bool?> startNextRound() async {
+    // TODO: implement startNextRound
+    try {
+      throw UnimplementedError();
+    } catch (e) {
+      return null;
+    }
   }
 }
