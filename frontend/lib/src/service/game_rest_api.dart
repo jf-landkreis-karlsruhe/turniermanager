@@ -1,6 +1,10 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:tournament_manager/src/serialization/referee/age_group_dto.dart';
+import 'package:tournament_manager/src/serialization/referee/game_dto.dart';
+import 'package:tournament_manager/src/serialization/referee/pitch_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/round_dto.dart';
+import 'package:tournament_manager/src/serialization/referee/team_dto.dart';
 import 'package:tournament_manager/src/serialization/results/result_entry_dto.dart';
 import 'package:tournament_manager/src/serialization/results/results_dto.dart';
 import 'package:tournament_manager/src/serialization/schedule/league_dto.dart';
@@ -9,6 +13,8 @@ import 'package:tournament_manager/src/serialization/results/league_dto.dart'
 import 'package:tournament_manager/src/serialization/schedule/match_schedule_dto.dart';
 import 'package:tournament_manager/src/serialization/schedule/match_schedule_entry_dto.dart';
 import 'package:tournament_manager/src/service/rest_client.dart';
+import 'package:tournament_manager/src/serialization/referee/league_dto.dart'
+    as referee_league;
 
 abstract class GameRestApi {
   Future<MatchScheduleDto?> getSchedule(String ageGroup);
@@ -147,9 +153,8 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
 
   @override
   Future<bool?> endCurrentGames() async {
-    // TODO: implement endCurrentGames
     try {
-      throw UnimplementedError();
+      return true; // TODO: implement endCurrentGames
     } catch (e) {
       return null;
     }
@@ -157,9 +162,8 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
 
   @override
   Future<bool?> startCurrentGames() async {
-    // TODO: implement startCurrentGames
     try {
-      throw UnimplementedError();
+      return true; // TODO: implement endCurrentGames
     } catch (e) {
       return null;
     }
@@ -167,17 +171,74 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
 
   @override
   Future<bool?> startNextRound() async {
-    // TODO: implement startNextRound
     try {
-      throw UnimplementedError();
+      return true; // TODO: implement endCurrentGames
     } catch (e) {
       return null;
     }
   }
 
   @override
-  Future<RoundDto?> getCurrentRound() {
+  Future<RoundDto?> getCurrentRound() async {
     // TODO: implement getCurrentRound
-    throw UnimplementedError();
+    return RoundDto("Runde 1")
+      ..games = [
+        GameDto(
+          1,
+          PitchDto("1"),
+          TeamDto(
+            "Team A",
+            AgeGroupDto("1"),
+            referee_league.LeagueDto("1"),
+          ),
+          TeamDto(
+            "Team B",
+            AgeGroupDto("1"),
+            referee_league.LeagueDto("1"),
+          ),
+        ),
+        GameDto(
+          1,
+          PitchDto("2"),
+          TeamDto(
+            "Team A",
+            AgeGroupDto("2"),
+            referee_league.LeagueDto("1"),
+          ),
+          TeamDto(
+            "Team B",
+            AgeGroupDto("2"),
+            referee_league.LeagueDto("1"),
+          ),
+        ),
+        GameDto(
+          2,
+          PitchDto("1"),
+          TeamDto(
+            "Team A",
+            AgeGroupDto("1"),
+            referee_league.LeagueDto("1"),
+          ),
+          TeamDto(
+            "Team B",
+            AgeGroupDto("1"),
+            referee_league.LeagueDto("1"),
+          ),
+        ),
+        GameDto(
+          2,
+          PitchDto("2"),
+          TeamDto(
+            "Team A",
+            AgeGroupDto("2"),
+            referee_league.LeagueDto("2"),
+          ),
+          TeamDto(
+            "Team B",
+            AgeGroupDto("2"),
+            referee_league.LeagueDto("2"),
+          ),
+        ),
+      ];
   }
 }

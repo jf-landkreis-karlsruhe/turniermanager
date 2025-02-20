@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
+import 'package:tournament_manager/src/model/referee/game.dart';
 import 'package:watch_it/watch_it.dart';
 
-class RefereeView extends StatelessWidget {
+class RefereeView extends StatelessWidget with WatchItMixin {
   const RefereeView({super.key});
 
   static const routeName = '/referee';
@@ -11,6 +12,20 @@ class RefereeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var gameManager = di<GameManager>();
+    var currentRound =
+        watchPropertyValue((GameManager manager) => manager.currentRound);
+    Map<int, List<Game>> sortedGames = {};
+
+    for (var game in currentRound.games) {
+      sortedGames.update(
+        game.gameNumber,
+        (value) {
+          value.add(game);
+          return value;
+        },
+        ifAbsent: () => [game],
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -22,9 +37,9 @@ class RefereeView extends StatelessWidget {
         ),
         leadingWidth: 200,
         actions: [
-          const Text(
-            'Runde 1',
-            style: TextStyle(fontSize: 26),
+          Text(
+            currentRound.name,
+            style: const TextStyle(fontSize: 26),
           ),
           const SizedBox(width: 10),
           IconButton(
@@ -43,11 +58,15 @@ class RefereeView extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
-        child: ListView(
-          children: [
-            GameView(first: true),
-            GameView(first: false),
-          ],
+        child: ListView.builder(
+          itemBuilder: (context, index) {
+            var games = sortedGames.values.toList()[index];
+            return GameView(
+              first: index == 0,
+              games: games,
+            );
+          },
+          itemCount: sortedGames.keys.length,
         ),
       ),
     );
@@ -58,10 +77,12 @@ class GameView extends StatefulWidget {
   const GameView({
     super.key,
     required this.first,
+    required this.games,
   });
 
   static const double _headerFontSize = 20;
   final bool first;
+  final List<Game> games;
 
   @override
   State<GameView> createState() => _GameViewState();
@@ -73,10 +94,6 @@ class _GameViewState extends State<GameView> {
 
   Color selectedTextColor = Colors.black;
   Color standardTextColor = Colors.white;
-  List<String> games = [
-    "1",
-    "2",
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +101,7 @@ class _GameViewState extends State<GameView> {
 
     List<Widget> rows = [];
 
-    for (var game in games) {
+    for (var game in widget.games) {
       rows.add(
         GameEntryView(
           gameRoundEntry: game,
@@ -112,7 +129,7 @@ class _GameViewState extends State<GameView> {
                   Row(
                     children: [
                       Text(
-                        'Spiel 1',
+                        'Spiel ${widget.games.first.gameNumber}',
                         style: TextStyle(
                             fontSize: GameView._headerFontSize,
                             color: currentlyRunning
@@ -304,7 +321,7 @@ class GameEntryView extends StatelessWidget {
     required this.textColor,
   });
 
-  final String gameRoundEntry;
+  final Game gameRoundEntry;
   final Color textColor;
 
   @override
@@ -314,7 +331,7 @@ class GameEntryView extends StatelessWidget {
         Row(
           children: [
             Text(
-              'Altersgruppe $gameRoundEntry',
+              'Altersgruppe ${gameRoundEntry.teamA.ageGroup.name}',
               style: TextStyle(color: textColor),
             ),
             const SizedBox(width: 5),
@@ -324,7 +341,7 @@ class GameEntryView extends StatelessWidget {
             ),
             const SizedBox(width: 5),
             Text(
-              'Liga $gameRoundEntry',
+              'Liga ${gameRoundEntry.teamA.league.name}',
               style: TextStyle(color: textColor),
             ),
             const SizedBox(width: 5),
@@ -334,7 +351,7 @@ class GameEntryView extends StatelessWidget {
             ),
             const SizedBox(width: 5),
             Text(
-              'Feld $gameRoundEntry',
+              'Feld ${gameRoundEntry.pitch.name}',
               style: TextStyle(color: textColor),
             ),
           ],
@@ -345,7 +362,7 @@ class GameEntryView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Team A',
+                gameRoundEntry.teamA.name,
                 style: TextStyle(color: textColor),
               ),
               const SizedBox(width: 5),
@@ -355,7 +372,7 @@ class GameEntryView extends StatelessWidget {
               ),
               const SizedBox(width: 5),
               Text(
-                'Team B',
+                gameRoundEntry.teamB.name,
                 style: TextStyle(color: textColor),
               ),
             ],
