@@ -34,10 +34,14 @@ public class League {
     @EqualsAndHashCode.Exclude
     private Tournament tournament; // Zugehöriges Turnier
 
-    @OneToMany(mappedBy = "league", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude // Verhindert rekursive Schleifen in toString()
-    @EqualsAndHashCode.Exclude
-    private List<Team> teams; // Teams in der Liga
+    @ManyToMany
+    @JoinTable(
+            name = "league_team", // Name der Join-Tabelle
+            joinColumns = @JoinColumn(name = "league_id"),  // Fremdschlüssel in der Join-Tabelle
+            inverseJoinColumns = @JoinColumn(name = "team_id") // Fremdschlüssel für die Teams
+    )
+    @ToString.Exclude
+    private List<Team> teams;
 
     @ManyToOne
     @JoinColumn(name = "age_group_id") // Fremdschlüssel in der League-Tabelle

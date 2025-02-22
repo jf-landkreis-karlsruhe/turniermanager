@@ -1,5 +1,6 @@
 package de.jf.karlsruhe.model.repos;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import de.jf.karlsruhe.model.base.Pitch;
@@ -11,4 +12,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface PitchRepository extends JpaRepository<Pitch, UUID>{
+    @EntityGraph(attributePaths = "ageGroups")
+    List<Pitch> findAll();
 }

@@ -1,6 +1,5 @@
 package de.jf.karlsruhe.model.base;
 
-import de.jf.karlsruhe.model.game.GameSettings;
 import jakarta.persistence.*;
 import lombok.*;
 

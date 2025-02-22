@@ -1,4 +1,4 @@
-package de.jf.karlsruhe.model.game;
+package de.jf.karlsruhe.model.base;
 
 import de.jf.karlsruhe.model.base.Tournament;
 import jakarta.persistence.*;

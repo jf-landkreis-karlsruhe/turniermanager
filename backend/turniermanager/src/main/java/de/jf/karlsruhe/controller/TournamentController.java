@@ -1,9 +1,9 @@
 package de.jf.karlsruhe.controller;//package de.jf.karlsruhe.controller;
 
 import de.jf.karlsruhe.model.base.*;
-import de.jf.karlsruhe.model.game.GameSettings;
 import de.jf.karlsruhe.model.repos.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -48,15 +48,15 @@ public class TournamentController {
         return tournament;
     }
 
-
+    @Transactional
     @PostMapping("/create/qualification")
     public Tournament createQualificationTournament(@RequestParam UUID tournamentId) {
         if (ageGroupRepository.count() == 0 && pitchRepository.count() == 0 && teamRepository.count() == 0)
             return tournamentRepository.findById(tournamentId).orElseThrow();
-        // Altersgruppen laden und Ligen erstellen
+
         Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow();
         List<AgeGroup> ageGroups = ageGroupRepository.findAll();
-        //qualification rounds
+
         for (AgeGroup ageGroup : ageGroups) {
             League league = League.builder()
                     .name("Qualifikation " + ageGroup.getName())
@@ -65,30 +65,30 @@ public class TournamentController {
                     .ageGroup(ageGroup)
                     .teams(teamRepository.findByAgeGroupId(ageGroup.getId()))
                     .build();
-            Round round = Round.builder().leagues(List.of(league)).name("Qualifikationsrunde").build();
+
+            Round round = Round.builder().leagues(List.of(league)).name("Qualifikationsrunde").tournament(tournament).build();
             league.setRound(round);
             tournament.addRound(round);
-            roundRepository.save(round);
-            leagueRepository.save(league);
+            roundRepository.save(round);  // save round
+            leagueRepository.save(league);  // save league
         }
-        List<League> all = leagueRepository.findAll();
-        for (League league : all) {
-            List<Game> games = generateLeagueGames(league);
-            List<Game> scheduled = pitchScheduler.scheduleGames(games);
 
-            league.getRound().addGames(scheduled);
-            leagueRepository.save(league);
-            gameRepository.saveAll(scheduled);
+        List<League> allLeagues = leagueRepository.findAll();
+        for (League league : allLeagues) {
+            List<Game> games = generateLeagueGames(league);
+            List<Game> scheduledGames = setGameTags(pitchScheduler.scheduleGames(games));
+
+            league.getRound().addGames(scheduledGames);
+            leagueRepository.save(league);  // save updated league
+            gameRepository.saveAll(scheduledGames); // save all scheduled games
         }
-        roundRepository.flush();
-        gameRepository.flush();
+
+        roundRepository.flush();  // ensure all changes are flushed to DB
+        gameRepository.flush();  // ensure all game updates are flushed to DB
         return tournament;
     }
 
-
-    /**
-     *
-     */
+    @Transactional
     @PostMapping("/create/round")
     public Tournament createTournamentRound(@RequestParam UUID tournamentId, @RequestParam String roundName) {
         if (ageGroupRepository.count() == 0 && pitchRepository.count() == 0 && teamRepository.count() == 0)
@@ -96,31 +96,36 @@ public class TournamentController {
 
         Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow();
         List<AgeGroup> ageGroups = ageGroupRepository.findAll();
+
         for (AgeGroup ageGroup : ageGroups) {
             List<Team> teams = teamRepository.findByAgeGroupId(ageGroup.getId());
             List<Game> allGames = gameRepository.findAll();
-            List<Team> teamsSortedByPerformance;
-            if (!allGames.isEmpty()) {
-                teamsSortedByPerformance = getTeamsSortedByPerformance(allGames, teams);
-            } else {
-                teamsSortedByPerformance = teams;
-            }
-            Map<League, List<Team>> balancedLeaguesForAgeGroup = createBalancedLeaguesForAgeGroup(teamsSortedByPerformance, 6, roundName, tournament);
-            balancedLeaguesForAgeGroup.forEach((league, teamsInLeague) -> {
+            List<Team> sortedTeams = !allGames.isEmpty() ? getTeamsSortedByPerformance(allGames, teams) : teams;
+
+            List<League> leagues = createBalancedLeaguesForAgeGroup(sortedTeams, 6, roundName, tournament);
+
+            // Erstelle eine Kopie der League-Liste
+            List<League> leaguesCopy = new ArrayList<>(leagues);
+
+            leaguesCopy.forEach(league -> {
                 league.setAgeGroup(ageGroup);
-                league.setTournament(tournament);
-                league.setTeams(teamsInLeague);
+                //league.setTournament(tournament); // Sicherstellen, dass das Tournament gesetzt ist
 
                 List<Game> games = generateLeagueGames(league);
-                List<Game> scheduled = pitchScheduler.scheduleGames(games);
-                league.getRound().addGames(scheduled);
-                roundRepository.save(league.getRound());
-                leagueRepository.save(league);
-                gameRepository.saveAll(scheduled);
+                List<Game> scheduledGames = setGameTags(pitchScheduler.scheduleGames(games));
+
+
+                // Hier vermeiden wir das Hinzufügen von Games zur Liste während der Iteration
+                league.getRound().addGames(scheduledGames);
+
+                roundRepository.save(league.getRound());  // save round
+                leagueRepository.save(league);  // save league
             });
         }
+
         return tournament;
     }
+
 
     @PostMapping("/addBreak")
     public void addBreakViaApi(@RequestParam LocalDateTime breakTime, @RequestParam int duration) {
@@ -136,30 +141,37 @@ public class TournamentController {
         return null;
     }
 
+    @Transactional
+    public synchronized  List<Game> setGameTags(List<Game> games) {
+        gameRepository.flush();
+        long maxGameNumber = gameRepository.count();
+        for (Game game : games) {
+            maxGameNumber+=1;
+            game.setGameNumber(maxGameNumber);
+        }
+        return games;
+    }
+
+    @Transactional
     public List<Game> generateLeagueGames(League league) {
         List<Game> games = new ArrayList<>();
         List<Team> teams = league.getTeams();
 
         if (teams == null || teams.size() < 2) {
-            return games; // Kein Spiel möglich, wenn weniger als 2 Teams vorhanden sind
+            return games;  // No games if less than 2 teams
         }
 
         int numberOfTeams = teams.size();
 
-        // Durchlaufen aller möglichen Paarungen (Kombinationen)
-        long count = gameRepository.count();
         for (int i = 0; i < numberOfTeams - 1; i++) {
             for (int j = i + 1; j < numberOfTeams; j++) {
-                count++;
                 Team teamA = teams.get(i);
                 Team teamB = teams.get(j);
 
-                // Spiel erstellen und zur Liste hinzufügen
                 Game game = Game.builder()
                         .teamA(teamA)
                         .teamB(teamB)
                         .round(league.getRound())
-                        .gameNumber(count)
                         .build();
 
                 games.add(game);
@@ -168,14 +180,14 @@ public class TournamentController {
         return games;
     }
 
+    @Transactional
     public List<Team> getTeamsSortedByPerformance(List<Game> games, List<Team> teams) {
         if (games == null || games.isEmpty() || teams == null || teams.isEmpty()) {
-            return new ArrayList<>(); // Keine Spiele oder Teams vorhanden
+            return new ArrayList<>();  // No games or teams available
         }
 
         Map<Team, Integer> teamPointsMap = new HashMap<>();
 
-        // Punkte für jedes Team berechnen
         for (Team team : teams) {
             int totalPoints = 0;
 
@@ -186,12 +198,12 @@ public class TournamentController {
                 boolean isTeamB = Objects.equals(g.getTeamB(), team);
 
                 if (isTeamA || isTeamB) {
-                    int eigeneTore = isTeamA ? teamAScore : teamBScore;
-                    int gegnerischeTore = isTeamA ? teamBScore : teamAScore;
+                    int ownGoals = isTeamA ? teamAScore : teamBScore;
+                    int opponentGoals = isTeamA ? teamBScore : teamAScore;
 
-                    if (eigeneTore > gegnerischeTore) {
+                    if (ownGoals > opponentGoals) {
                         totalPoints += 3;
-                    } else if (eigeneTore == gegnerischeTore) {
+                    } else if (ownGoals == opponentGoals) {
                         totalPoints += 1;
                     }
                 }
@@ -199,35 +211,35 @@ public class TournamentController {
             teamPointsMap.put(team, totalPoints);
         }
 
-        // Teams nach Punkten absteigend sortieren
         return teams.stream()
                 .sorted((t1, t2) -> Integer.compare(teamPointsMap.get(t2), teamPointsMap.get(t1)))
                 .collect(Collectors.toList());
     }
 
-    public Map<League, List<Team>> createBalancedLeaguesForAgeGroup(
+    @Transactional
+    public List<League> createBalancedLeaguesForAgeGroup(
             List<Team> teams, int maxTeamsPerLeague, String roundName, Tournament tournament) {
 
-        // Gesamtanzahl Teams und notwendige Anzahl Ligen berechnen
         int totalTeams = teams.size();
         int numberOfLeagues = (int) Math.ceil((double) totalTeams / maxTeamsPerLeague);
 
-        // Ligen erstellen
         List<League> leagues = new ArrayList<>();
-        Round round = Round.builder().name(roundName).build();
+        Round round = Round.builder().name(roundName).tournament(tournament).build();
+
         for (int i = 0; i < numberOfLeagues; i++) {
-            League league = League.builder().isQualification(false).build();
+            League league = League.builder().tournament(tournament).isQualification(false).build();
             league.setRound(round);
+            league.setTournament(tournament);
             league.setName("League " + (i + 1));
             leagues.add(league);
         }
-        // Teams gleichmäßig verteilen (Round-Robin-Verteilung)
-        Map<League, List<Team>> leagueMap = new HashMap<>();
+
+
         for (League league : leagues) {
-            leagueMap.put(league, new ArrayList<>()); // Initialisierung der Ligen mit leeren Listen
+            league.setTeams(new ArrayList<>());
         }
 
-        int leagueIndex = 0; // Zum Wechseln zwischen den Ligen
+        int leagueIndex = 0;
         HashMap<League, Integer> numberOfTeamsPerLeague = new HashMap<>();
         for (Team team : teams) {
             League currentLeague = leagues.get(leagueIndex);
@@ -238,7 +250,7 @@ public class TournamentController {
                 value += 1;
                 numberOfTeamsPerLeague.put(currentLeague, value);
             }
-            leagueIndex = (leagueIndex + 1) % leagues.size(); // Wechsel per Round-Robin
+            leagueIndex = (leagueIndex + 1) % leagues.size();
         }
 
         Queue<Team> teamsQueue = new LinkedList<>(teams);
@@ -252,6 +264,6 @@ public class TournamentController {
 
         round.setLeagues(leagues);
         tournament.addRound(round);
-        return leagueMap;
+        return leagues;
     }
 }

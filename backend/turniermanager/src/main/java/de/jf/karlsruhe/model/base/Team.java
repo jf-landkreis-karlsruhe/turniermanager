@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -29,9 +30,8 @@ public class Team {
     @EqualsAndHashCode.Exclude
     private AgeGroup ageGroup;
 
-    // Beziehung zur Liga
-    @ManyToOne
+    @ManyToMany(mappedBy = "teams")  // Rückbeziehung, da "teams" in League die Many-to-Many-Seite ist
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private League league;
+    private List<League> leagues;
+
 }

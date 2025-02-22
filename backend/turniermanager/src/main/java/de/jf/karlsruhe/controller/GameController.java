@@ -19,12 +19,12 @@ public class GameController {
     /**
      * Spielergebnisse eintragen/aktualisieren
      *
-     * @param gameId      ID des Spiels
-     * @param teamAScore  Punktzahl von Team A
-     * @param teamBScore  Punktzahl von Team B
+     * @param gameId     ID des Spiels
+     * @param teamAScore Punktzahl von Team A
+     * @param teamBScore Punktzahl von Team B
      * @return Das aktualisierte Spiel
      */
-    @PostMapping("/{gameId}/update")
+    @PostMapping("/updatebyid/{gameId}")
     public ResponseEntity<Game> updateGameScores(@PathVariable UUID gameId,
                                                  @RequestParam int teamAScore,
                                                  @RequestParam int teamBScore) {
@@ -40,6 +40,24 @@ public class GameController {
         Game updatedGame = gameRepository.save(game);
         return ResponseEntity.ok(updatedGame);
     }
+
+    @PostMapping("/update/{gameNumber}")
+    public ResponseEntity<Game> updateGameScoresByNumber(@PathVariable int gameNumber,
+                                                         @RequestParam int teamAScore,
+                                                         @RequestParam int teamBScore) {
+        // Spiel anhand der gameNumber abrufen
+        Game game = gameRepository.findByGameNumber(gameNumber)
+                .orElseThrow(() -> new IllegalArgumentException("Spiel mit Nummer " + gameNumber + " nicht gefunden"));
+
+        // Ergebnisse setzen
+        game.setTeamAScore(teamAScore);
+        game.setTeamBScore(teamBScore);
+
+        // Spiel aktualisieren
+        Game updatedGame = gameRepository.save(game);
+        return ResponseEntity.ok(updatedGame);
+    }
+
 
     /**
      * Ausgabe für ein bestimmtes Spiel erstellen

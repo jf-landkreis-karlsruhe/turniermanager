@@ -3,14 +3,19 @@ package de.jf.karlsruhe.controller;
 import de.jf.karlsruhe.model.base.AgeGroup;
 import de.jf.karlsruhe.model.base.Game;
 import de.jf.karlsruhe.model.base.Pitch;
-import de.jf.karlsruhe.model.game.GameSettings;
+import de.jf.karlsruhe.model.base.GameSettings;
+import de.jf.karlsruhe.model.repos.PitchRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
+@RequiredArgsConstructor
 public class PitchScheduler {
+
+    private final PitchRepository pitchRepository; // Repository, um sicherzustellen, dass die Pitches korrekt geladen werden
 
     private List<Pitch> pitches; // Liste der verfügbaren Spielfelder
     private GameSettings gameSettings; // Spieleinstellungen (Dauer, Pausen...)
@@ -24,10 +29,19 @@ public class PitchScheduler {
      */
     public void initialize(List<Pitch> pitches, GameSettings gameSettings) {
         pitchSchedules.clear();
-        if (this.pitches != null) this.pitches.clear();
         this.pitches = pitches;
         this.gameSettings = gameSettings;
-        pitches.forEach(pitch -> pitchSchedules.put(pitch, gameSettings.getStartTime())); // Alle Felder starten gleich
+
+        // Alle Felder starten gleich
+        pitches.forEach(pitch -> pitchSchedules.put(pitch, gameSettings.getStartTime()));
+    }
+
+    /**
+     * Sichert, dass die Pitches und ihre Altersgruppen ordnungsgemäß geladen werden, um LazyLoading-Probleme zu vermeiden
+     */
+    public void preLoadPitchData() {
+        // Lade alle relevanten Daten für Pitches vorab, damit keine LazyInitializationException auftritt
+        pitches = pitchRepository.findAll(); // Sicherstellen, dass die Pitches und ihre Altersgruppen in der aktuellen Transaktion sind
     }
 
     /**
@@ -37,6 +51,11 @@ public class PitchScheduler {
      * @return Geplante Spiele mit zugewiesenen Feldern und Zeiten
      */
     public List<Game> scheduleGames(List<Game> games) {
+        // Falls die Pitches nicht geladen sind, sicherstellen, dass sie vorab geladen werden
+        if (pitches == null || pitches.isEmpty()) {
+            preLoadPitchData();
+        }
+
         // Rotations-Index für die Felder
         Iterator<Pitch> pitchIterator = pitches.iterator();
 
@@ -85,6 +104,12 @@ public class PitchScheduler {
         return pitch.getAgeGroups().contains(teamAAgeGroup) && pitch.getAgeGroups().contains(teamBAgeGroup);
     }
 
+    /**
+     * Verzögert alle Spiele, die nach einem bestimmten Zeitpunkt geplant sind.
+     *
+     * @param afterTime Zeitpunkt, ab dem alle Spiele verzögert werden sollen
+     * @param minutes   Anzahl der Minuten, um die jedes Spiel verzögert werden soll
+     */
     public void delayGamesAfter(LocalDateTime afterTime, int minutes) {
         for (Map.Entry<Pitch, LocalDateTime> entry : pitchSchedules.entrySet()) {
             LocalDateTime scheduledTime = entry.getValue();
