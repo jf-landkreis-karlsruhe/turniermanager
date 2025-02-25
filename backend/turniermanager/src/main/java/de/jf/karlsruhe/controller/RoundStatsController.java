@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -17,15 +18,16 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/stats")
 public class RoundStatsController {
-    
+
     @Autowired
-    private RoundRepository roundRepository; 
+    private RoundRepository roundRepository;
 
     /**
      * Endpunkt, um die Spieltabellen jeder Liga einer bestimmten Runde als JSON zu liefern.
      * Beispielaufruf: GET /api/rounds/{roundId}/stats
      */
     @GetMapping("/{roundId}")
+    @Transactional
     public ResponseEntity<RoundStatsDTO> getRoundStats(@PathVariable UUID roundId) {
         Optional<Round> roundOpt = roundRepository.findById(roundId);
         if (roundOpt.isEmpty()) {
@@ -59,6 +61,46 @@ public class RoundStatsController {
 
         return ResponseEntity.ok(roundStatsDTO);
     }
+
+    @GetMapping("/{tournamentId}")
+    @Transactional
+    public ResponseEntity<List<RoundStatsDTO>> getRoundStatsByTournament(@PathVariable UUID tournamentId) {
+        List<Round> allRoundsByTournamentId = roundRepository.findAllRoundsByTournamentId(tournamentId);
+        List<RoundStatsDTO> roundStatsDTOList = new ArrayList<>();
+        for (Round round : allRoundsByTournamentId) {
+            RoundStatsDTO roundStatsByRound = getRoundStatsByRound(round);
+            roundStatsDTOList.add(roundStatsByRound);
+        }
+        return ResponseEntity.ok(roundStatsDTOList);
+    }
+
+    private RoundStatsDTO getRoundStatsByRound(Round round) {
+        RoundStatsDTO roundStatsDTO = new RoundStatsDTO(round.getId(), round.getName());
+
+        // Jede Liga der Runde durchgehen und Tabelle berechnen
+        List<League> leagues = round.getLeagues();
+        if (leagues == null) {
+            return roundStatsDTO;
+        }
+
+        for (League league : leagues) {
+            LeagueTableDTO leagueTableDTO = new LeagueTableDTO(league.getId(), league.getName());
+
+            // Teams in dieser Liga ermitteln
+            List<Team> teams = league.getTeams();
+            if (teams != null) {
+                // Jedes Team einzeln auswerten
+                for (Team team : teams) {
+                    TeamStatsDTO teamStats = computeTeamStats(round, team);
+                    leagueTableDTO.getTeams().add(teamStats);
+                }
+            }
+            roundStatsDTO.getLeagueTables().add(leagueTableDTO);
+        }
+
+        return roundStatsDTO;
+    }
+
 
     /**
      * Ermittelt die Statistik für ein einzelnes Team innerhalb der gegebenen Runde:
@@ -122,7 +164,7 @@ public class RoundStatsController {
      */
     @Data
     @AllArgsConstructor
-    static class RoundStatsDTO {
+    public static class RoundStatsDTO {
         private UUID roundId;
         private String roundName;
         private List<LeagueTableDTO> leagueTables = new ArrayList<>();

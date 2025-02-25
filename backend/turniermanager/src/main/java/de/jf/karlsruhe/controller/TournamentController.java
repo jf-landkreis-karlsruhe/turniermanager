@@ -132,6 +132,21 @@ public class TournamentController {
         pitchScheduler.delayGamesAfter(breakTime, duration);
     }
 
+    @PostMapping("/advanceAfter")
+    public void advanceGamesAfterViaApi(@RequestParam LocalDateTime afterTime, @RequestParam int minutes) {
+        pitchScheduler.advanceGamesAfter(afterTime, minutes);
+    }
+
+    @PostMapping("/shiftBetweenForward")
+    public void shiftGamesBetweenForwardViaApi(@RequestParam LocalDateTime startTime, @RequestParam LocalDateTime endTime, @RequestParam int minutes) {
+        pitchScheduler.shiftGamesBetweenForward(startTime, endTime, minutes);
+    }
+
+    @PostMapping("/shiftBetweenBackward")
+    public void shiftGamesBetweenBackwardViaApi(@RequestParam LocalDateTime startTime, @RequestParam LocalDateTime endTime, @RequestParam int minutes) {
+        pitchScheduler.shiftGamesBetweenBackward(startTime, endTime, minutes);
+    }
+
     @DeleteMapping("/reset")
     public Tournament resetTournament() {
         leagueRepository.deleteAll();
@@ -140,6 +155,10 @@ public class TournamentController {
         tournamentRepository.deleteAll();
         return null;
     }
+
+
+    // <------------------- Helper Methods --------------------->
+
 
     @Transactional
     public synchronized  List<Game> setGameTags(List<Game> games) {

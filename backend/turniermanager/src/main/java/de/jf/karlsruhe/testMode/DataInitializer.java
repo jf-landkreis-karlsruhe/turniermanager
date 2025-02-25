@@ -1,18 +1,13 @@
 package de.jf.karlsruhe.testMode;
 
+import de.jf.karlsruhe.controller.RoundStatsController;
 import de.jf.karlsruhe.controller.TournamentController;
-import de.jf.karlsruhe.model.base.AgeGroup;
-import de.jf.karlsruhe.model.base.Game;
-import de.jf.karlsruhe.model.base.Pitch;
-import de.jf.karlsruhe.model.base.Team;
-import de.jf.karlsruhe.model.base.Tournament;
-import de.jf.karlsruhe.model.repos.GameRepository;
-import de.jf.karlsruhe.model.repos.AgeGroupRepository;
-import de.jf.karlsruhe.model.repos.PitchRepository;
-import de.jf.karlsruhe.model.repos.TeamRepository;
+import de.jf.karlsruhe.model.base.*;
+import de.jf.karlsruhe.model.repos.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +18,7 @@ import java.util.UUID;
 public class DataInitializer {
 
     @Bean
-    CommandLineRunner initData(AgeGroupRepository ageGroupRepository, PitchRepository pitchRepository, TeamRepository teamRepository, GameRepository gameRepository, TournamentController tournamentController) {
+    CommandLineRunner initData(AgeGroupRepository ageGroupRepository, PitchRepository pitchRepository, TeamRepository teamRepository, GameRepository gameRepository, TournamentController tournamentController, RoundStatsController statsController, TournamentRepository tournamentRepository, RoundRepository roundRepository) {
         return args -> {
             // Altersgruppen initialisieren
             if (ageGroupRepository.count() == 0) {
@@ -60,11 +55,24 @@ public class DataInitializer {
                 // Zufällige Scores für alle Spiele setzen
                 updateAllGamesWithRandomScores(gameRepository);
             }
-            
-            if(true){
+
+            if (true) {
                 UUID id = tournament.getId();
                 tournamentController.createTournamentRound(id, "World Cup FW");
             }
+
+            Tournament first = tournamentRepository.findAll().getFirst();
+            ResponseEntity<List<RoundStatsController.RoundStatsDTO>> roundStatsByTournament = statsController.getRoundStatsByTournament(first.getId());
+            System.out.println(roundStatsByTournament.toString());
+
+
+            Round last = roundRepository.findAll().getLast();
+            ResponseEntity<RoundStatsController.RoundStatsDTO> roundStats = statsController.getRoundStats(last.getId());
+            System.out.println(roundStats.toString());
+            //tournament.getRounds().forEach(round -> {
+            //    ResponseEntity<RoundStatsController.RoundStatsDTO> roundStats = statsController.getRoundStats(round.getId());
+            //    System.out.println(roundStats.getBody());
+            //});
         };
     }
 

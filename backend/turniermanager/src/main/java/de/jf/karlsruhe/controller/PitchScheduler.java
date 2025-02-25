@@ -122,4 +122,37 @@ public class PitchScheduler {
         }
     }
 
+    public void advanceGamesAfter(LocalDateTime afterTime, int minutes) {
+        for (Map.Entry<Pitch, LocalDateTime> entry : pitchSchedules.entrySet()) {
+            LocalDateTime scheduledTime = entry.getValue();
+
+            // Überprüft, ob das Spiel nach der angegebenen Zeit stattfindet oder genau zur gleichen Stunde und Minute
+            if (scheduledTime.isAfter(afterTime) ||
+                    (scheduledTime.getHour() == afterTime.getHour() && scheduledTime.getMinute() == afterTime.getMinute())) {
+                pitchSchedules.put(entry.getKey(), scheduledTime.minusMinutes(minutes));
+            }
+        }
+    }
+
+    public void shiftGamesBetweenForward(LocalDateTime startTime, LocalDateTime endTime, int minutes) {
+        for (Map.Entry<Pitch, LocalDateTime> entry : pitchSchedules.entrySet()) {
+            LocalDateTime scheduledTime = entry.getValue();
+
+            if (!scheduledTime.isBefore(startTime) && !scheduledTime.isAfter(endTime)) {
+                pitchSchedules.put(entry.getKey(), scheduledTime.minusMinutes(minutes));
+            }
+        }
+    }
+
+    public void shiftGamesBetweenBackward(LocalDateTime startTime, LocalDateTime endTime, int minutes) {
+        for (Map.Entry<Pitch, LocalDateTime> entry : pitchSchedules.entrySet()) {
+            LocalDateTime scheduledTime = entry.getValue();
+
+            if (!scheduledTime.isBefore(startTime) && !scheduledTime.isAfter(endTime)) {
+                pitchSchedules.put(entry.getKey(), scheduledTime.plusMinutes(minutes));
+            }
+        }
+    }
+
+
 }
