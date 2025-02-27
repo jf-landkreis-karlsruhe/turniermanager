@@ -9,6 +9,8 @@ class RefereeView extends StatelessWidget with WatchItMixin {
 
   static const routeName = '/referee';
 
+  static const _headerTextSize = 26.0;
+
   @override
   Widget build(BuildContext context) {
     var gameManager = di<GameManager>();
@@ -32,17 +34,12 @@ class RefereeView extends StatelessWidget with WatchItMixin {
         leading: const Center(
           child: Text(
             'Spielübersicht',
-            style: TextStyle(fontSize: 26),
+            style: TextStyle(fontSize: _headerTextSize),
           ),
         ),
         leadingWidth: 200,
         actions: [
-          Text(
-            currentRound.name,
-            style: const TextStyle(fontSize: 26),
-          ),
-          const SizedBox(width: 10),
-          IconButton(
+          ElevatedButton(
             onPressed: () async {
               var result =
                   await gameManager.startNextRoundCommand.executeWithFuture();
@@ -50,10 +47,30 @@ class RefereeView extends StatelessWidget with WatchItMixin {
                 gameManager.getCurrentRoundCommand();
               }
             },
-            icon: const Icon(Icons.double_arrow),
-            tooltip: "Runde beenden / Neue Runde starten",
-            iconSize: 40,
-          )
+            child: const Row(
+              children: [
+                Icon(
+                  Icons.double_arrow,
+                  color: Colors.white,
+                  size: 40,
+                ),
+                SizedBox(width: 5),
+                Text(
+                  'Nächste Runde',
+                  style: TextStyle(
+                    fontSize: _headerTextSize,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(width: 5),
+                Icon(
+                  Icons.double_arrow,
+                  color: Colors.white,
+                  size: 40,
+                ),
+              ],
+            ),
+          ),
         ],
       ),
       body: Padding(
