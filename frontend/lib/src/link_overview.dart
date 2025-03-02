@@ -95,13 +95,13 @@ class MainContentView extends StatelessWidget with WatchItMixin {
                     ElevatedButton.icon(
                       onPressed: () {
                         context.go(
-                          Uri(
+                          ".${Uri(
                             path: ResultsView.routeName,
                             queryParameters: {
                               ResultsView.ageGroupQueryParam:
                                   resultsAgeGroupTextController.text
                             },
-                          ).toString(),
+                          )}",
                         );
                       },
                       label: const Text("Ergebnisse"),
@@ -115,7 +115,7 @@ class MainContentView extends StatelessWidget with WatchItMixin {
           const SizedBox(height: 10),
           ElevatedButton.icon(
             onPressed: () {
-              context.go(Uri(path: RefereeView.routeName).toString());
+              context.go(".${Uri(path: RefereeView.routeName)}");
             },
             label: const Text("Spielleiter"),
             icon: const Icon(Icons.sports_esports),

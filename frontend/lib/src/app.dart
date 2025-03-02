@@ -44,23 +44,24 @@ class MainWidget extends StatelessWidget {
               return ScheduleView(ageGroup);
             },
           ),
+          GoRoute(
+            path: ResultsView.routeName,
+            builder: (context, state) {
+              var ageGroup =
+                  state.uri.queryParameters[ResultsView.ageGroupQueryParam] ??
+                      "1";
+
+              final GameManager gameManager = di<GameManager>();
+              gameManager.getResultsCommand(ageGroup);
+
+              return ResultsView(ageGroup);
+            },
+          ),
+          GoRoute(
+            path: RefereeView.routeName,
+            builder: (context, state) => const RefereeView(),
+          ),
         ],
-      ),
-      GoRoute(
-        path: ResultsView.routeName,
-        builder: (context, state) {
-          var ageGroup =
-              state.uri.queryParameters[ResultsView.ageGroupQueryParam] ?? "1";
-
-          final GameManager gameManager = di<GameManager>();
-          gameManager.getResultsCommand(ageGroup);
-
-          return ResultsView(ageGroup);
-        },
-      ),
-      GoRoute(
-        path: RefereeView.routeName,
-        builder: (context, state) => const RefereeView(),
       ),
     ],
   );
