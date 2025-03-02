@@ -18,5 +18,5 @@ void main() async {
 
   usePathUrlStrategy();
   // Run the app.
-  runApp(const MainWidget());
+  runApp(MainWidget());
 }
