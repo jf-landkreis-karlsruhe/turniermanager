@@ -62,7 +62,10 @@ class LinkContentView extends StatelessWidget with WatchItMixin {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Spielplan & Ergebnisse'),
+                  const Text(
+                    'Spielplan & Ergebnisse',
+                    style: TextStyle(fontSize: 26),
+                  ),
                   const SizedBox(height: 10),
                   SizedBox(
                     height: 120,
@@ -70,7 +73,7 @@ class LinkContentView extends StatelessWidget with WatchItMixin {
                       itemBuilder: (context, index) {
                         var ageGroup = tournament.ageGroups[index];
 
-                        return LinkView(ageGroup: ageGroup);
+                        return ScheduleAndResultsLinkView(ageGroup: ageGroup);
                       },
                       itemCount: tournament.ageGroups.length,
                       scrollDirection: Axis.horizontal,
@@ -85,13 +88,19 @@ class LinkContentView extends StatelessWidget with WatchItMixin {
             child: Row(
               children: [
                 Expanded(
-                    child: Card(
-                  child: Placeholder(),
-                )),
+                  child: LinkView(
+                    header: 'Spielleiter',
+                    onPressed: () {
+                      context.go(".${Uri(path: RefereeView.routeName)}");
+                    },
+                  ),
+                ),
                 Expanded(
-                    child: Card(
-                  child: Placeholder(),
-                )),
+                  child: LinkView(
+                    header: 'Admin',
+                    onPressed: () {},
+                  ),
+                ),
               ],
             ),
           ),
@@ -103,6 +112,69 @@ class LinkContentView extends StatelessWidget with WatchItMixin {
 
 class LinkView extends StatelessWidget {
   const LinkView({
+    super.key,
+    required this.header,
+    required this.onPressed,
+  });
+
+  final String header;
+  final void Function() onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              header,
+              style: const TextStyle(fontSize: 26),
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: Center(
+                child: ElevatedButton(
+                  style: const ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(Colors.blue)),
+                  onPressed: onPressed,
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.double_arrow,
+                        color: Colors.white,
+                        size: 100,
+                      ),
+                      SizedBox(width: 5),
+                      Text(
+                        'Link folgen',
+                        style: TextStyle(
+                          fontSize: 44,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(width: 5),
+                      Icon(
+                        Icons.double_arrow,
+                        color: Colors.white,
+                        size: 100,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ScheduleAndResultsLinkView extends StatelessWidget {
+  const ScheduleAndResultsLinkView({
     super.key,
     required this.ageGroup,
   });
