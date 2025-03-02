@@ -22,7 +22,14 @@ class MainWidget extends StatelessWidget {
       ),
       GoRoute(
         path: LinkOverview.routeName,
-        builder: (context, state) => const LinkOverview(),
+        builder: (context, state) {
+          var tournamentIdParam =
+              state.uri.queryParameters[LinkOverview.tournamentIdParam] ?? "1";
+
+          var tournamentId = int.tryParse(tournamentIdParam) ?? 1;
+
+          return LinkOverview(tournamentId: tournamentId);
+        },
       ),
       GoRoute(
         path: ScheduleView.routeName,

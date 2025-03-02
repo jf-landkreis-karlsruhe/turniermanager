@@ -10,6 +10,17 @@ class HomeView extends StatelessWidget {
 
   final tournamentIdController = TextEditingController(text: '1');
 
+  void navigateToLinkOverview(BuildContext context) {
+    context.go(
+      Uri(
+        path: LinkOverview.routeName,
+        queryParameters: {
+          LinkOverview.tournamentIdParam: tournamentIdController.text
+        },
+      ).toString(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +40,7 @@ class HomeView extends StatelessWidget {
               return;
             }
 
-            context.go(LinkOverview.routeName);
+            navigateToLinkOverview(context);
           },
           child: Card(
             margin: const EdgeInsets.all(10),
@@ -63,7 +74,7 @@ class HomeView extends StatelessWidget {
                         const SizedBox(width: 20),
                         IconButton(
                           onPressed: () {
-                            context.go(LinkOverview.routeName);
+                            navigateToLinkOverview(context);
                           },
                           icon: const Icon(Icons.double_arrow),
                           iconSize: 40,
