@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/views/referee_view.dart';
 import 'package:tournament_manager/src/views/results_view.dart';
 import 'package:tournament_manager/src/views/schedule_view.dart';
@@ -26,7 +27,128 @@ class LinkOverview extends StatelessWidget {
         ),
         leadingWidth: 80,
       ),
-      body: MainContentView(),
+      body: const LinkContentView(),
+    );
+  }
+}
+
+class LinkContentView extends StatelessWidget with WatchItMixin {
+  const LinkContentView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var tournament =
+        watchPropertyValue((GameManager manager) => manager.tournament);
+
+    if (tournament == null) {
+      return const Center(
+        child: Text(
+          'Turnierdaten nicht geladen!',
+          style: TextStyle(
+            fontSize: 24,
+            color: Colors.red,
+          ),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        children: [
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Spielplan & Ergebnisse'),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 120,
+                    child: ListView.builder(
+                      itemBuilder: (context, index) {
+                        var ageGroup = tournament.ageGroups[index];
+
+                        return LinkView(ageGroup: ageGroup);
+                      },
+                      itemCount: tournament.ageGroups.length,
+                      scrollDirection: Axis.horizontal,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                    child: Card(
+                  child: Placeholder(),
+                )),
+                Expanded(
+                    child: Card(
+                  child: Placeholder(),
+                )),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class LinkView extends StatelessWidget {
+  const LinkView({
+    super.key,
+    required this.ageGroup,
+  });
+
+  final int ageGroup;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 495,
+      child: Card(
+        color: Colors.blue,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              Text(
+                'Altersgruppe $ageGroup',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                  child: Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: const Text('Spielübersicht'),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: const Text('Ergebnisse'),
+                    ),
+                  ),
+                ],
+              )),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
