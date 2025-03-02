@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/model/referee/game.dart';
@@ -41,11 +42,49 @@ class RefereeView extends StatelessWidget with WatchItMixin {
         actions: [
           ElevatedButton(
             onPressed: () async {
-              var result =
-                  await gameManager.startNextRoundCommand.executeWithFuture();
-              if (result) {
-                gameManager.getCurrentRoundCommand();
-              }
+              showDialog(
+                context: context,
+                builder: (dialogContext) {
+                  return AlertDialog(
+                    icon: const Icon(Icons.warning),
+                    iconColor: Colors.yellow,
+                    title: const Text('Wechsel zur nächsten Runde'),
+                    content: const SizedBox(
+                      height: 100,
+                      child: Center(
+                        child: Text(
+                          'Soll diese Runde wirklich beendet werden?\nDieser Schritt kann nicht rückgängig gemacht werden!',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          var result = await gameManager.startNextRoundCommand
+                              .executeWithFuture();
+                          if (result) {
+                            gameManager.getCurrentRoundCommand();
+                          }
+
+                          if (!dialogContext.mounted) {
+                            return;
+                          }
+
+                          GoRouter.of(dialogContext).pop();
+                        },
+                        child: const Text('OK'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          GoRouter.of(dialogContext).pop();
+                        },
+                        child: const Text('Abbrechen'),
+                      ),
+                    ],
+                  );
+                },
+              );
             },
             child: const Row(
               children: [
