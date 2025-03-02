@@ -11,14 +11,7 @@ class HomeView extends StatelessWidget {
   final tournamentIdController = TextEditingController(text: '1');
 
   void navigateToLinkOverview(BuildContext context) {
-    context.go(
-      Uri(
-        path: LinkOverview.routeName,
-        queryParameters: {
-          LinkOverview.tournamentIdParam: tournamentIdController.text
-        },
-      ).toString(),
-    );
+    context.go("${LinkOverview.routeName}:${tournamentIdController.text}");
   }
 
   @override

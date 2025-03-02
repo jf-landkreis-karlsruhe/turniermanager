@@ -60,13 +60,13 @@ class MainContentView extends StatelessWidget with WatchItMixin {
                     ElevatedButton.icon(
                       onPressed: () {
                         context.go(
-                          Uri(
+                          ".${Uri(
                             path: ScheduleView.routeName,
                             queryParameters: {
                               ScheduleView.ageGroupQueryParam:
                                   scheduleAgeGroupTextController.text
                             },
-                          ).toString(),
+                          )}",
                         );
                       },
                       label: const Text("Spielplan"),

@@ -21,27 +21,30 @@ class MainWidget extends StatelessWidget {
         builder: (context, state) => HomeView(),
       ),
       GoRoute(
-        path: LinkOverview.routeName,
+        path: "${LinkOverview.routeName}:${LinkOverview.tournamentIdParam}",
         builder: (context, state) {
           var tournamentIdParam =
-              state.uri.queryParameters[LinkOverview.tournamentIdParam] ?? "1";
+              state.pathParameters[LinkOverview.tournamentIdParam] ?? "1";
 
           var tournamentId = int.tryParse(tournamentIdParam) ?? 1;
 
           return LinkOverview(tournamentId: tournamentId);
         },
-      ),
-      GoRoute(
-        path: ScheduleView.routeName,
-        builder: (context, state) {
-          var ageGroup =
-              state.uri.queryParameters[ScheduleView.ageGroupQueryParam] ?? "1";
+        routes: [
+          GoRoute(
+            path: ScheduleView.routeName,
+            builder: (context, state) {
+              var ageGroup =
+                  state.uri.queryParameters[ScheduleView.ageGroupQueryParam] ??
+                      "1";
 
-          final GameManager gameManager = di<GameManager>();
-          gameManager.getScheduleCommand(ageGroup);
+              final GameManager gameManager = di<GameManager>();
+              gameManager.getScheduleCommand(ageGroup);
 
-          return ScheduleView(ageGroup);
-        },
+              return ScheduleView(ageGroup);
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: ResultsView.routeName,
