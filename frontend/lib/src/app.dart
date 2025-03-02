@@ -28,6 +28,9 @@ class MainWidget extends StatelessWidget {
 
           var tournamentId = int.tryParse(tournamentIdParam) ?? 1;
 
+          final GameManager gameManager = di<GameManager>();
+          gameManager.getTournamentCommand(tournamentId);
+
           return LinkOverview(tournamentId: tournamentId);
         },
         routes: [
