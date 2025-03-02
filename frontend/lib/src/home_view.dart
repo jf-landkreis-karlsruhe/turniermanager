@@ -80,34 +80,6 @@ class HomeView extends StatelessWidget {
             ),
           ),
         ),
-        // child: Column(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     Row(
-        //       mainAxisAlignment: MainAxisAlignment.center,
-        //       crossAxisAlignment: CrossAxisAlignment.center,
-        //       children: [
-        //         ElevatedButton(
-        //           onPressed: () {
-        //             context.go(LinkOverview.routeName);
-        //           },
-        //           child: const Text('Turnier laden'),
-        //         ),
-        //         const SizedBox(width: 10),
-        //         SizedBox(
-        //           width: 200,
-        //           child: TextField(
-        //             controller: tournamentIdController,
-        //             textAlign: TextAlign.center,
-        //             decoration: const InputDecoration(
-        //               label: Text('Turnier ID'),
-        //             ),
-        //           ),
-        //         ),
-        //       ],
-        //     ),
-        //   ],
-        // ),
       ),
     );
   }

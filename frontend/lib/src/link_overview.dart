@@ -132,14 +132,34 @@ class LinkView extends StatelessWidget {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.go(
+                          ".${Uri(
+                            path: ScheduleView.routeName,
+                            queryParameters: {
+                              ScheduleView.ageGroupQueryParam:
+                                  ageGroup.toString()
+                            },
+                          )}",
+                        );
+                      },
                       child: const Text('Spielübersicht'),
                     ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.go(
+                          ".${Uri(
+                            path: ResultsView.routeName,
+                            queryParameters: {
+                              ResultsView.ageGroupQueryParam:
+                                  ageGroup.toString()
+                            },
+                          )}",
+                        );
+                      },
                       child: const Text('Ergebnisse'),
                     ),
                   ),
