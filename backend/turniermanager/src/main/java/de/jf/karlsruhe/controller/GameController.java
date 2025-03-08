@@ -1,17 +1,20 @@
 package de.jf.karlsruhe.controller;
 
 import de.jf.karlsruhe.model.base.Game;
+import de.jf.karlsruhe.model.base.Pitch;
+import de.jf.karlsruhe.model.base.Team;
 import de.jf.karlsruhe.model.repos.GameRepository;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.LocalTime;
+import java.util.*;
 
 @RestController
 @RequestMapping("/games")
@@ -127,6 +130,61 @@ public class GameController {
         } else {
             return ResponseEntity.ok("Actual start time was on time.");
         }
+    }
+
+    @GetMapping("/activeGamesSortedDateTimeList")
+    public List<GameScheduleDateTimeDTO> getActiveGamesSortedDateTimeList() {
+        List<Game> activeGames = gameRepository.findByRound_ActiveTrueOrderByStartTimeAsc();
+        TreeMap<LocalDateTime, List<GameDTO>> groupedGames = new TreeMap<>();
+
+        for (Game game : activeGames) {
+            LocalDateTime startTime = game.getStartTime();
+            TeamDTO teamADTO = new TeamDTO(game.getTeamA().getId(), game.getTeamA().getName());
+            TeamDTO teamBDTO = new TeamDTO(game.getTeamB().getId(), game.getTeamB().getName());
+            PitchDTO pitchDTO = new PitchDTO(game.getPitch().getId(), game.getPitch().getName());
+            GameDTO gameDTO = new GameDTO(game.getId(), game.getGameNumber(), teamADTO, teamBDTO, pitchDTO);
+            groupedGames.computeIfAbsent(startTime, k -> new ArrayList<>()).add(gameDTO);
+        }
+
+        List<GameScheduleDateTimeDTO> result = new ArrayList<>();
+        groupedGames.forEach((startTime, games) -> result.add(new GameScheduleDateTimeDTO(startTime, games)));
+
+        return result;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class GameScheduleDateTimeDTO {
+        private LocalDateTime startTime;
+        private List<GameDTO> games;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class GameDTO {
+        private UUID id;
+        private long gameNumber;
+        private TeamDTO teamA;
+        private TeamDTO teamB;
+        private PitchDTO pitch;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class PitchDTO {
+        private UUID id;
+        private String name;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class TeamDTO {
+        private UUID id;
+        private String name;
     }
 
     @Data

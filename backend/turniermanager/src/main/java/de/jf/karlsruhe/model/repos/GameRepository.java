@@ -14,4 +14,7 @@ public interface GameRepository extends JpaRepository<Game, UUID> {
     List<Game> findByPitchId(UUID pitchId);
 
     Optional<Game> findByGameNumber(long gameNumber);
+
+    List<Game> findByRound_ActiveTrueOrderByStartTimeAsc();
+
 }

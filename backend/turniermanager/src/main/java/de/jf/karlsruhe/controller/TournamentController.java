@@ -163,11 +163,15 @@ public class TournamentController {
 
 
     @Transactional
-    public synchronized  List<Game> setGameTags(List<Game> games) {
+    public synchronized List<Game> setGameTags(List<Game> games) {
         gameRepository.flush();
         long maxGameNumber = gameRepository.count();
+
+        // Sortiere die Spiele nach startTime
+        Collections.sort(games, Comparator.comparing(Game::getStartTime));
+
         for (Game game : games) {
-            maxGameNumber+=1;
+            maxGameNumber += 1;
             game.setGameNumber(maxGameNumber);
         }
         return games;
