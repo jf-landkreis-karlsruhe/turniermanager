@@ -110,7 +110,7 @@ public class RoundStatsController {
         // Spiele in dieser Runde
         List<Game> allGamesInRound = round.getGames();
         if (allGamesInRound == null) {
-            return new TeamStatsDTO(team.getName(), 0, 0, 0, 0, 0);
+            return new TeamStatsDTO(team.getName(), 0, 0, 0, 0, 0, 0, 0);
         }
 
         // Alle Spiele, an denen das Team beteiligt ist
@@ -123,6 +123,8 @@ public class RoundStatsController {
         int unentschieden = 0;
         int punkteDifferenz = 0;
         int gesamtPunkte = 0;
+        int eigeneTore = 0;
+        int gegnerischeTore = 0;
 
         for (Game g : teamGames) {
             int teamAScore = g.getTeamAScore();
@@ -132,8 +134,8 @@ public class RoundStatsController {
             boolean isTeamA = Objects.equals(g.getTeamA(), team);
 
             // Tore und Gegentore je nach Perspektive
-            int eigeneTore = isTeamA ? teamAScore : teamBScore;
-            int gegnerischeTore = isTeamA ? teamBScore : teamAScore;
+            eigeneTore = isTeamA ? teamAScore : teamBScore;
+            gegnerischeTore = isTeamA ? teamBScore : teamAScore;
 
             // Sieg, Niederlage, Unentschieden
             if (eigeneTore > gegnerischeTore) {
@@ -150,8 +152,7 @@ public class RoundStatsController {
             // Tordifferenz
             punkteDifferenz += (eigeneTore - gegnerischeTore);
         }
-
-        return new TeamStatsDTO(team.getName(), siege, niederlagen, unentschieden, punkteDifferenz, gesamtPunkte);
+        return new TeamStatsDTO(team.getName(), siege, niederlagen, unentschieden, punkteDifferenz, gesamtPunkte, eigeneTore, gegnerischeTore);
     }
 
     // ---------------------------
@@ -200,11 +201,13 @@ public class RoundStatsController {
     @AllArgsConstructor
     static class TeamStatsDTO {
         private String teamName;
-        private int siege;
-        private int niederlagen;
-        private int unentschieden;
-        private int punkteDifferenz;
-        private int gesamtPunkte;
+        private int victories;
+        private int defeats;
+        private int draws;
+        private int pointsDifference;
+        private int totalPoints;
+        private int ownScoredGoals;
+        private int enemyScoredGoals;
     }
 
 }

@@ -38,4 +38,10 @@ public class AgeGroupController {
         List<AgeGroup> savedAgeGroups = ageGroupRepository.saveAll(ageGroups);
         return ResponseEntity.ok(savedAgeGroups);
     }
+
+
+    @GetMapping("/getAll")
+    public ResponseEntity<List<AgeGroup>> getAllAgeGroups() {
+        return ResponseEntity.ok(ageGroupRepository.findAll());
+    }
 }

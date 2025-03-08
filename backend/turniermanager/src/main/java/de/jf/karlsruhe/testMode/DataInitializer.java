@@ -1,5 +1,6 @@
 package de.jf.karlsruhe.testMode;
 
+import de.jf.karlsruhe.controller.GamePlanController;
 import de.jf.karlsruhe.controller.RoundStatsController;
 import de.jf.karlsruhe.controller.TournamentController;
 import de.jf.karlsruhe.model.base.*;
@@ -18,7 +19,7 @@ import java.util.UUID;
 public class DataInitializer {
 
     @Bean
-    CommandLineRunner initData(AgeGroupRepository ageGroupRepository, PitchRepository pitchRepository, TeamRepository teamRepository, GameRepository gameRepository, TournamentController tournamentController, RoundStatsController statsController, TournamentRepository tournamentRepository, RoundRepository roundRepository) {
+    CommandLineRunner initData(AgeGroupRepository ageGroupRepository, PitchRepository pitchRepository, TeamRepository teamRepository, GameRepository gameRepository, TournamentController tournamentController, RoundStatsController statsController, TournamentRepository tournamentRepository, RoundRepository roundRepository, GamePlanController gamePlanController) {
         return args -> {
             // Altersgruppen initialisieren
             if (ageGroupRepository.count() == 0) {
@@ -28,9 +29,9 @@ public class DataInitializer {
 
                 // Pitches initialisieren
                 if (pitchRepository.count() == 0) {
-                    pitchRepository.save(Pitch.builder().name("Platz1").ageGroups(List.of(kinder, jugendliche)).build());
-                    pitchRepository.save(Pitch.builder().name("Platz2").ageGroups(List.of(kinder, jugendliche)).build());
-                    pitchRepository.save(Pitch.builder().name("Platz3").ageGroups(List.of(kinder, jugendliche)).build());
+                    pitchRepository.save(Pitch.builder().name("Platz1").ageGroups(List.of(kinder)).build());
+                    pitchRepository.save(Pitch.builder().name("Platz2").ageGroups(List.of(kinder)).build());
+                    pitchRepository.save(Pitch.builder().name("Platz3").ageGroups(List.of(kinder)).build());
                     pitchRepository.save(Pitch.builder().name("Platz4").ageGroups(List.of(jugendliche)).build());
                     pitchRepository.save(Pitch.builder().name("Platz5").ageGroups(List.of(jugendliche)).build());
                     pitchRepository.save(Pitch.builder().name("Platz6").ageGroups(List.of(jugendliche)).build());
@@ -61,6 +62,17 @@ public class DataInitializer {
                 tournamentController.createTournamentRound(id, "World Cup FW");
             }
 
+            if (false) {
+                AgeGroup one = ageGroupRepository.findAll().getFirst();
+                ResponseEntity<GamePlanController.GamePlan> gamePlanByAgeGroup = gamePlanController.getGamePlanByAgeGroup(one.getId());
+                System.out.println(gamePlanByAgeGroup.getBody());
+            }
+
+
+            //gamePlanController.getGamePlanByAgeGroup();
+
+
+            if (true) return;
             Tournament first = tournamentRepository.findAll().getFirst();
             ResponseEntity<List<RoundStatsController.RoundStatsDTO>> roundStatsByTournament = statsController.getRoundStatsByTournament(first.getId());
             System.out.println(roundStatsByTournament.toString());
@@ -88,7 +100,9 @@ public class DataInitializer {
         Random random = new Random();
 
         // Durch jedes Spiel iterieren und zufällige Scores zuweisen
+        int i = 0;
         for (Game game : games) {
+            //if (i++ == 30) break;
             // Zufällige Scores für Team A und Team B generieren (zum Beispiel zwischen 0 und 5)
             int teamAScore = random.nextInt(6); // Zufallszahl zwischen 0 und 5
             int teamBScore = random.nextInt(6); // Zufallszahl zwischen 0 und 5

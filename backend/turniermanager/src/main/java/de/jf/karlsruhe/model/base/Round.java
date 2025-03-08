@@ -23,6 +23,8 @@ public class Round {
 	)
 	private UUID id;
 
+	private boolean active;
+
 	private String name;
 
 	@OneToMany(mappedBy = "round", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -2,11 +2,15 @@ package de.jf.karlsruhe.controller;
 
 import de.jf.karlsruhe.model.base.Game;
 import de.jf.karlsruhe.model.repos.GameRepository;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -15,6 +19,7 @@ import java.util.UUID;
 public class GameController {
 
     private final GameRepository gameRepository;
+    private final PitchScheduler pitchScheduler;
 
     /**
      * Spielergebnisse eintragen/aktualisieren
@@ -104,4 +109,30 @@ public class GameController {
         return ResponseEntity.ok(games);
     }
 
+    @PostMapping("/refreshTimings")
+    public ResponseEntity<String> refreshTimings(@RequestBody TimingRequest request) {
+        LocalDateTime startTime = request.getStartTime();
+        LocalDateTime actualStartTime = request.getActualStartTime();
+
+        if (actualStartTime.isBefore(startTime)) {
+            Duration duration = Duration.between(actualStartTime, startTime);
+            long minutes = duration.toMinutes();
+            pitchScheduler.advanceGamesAfter(startTime, (int) minutes);
+            return ResponseEntity.ok("Actual start time was " + minutes + " minutes early.");
+        } else if (actualStartTime.isAfter(startTime)) {
+            Duration duration = Duration.between(startTime, actualStartTime);
+            long minutes = duration.toMinutes();
+            pitchScheduler.delayGamesAfter(startTime, (int) minutes);
+            return ResponseEntity.ok("Actual start time was " + minutes + " minutes late.");
+        } else {
+            return ResponseEntity.ok("Actual start time was on time.");
+        }
+    }
+
+    @Data
+    private static class TimingRequest {
+        private LocalDateTime startTime;
+        private LocalDateTime actualStartTime;
+        private LocalDateTime endTime;
+    }
 }

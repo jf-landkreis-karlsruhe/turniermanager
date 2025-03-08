@@ -58,7 +58,7 @@ public class PitchScheduler {
 
         // Rotations-Index für die Felder
         Iterator<Pitch> pitchIterator = pitches.iterator();
-
+        Collections.shuffle(games);
         for (Game game : games) {
             // Suche nächstes Feld in Round-Robin-Manier
             if (!pitchIterator.hasNext()) {

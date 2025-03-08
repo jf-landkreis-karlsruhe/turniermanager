@@ -66,7 +66,7 @@ public class TournamentController {
                     .teams(teamRepository.findByAgeGroupId(ageGroup.getId()))
                     .build();
 
-            Round round = Round.builder().leagues(List.of(league)).name("Qualifikationsrunde").tournament(tournament).build();
+            Round round = Round.builder().leagues(List.of(league)).name("Qualifikationsrunde").active(true).tournament(tournament).build();
             league.setRound(round);
             tournament.addRound(round);
             roundRepository.save(round);  // save round
@@ -93,6 +93,8 @@ public class TournamentController {
     public Tournament createTournamentRound(@RequestParam UUID tournamentId, @RequestParam String roundName) {
         if (ageGroupRepository.count() == 0 && pitchRepository.count() == 0 && teamRepository.count() == 0)
             return tournamentRepository.findById(tournamentId).orElseThrow();
+        List<Round> all = roundRepository.findAll();
+        all.forEach(round -> {round.setActive(false);});
 
         Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow();
         List<AgeGroup> ageGroups = ageGroupRepository.findAll();
@@ -243,7 +245,7 @@ public class TournamentController {
         int numberOfLeagues = (int) Math.ceil((double) totalTeams / maxTeamsPerLeague);
 
         List<League> leagues = new ArrayList<>();
-        Round round = Round.builder().name(roundName).tournament(tournament).build();
+        Round round = Round.builder().name(roundName).tournament(tournament).active(true).build();
 
         for (int i = 0; i < numberOfLeagues; i++) {
             League league = League.builder().tournament(tournament).isQualification(false).build();
