@@ -345,7 +345,7 @@ class LeagueView extends StatelessWidget {
           ),
           Expanded(
             child: Container(
-              color: Colors.grey,
+              color: Colors.indigo,
               width: width,
               child: Padding(
                 padding: const EdgeInsets.all(10),

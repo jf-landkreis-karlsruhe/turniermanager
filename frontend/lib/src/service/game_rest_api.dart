@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:tournament_manager/src/model/tournament.dart';
 import 'package:tournament_manager/src/serialization/referee/age_group_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/game_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/pitch_dto.dart';
@@ -12,6 +13,7 @@ import 'package:tournament_manager/src/serialization/results/league_dto.dart'
     as resultleague;
 import 'package:tournament_manager/src/serialization/schedule/match_schedule_dto.dart';
 import 'package:tournament_manager/src/serialization/schedule/match_schedule_entry_dto.dart';
+import 'package:tournament_manager/src/serialization/tournament_dto.dart';
 import 'package:tournament_manager/src/service/rest_client.dart';
 import 'package:tournament_manager/src/serialization/referee/league_dto.dart'
     as referee_league;
@@ -28,6 +30,8 @@ abstract class GameRestApi {
   Future<bool?> startNextRound();
 
   Future<RoundDto?> getCurrentRound();
+
+  Future<TournamentDto?> getTournament(int id);
 }
 
 class GameRestApiImplementation extends RestClient implements GameRestApi {
@@ -239,6 +243,17 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
             referee_league.LeagueDto("2"),
           ),
         ),
+      ];
+  }
+
+  @override
+  Future<TournamentDto?> getTournament(int id) async {
+    // TODO: implement getTournament
+    return TournamentDto(1)
+      ..ageGroups = [
+        1,
+        2,
+        3,
       ];
   }
 }
