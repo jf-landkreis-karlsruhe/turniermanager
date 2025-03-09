@@ -7,12 +7,12 @@ part of 'league_dto.dart';
 // **************************************************************************
 
 LeagueDto _$LeagueDtoFromJson(Map<String, dynamic> json) => LeagueDto(
-      (json['leagueNo'] as num).toInt(),
-    )..scheduledGames = (json['scheduledGames'] as List<dynamic>)
+      json['leagueName'] as String,
+    )..entries = (json['entries'] as List<dynamic>)
         .map((e) => MatchScheduleEntryDto.fromJson(e as Map<String, dynamic>))
         .toList();
 
 Map<String, dynamic> _$LeagueDtoToJson(LeagueDto instance) => <String, dynamic>{
-      'leagueNo': instance.leagueNo,
-      'scheduledGames': instance.scheduledGames.map((e) => e.toJson()).toList(),
+      'leagueName': instance.leagueName,
+      'entries': instance.entries.map((e) => e.toJson()).toList(),
     };

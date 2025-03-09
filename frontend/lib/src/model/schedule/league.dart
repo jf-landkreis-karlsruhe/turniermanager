@@ -1,8 +1,8 @@
 import 'package:tournament_manager/src/model/schedule/match_schedule_entry.dart';
 
 class League {
-  League(this.leagueNo);
+  League(this.leagueName);
 
-  int leagueNo;
-  List<MatchScheduleEntry> scheduledGames = [];
+  String leagueName;
+  List<MatchScheduleEntry> entries = [];
 }

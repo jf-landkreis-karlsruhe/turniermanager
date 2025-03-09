@@ -9,7 +9,7 @@ class MatchScheduleDto {
   MatchScheduleDto(this.matchRound);
 
   int matchRound;
-  List<LeagueDto> leagueSchedules = [];
+  List<LeagueDto> leagues = [];
 
   factory MatchScheduleDto.fromJson(Map<String, dynamic> json) =>
       _$MatchScheduleDtoFromJson(json);

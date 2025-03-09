@@ -9,17 +9,17 @@ part of 'match_schedule_entry_dto.dart';
 MatchScheduleEntryDto _$MatchScheduleEntryDtoFromJson(
         Map<String, dynamic> json) =>
     MatchScheduleEntryDto(
-      json['field'] as String,
-      json['team1'] as String,
-      json['team2'] as String,
+      json['pitchName'] as String,
+      json['teamAName'] as String,
+      json['teamBName'] as String,
       json['startTime'] as String,
     );
 
 Map<String, dynamic> _$MatchScheduleEntryDtoToJson(
         MatchScheduleEntryDto instance) =>
     <String, dynamic>{
-      'field': instance.field,
-      'team1': instance.team1,
-      'team2': instance.team2,
+      'pitchName': instance.pitchName,
+      'teamAName': instance.teamAName,
+      'teamBName': instance.teamBName,
       'startTime': instance.startTime,
     };

@@ -6,15 +6,15 @@ part 'match_schedule_entry_dto.g.dart';
 @JsonSerializable()
 class MatchScheduleEntryDto {
   MatchScheduleEntryDto(
-    this.field,
-    this.team1,
-    this.team2,
+    this.pitchName,
+    this.teamAName,
+    this.teamBName,
     this.startTime,
   );
 
-  String field;
-  String team1;
-  String team2;
+  String pitchName;
+  String teamAName;
+  String teamBName;
   String startTime;
 
   factory MatchScheduleEntryDto.fromJson(Map<String, dynamic> json) =>

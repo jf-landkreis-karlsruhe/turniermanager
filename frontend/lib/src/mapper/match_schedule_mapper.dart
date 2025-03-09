@@ -8,21 +8,19 @@ import 'package:tournament_manager/src/serialization/schedule/match_schedule_ent
 class MatchScheduleMapper {
   MatchSchedule map(MatchScheduleDto dto) {
     return MatchSchedule(dto.matchRound)
-      ..leagueSchedules =
-          dto.leagueSchedules.map((entry) => mapLeague(entry)).toList();
+      ..leagueSchedules = dto.leagues.map((entry) => mapLeague(entry)).toList();
   }
 
   League mapLeague(LeagueDto dto) {
-    return League(dto.leagueNo)
-      ..scheduledGames =
-          dto.scheduledGames.map((entry) => mapEntry(entry)).toList();
+    return League(dto.leagueName)
+      ..entries = dto.entries.map((entry) => mapEntry(entry)).toList();
   }
 
   MatchScheduleEntry mapEntry(MatchScheduleEntryDto dto) {
     return MatchScheduleEntry(
-      dto.field,
-      dto.team1,
-      dto.team2,
+      dto.pitchName,
+      dto.teamAName,
+      dto.teamBName,
       dto.startTime,
     );
   }
