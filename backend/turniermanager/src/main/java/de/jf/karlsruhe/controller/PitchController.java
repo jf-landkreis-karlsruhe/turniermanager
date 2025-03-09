@@ -4,17 +4,25 @@ import com.lowagie.text.*;
 import com.lowagie.text.Font;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfWriter;
+import de.jf.karlsruhe.model.base.Game;
 import de.jf.karlsruhe.model.base.Pitch;
+import de.jf.karlsruhe.model.repos.GameRepository;
 import de.jf.karlsruhe.model.repos.PitchRepository;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,6 +33,7 @@ import java.util.UUID;
 public class PitchController {
 
     private final PitchRepository pitchRepository;
+    private final GameRepository gameRepository;
 
     // Create a new Pitch
     @PostMapping
@@ -82,28 +91,40 @@ public class PitchController {
         return ResponseEntity.ok(savedPitches);
     }
 
-    @ResponseBody
-    @GetMapping(value = {"/result-card/{id}"}, produces = {"application/pdf"})
-    public ByteArrayOutputStream getResultCards(@PathVariable UUID id, HttpServletResponse response ) {
-        response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=spielfeld" + id +".pdf");
-        List<Game> games = List.of(
-            new Game("Langensteinbach 1", "Langensteinbach 2", 1, 1),
-            new Game("Ettlingen", "Karlsruhe", 2, 2)
-        );
-        return createPdf(games);
+    @GetMapping(value = "/result-card/{id}", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> getResultCards(@PathVariable UUID id) {
+        List<GameDTO> games = new ArrayList<>();
+        Optional<Pitch> optionalPitch = pitchRepository.findById(id);
+
+        if (optionalPitch.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Pitch pitch = optionalPitch.get();
+        List<Game> byPitchId = gameRepository.findByPitchId(pitch.getId());
+        if(byPitchId.isEmpty())return ResponseEntity.noContent().build();
+        byPitchId.forEach(game -> {
+            games.add(new GameDTO(game.getTeamA().getName(), game.getTeamB().getName(), pitch.getName(), game.getGameNumber()));
+        });
+
+        try {
+            ByteArrayOutputStream out = createPdf(games);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=spielfeld" + id + ".pdf");
+            return ResponseEntity.ok().headers(headers).body(out.toByteArray());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
-    private ByteArrayOutputStream createPdf(List<Game> games) {
+    private ByteArrayOutputStream createPdf(List<GameDTO> games) {
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            // PDF-Dokument und Writer erstellen
             Document document = new Document(PageSize.A4.rotate());
             PdfWriter writer = PdfWriter.getInstance(document, out);
             writer.setCloseStream(false);
             document.open();
 
-
-            // Überschrift: Spielfeld & Spielnummer
             Font font = new Font(
                     BaseFont.createFont(BaseFont.HELVETICA_BOLD, BaseFont.CP1252, BaseFont.NOT_EMBEDDED),
                     20F,
@@ -111,31 +132,21 @@ public class PitchController {
                     Color.BLACK
             );
 
-            for (Game game : games) {
-
+            for (GameDTO game : games) {
                 Paragraph header = new Paragraph("Platz: " + game.fieldNumber + "    Spiel: " + game.matchNumber, font);
                 header.setAlignment(Element.ALIGN_CENTER);
                 document.add(header);
-
-                // Abstand
                 document.add(new Paragraph("\n"));
 
-                // Tabelle für Mannschaftsnamen
-                Table table = new Table(2); // 2 Spalten
+                Table table = new Table(2);
                 table.setWidth(100);
-
-                // Mannschaftsnamen hinzufügen
                 table.addCell(createCell(game.team1));
                 table.addCell(createCell(game.team2));
                 table.addCell(createCell(game.team2));
                 table.addCell(createCell(game.team1));
-
                 document.add(table);
-
-                // Abstand
                 document.add(new Paragraph("\n"));
 
-                // Endergebnis-Bereich
                 document.add(new Paragraph("Endergebnis:", font));
                 document.add(new Paragraph(game.team1 + ": ________________"));
                 document.add(new Paragraph(game.team2 + ": ________________"));
@@ -143,7 +154,6 @@ public class PitchController {
                 document.newPage();
             }
 
-            // PDF-Dokument schließen
             document.close();
             return out;
         } catch (IOException e) {
@@ -151,28 +161,21 @@ public class PitchController {
         }
     }
 
-    // Hilfsfunktion: Tabellenzelle erstellen (ohne Rahmen, zentriert)
     private static Cell createCell(String text) {
         Paragraph paragraph = new Paragraph(text);
         paragraph.setAlignment(Element.ALIGN_CENTER);
-
         Cell cell = new Cell(paragraph);
         cell.setBorder(0);
         return cell;
     }
 
-    // create inner class for PitchData
-    public class Game {
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public class GameDTO {
         String team1;
         String team2;
-        int fieldNumber;
-        int matchNumber;
-
-        public Game(String team1, String team2, int fieldNumber, int matchNumber) {
-            this.team1 = team1;
-            this.team2 = team2;
-            this.fieldNumber = fieldNumber;
-            this.matchNumber = matchNumber;
-        }
+        String fieldNumber;
+        long matchNumber;
     }
 }

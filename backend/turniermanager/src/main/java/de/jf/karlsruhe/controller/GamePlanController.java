@@ -34,9 +34,9 @@ public class GamePlanController {
         Optional<AgeGroup> ageGroupOptional = ageGroupRepository.findById(ageGroupId);
         if (ageGroupOptional.isPresent()) {
             AgeGroup ageGroup = ageGroupOptional.get();
-            List<Round> roundOptional = roundRepository.findByAgeGroup(ageGroup);
-            if (!roundOptional.isEmpty()) {
-                List<Round> list = roundOptional.stream().filter(Round::isActive).toList();
+            List<Round> rounds = roundRepository.findByAgeGroup(ageGroup);
+            if (!rounds.isEmpty()) {
+                List<Round> list = rounds.stream().filter(Round::isActive).toList();
                 GamePlan gamePlan = createGamePlan(list.getFirst());
                 return ResponseEntity.ok(gamePlan);
             } else {
