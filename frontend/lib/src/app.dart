@@ -15,23 +15,20 @@ class MainWidget extends StatelessWidget {
   });
 
   final _router = GoRouter(
+    initialLocation: LinkOverview.routeName,
     routes: [
       GoRoute(
+        // TODO: Home view is left in for now. Future features to load different tournaments might need this
         path: HomeView.routeName,
         builder: (context, state) => HomeView(),
       ),
       GoRoute(
-        path: "${LinkOverview.routeName}:${LinkOverview.tournamentIdParam}",
+        path: LinkOverview.routeName,
         builder: (context, state) {
-          var tournamentIdParam =
-              state.pathParameters[LinkOverview.tournamentIdParam] ?? "1";
-
-          var tournamentId = int.tryParse(tournamentIdParam) ?? 1;
-
           final GameManager gameManager = di<GameManager>();
-          gameManager.getTournamentCommand(tournamentId);
+          gameManager.getAgeGroupsCommand();
 
-          return LinkOverview(tournamentId: tournamentId);
+          return const LinkOverview();
         },
         routes: [
           GoRoute(

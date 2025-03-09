@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
+import 'package:tournament_manager/src/model/referee/age_group.dart';
 import 'package:tournament_manager/src/views/referee_view.dart';
 import 'package:tournament_manager/src/views/results_view.dart';
 import 'package:tournament_manager/src/views/schedule_view.dart';
 import 'package:watch_it/watch_it.dart';
 
 class LinkOverview extends StatelessWidget {
-  const LinkOverview({
-    super.key,
-    required this.tournamentId,
-  });
-
-  final int tournamentId;
+  const LinkOverview({super.key});
 
   static const routeName = '/tournament';
-  static const tournamentIdParam = 'id';
 
   @override
   Widget build(BuildContext context) {
@@ -37,20 +32,8 @@ class LinkContentView extends StatelessWidget with WatchItMixin {
 
   @override
   Widget build(BuildContext context) {
-    var tournament =
-        watchPropertyValue((GameManager manager) => manager.tournament);
-
-    if (tournament == null) {
-      return const Center(
-        child: Text(
-          'Turnierdaten nicht geladen!',
-          style: TextStyle(
-            fontSize: 24,
-            color: Colors.red,
-          ),
-        ),
-      );
-    }
+    var ageGroups =
+        watchPropertyValue((GameManager manager) => manager.ageGroups);
 
     return Padding(
       padding: const EdgeInsets.all(10),
@@ -71,11 +54,11 @@ class LinkContentView extends StatelessWidget with WatchItMixin {
                     height: 120,
                     child: ListView.builder(
                       itemBuilder: (context, index) {
-                        var ageGroup = tournament.ageGroups[index];
+                        var ageGroup = ageGroups[index];
 
                         return ScheduleAndResultsLinkView(ageGroup: ageGroup);
                       },
-                      itemCount: tournament.ageGroups.length,
+                      itemCount: ageGroups.length,
                       scrollDirection: Axis.horizontal,
                     ),
                   ),
@@ -179,7 +162,7 @@ class ScheduleAndResultsLinkView extends StatelessWidget {
     required this.ageGroup,
   });
 
-  final int ageGroup;
+  final AgeGroup ageGroup;
 
   @override
   Widget build(BuildContext context) {
@@ -192,7 +175,7 @@ class ScheduleAndResultsLinkView extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                'Altersgruppe $ageGroup',
+                ageGroup.name,
                 style: const TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -209,8 +192,7 @@ class ScheduleAndResultsLinkView extends StatelessWidget {
                           ".${Uri(
                             path: ScheduleView.routeName,
                             queryParameters: {
-                              ScheduleView.ageGroupQueryParam:
-                                  ageGroup.toString()
+                              ScheduleView.ageGroupQueryParam: ageGroup.name
                             },
                           )}",
                         );
@@ -226,8 +208,7 @@ class ScheduleAndResultsLinkView extends StatelessWidget {
                           ".${Uri(
                             path: ResultsView.routeName,
                             queryParameters: {
-                              ResultsView.ageGroupQueryParam:
-                                  ageGroup.toString()
+                              ResultsView.ageGroupQueryParam: ageGroup.name
                             },
                           )}",
                         );
@@ -240,109 +221,6 @@ class ScheduleAndResultsLinkView extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class MainContentView extends StatelessWidget with WatchItMixin {
-  MainContentView({super.key});
-
-  final scheduleAgeGroupTextController = TextEditingController(text: '1');
-  final resultsAgeGroupTextController = TextEditingController(text: '1');
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 200,
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: scheduleAgeGroupTextController,
-                      textAlign: TextAlign.center,
-                      decoration:
-                          const InputDecoration(label: Text('Altersklasse')),
-                    ),
-                    const SizedBox(height: 5),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        context.go(
-                          ".${Uri(
-                            path: ScheduleView.routeName,
-                            queryParameters: {
-                              ScheduleView.ageGroupQueryParam:
-                                  scheduleAgeGroupTextController.text
-                            },
-                          )}",
-                        );
-                      },
-                      label: const Text("Spielplan"),
-                      icon: const Icon(Icons.view_list),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          SizedBox(
-            width: 200,
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: resultsAgeGroupTextController,
-                      textAlign: TextAlign.center,
-                      decoration:
-                          const InputDecoration(label: Text('Altersklasse')),
-                    ),
-                    const SizedBox(height: 5),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        context.go(
-                          ".${Uri(
-                            path: ResultsView.routeName,
-                            queryParameters: {
-                              ResultsView.ageGroupQueryParam:
-                                  resultsAgeGroupTextController.text
-                            },
-                          )}",
-                        );
-                      },
-                      label: const Text("Ergebnisse"),
-                      icon: const Icon(Icons.view_list),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton.icon(
-            onPressed: () {
-              context.go(".${Uri(path: RefereeView.routeName)}");
-            },
-            label: const Text("Spielleiter"),
-            icon: const Icon(Icons.sports_esports),
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton.icon(
-            onPressed: () {
-              // context.go("");
-            },
-            label: const Text("Admin"),
-            icon: const Icon(Icons.admin_panel_settings),
-          ),
-        ],
       ),
     );
   }
