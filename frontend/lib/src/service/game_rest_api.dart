@@ -35,10 +35,12 @@ abstract class GameRestApi {
 class GameRestApiImplementation extends RestClient implements GameRestApi {
   late final Uri getScheduleUri;
   late final Uri getResultsUri;
+  late final Uri getAllAgeGroupsUri;
 
   GameRestApiImplementation() {
     getScheduleUri = Uri.parse('$baseUri/schedule');
     getResultsUri = Uri.parse('$baseUri/results');
+    getAllAgeGroupsUri = Uri.parse('$baseUri/turniersetup/agegroups');
   }
 
   @override
@@ -246,7 +248,26 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
 
   @override
   Future<List<AgeGroupDto>> getAllAgeGroups() async {
-    // TODO: implement getAllAgeGroups
-    return [AgeGroupDto('Altersklasse 1')];
+    return getAllAgeGroupsTestData(); // TODO: remove test data
+
+    final response = await client.get(getAllAgeGroupsUri, headers: headers);
+
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+
+      if (json is List<Map<String, dynamic>>) {
+        return json.map((e) => AgeGroupDto.fromJson(e)).toList();
+      }
+    }
+
+    return [];
+  }
+
+  List<AgeGroupDto> getAllAgeGroupsTestData() {
+    return [
+      AgeGroupDto('Altersklasse 1'),
+      AgeGroupDto('Altersklasse 2'),
+      AgeGroupDto('Altersklasse 3'),
+    ];
   }
 }
