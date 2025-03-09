@@ -137,7 +137,7 @@ class LeagueView extends StatelessWidget {
               child: Row(
                 children: [
                   Text(
-                    'Liga ${league.leagueNo}',
+                    league.leagueName,
                     style: const TextStyle(fontSize: _headerFontSize),
                   ),
                   const SizedBox(width: 10),
@@ -154,11 +154,11 @@ class LeagueView extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 child: ListView.separated(
                   itemBuilder: (context, index) {
-                    var element = league.scheduledGames[index];
+                    var element = league.entries[index];
                     return ScheduleEntryView(matchScheduleEntry: element);
                   },
                   separatorBuilder: (context, index) => const Divider(),
-                  itemCount: league.scheduledGames.length,
+                  itemCount: league.entries.length,
                 ),
               ),
             ),
@@ -186,7 +186,7 @@ class ScheduleEntryView extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                'Platz ${matchScheduleEntry.field}',
+                matchScheduleEntry.pitchName,
                 style: const TextStyle(color: Colors.black),
               ),
               const SizedBox(width: 5),
@@ -208,7 +208,7 @@ class ScheduleEntryView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                matchScheduleEntry.team1,
+                matchScheduleEntry.teamAName,
                 style: const TextStyle(color: Colors.black),
               ),
               const SizedBox(width: 5),
@@ -218,7 +218,7 @@ class ScheduleEntryView extends StatelessWidget {
               ),
               const SizedBox(width: 5),
               Text(
-                matchScheduleEntry.team2,
+                matchScheduleEntry.teamBName,
                 style: const TextStyle(color: Colors.black),
               ),
             ],

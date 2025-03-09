@@ -1,8 +1,8 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
+import 'package:tournament_manager/src/model/referee/age_group.dart';
 import 'package:tournament_manager/src/model/results/league.dart';
 import 'package:watch_it/watch_it.dart';
 
@@ -12,7 +12,7 @@ class ResultsView extends StatefulWidget with WatchItStatefulWidgetMixin {
     super.key,
   });
 
-  final String ageGroup;
+  final AgeGroup ageGroup;
 
   static const routeName = '/results';
   static const ageGroupQueryParam = 'ageGroup';
@@ -38,7 +38,7 @@ class _ResultsViewState extends State<ResultsView> {
 
     refreshTimer ??= Timer.periodic(const Duration(seconds: 10), (timer) {
       final GameManager gameManager = di<GameManager>();
-      gameManager.getResultsCommand(widget.ageGroup);
+      gameManager.getResultsCommand(widget.ageGroup.id);
 
       if (amountItems > 0) {
         itemScrollController.scrollTo(
@@ -90,7 +90,7 @@ class _ResultsViewState extends State<ResultsView> {
         leadingWidth: 150,
         actions: [
           Text(
-            widget.ageGroup,
+            widget.ageGroup.name,
             style: TextStyle(fontSize: _headerFontSize),
           ),
           const SizedBox(width: 5),

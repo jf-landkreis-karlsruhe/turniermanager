@@ -47,18 +47,28 @@ class MainWidget extends StatelessWidget {
                 );
               }
 
+              gameManager.getScheduleCommand(ageGroup.id);
+
               return ScheduleView(ageGroup);
             },
           ),
           GoRoute(
             path: ResultsView.routeName,
             builder: (context, state) {
-              var ageGroup =
+              var ageGroupParam =
                   state.uri.queryParameters[ResultsView.ageGroupQueryParam] ??
                       "Altersklasse ??";
 
               final GameManager gameManager = di<GameManager>();
-              gameManager.getResultsCommand(ageGroup);
+              var ageGroup = gameManager.getAgeGroupByName(ageGroupParam);
+
+              if (ageGroup == null) {
+                return Center(
+                  child: Text('Altersklasse "$ageGroupParam" nicht vorhanden!'),
+                );
+              }
+
+              gameManager.getResultsCommand(ageGroup.id);
 
               return ResultsView(ageGroup);
             },

@@ -34,18 +34,18 @@ abstract class GameRestApi {
 
 class GameRestApiImplementation extends RestClient implements GameRestApi {
   late final String getSchedulePath;
-  late final Uri getResultsUri;
+  late final String getResultsPath;
   late final Uri getAllAgeGroupsUri;
 
   GameRestApiImplementation() {
     getSchedulePath = '$baseUri/gameplan/agegroup/';
-    getResultsUri = Uri.parse('$baseUri/results');
-    getAllAgeGroupsUri = Uri.parse('$baseUri/turniersetup/agegroups');
+    getResultsPath = '$baseUri/stats/agegroup/';
+    getAllAgeGroupsUri = Uri.parse('$baseUri/turniersetup/agegroups/getAll');
   }
 
   @override
-  Future<MatchScheduleDto?> getSchedule(String ageGroup) async {
-    final uri = Uri.parse(getSchedulePath + ageGroup);
+  Future<MatchScheduleDto?> getSchedule(String ageGroupId) async {
+    final uri = Uri.parse(getSchedulePath + ageGroupId);
 
     final response = await client.get(uri, headers: headers);
 
@@ -58,12 +58,8 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   }
 
   @override
-  Future<ResultsDto?> getResults(String ageGroup) async {
-    final uri = getResultsUri.replace(
-      queryParameters: {
-        'ageGroup': ageGroup,
-      },
-    );
+  Future<ResultsDto?> getResults(String ageGroupId) async {
+    final uri = Uri.parse(getSchedulePath + ageGroupId);
 
     final response = await client.get(uri, headers: headers);
 
@@ -247,7 +243,7 @@ class GameTestRestApi extends GameRestApi {
       10,
       (innerIndex) {
         var result = MatchScheduleEntryDto(
-          "$fieldCount",
+          "Platz $fieldCount",
           "team${teamCount++}",
           "team${teamCount++}",
           "$hourCount:$timeCount Uhr",
@@ -273,10 +269,10 @@ class GameTestRestApi extends GameRestApi {
     );
 
     return MatchScheduleDto(1)
-      ..leagueSchedules = List.generate(
+      ..leagues = List.generate(
         8,
         (index) {
-          return LeagueDto(index + 1)..scheduledGames = scheduleList;
+          return LeagueDto('Liga ${index + 1}')..entries = scheduleList;
         },
       );
   }
