@@ -8,6 +8,7 @@ import de.jf.karlsruhe.model.base.Game;
 import de.jf.karlsruhe.model.base.Pitch;
 import de.jf.karlsruhe.model.repos.GameRepository;
 import de.jf.karlsruhe.model.repos.PitchRepository;
+import de.jf.karlsruhe.model.repos.RoundRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,10 +23,9 @@ import org.springframework.web.bind.annotation.*;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/turniersetup/pitches")
@@ -34,6 +34,7 @@ public class PitchController {
 
     private final PitchRepository pitchRepository;
     private final GameRepository gameRepository;
+    private final RoundRepository roundRepository;
 
     // Create a new Pitch
     @PostMapping
@@ -101,7 +102,7 @@ public class PitchController {
         }
 
         Pitch pitch = optionalPitch.get();
-        List<Game> byPitchId = gameRepository.findByPitchId(pitch.getId());
+        List<Game> byPitchId = getActiveRoundGamesByPitchId(pitch.getId());
         if(byPitchId.isEmpty())return ResponseEntity.noContent().build();
         byPitchId.forEach(game -> {
             games.add(new GameDTO(game.getTeamA().getName(), game.getTeamB().getName(), pitch.getName(), game.getGameNumber()));
@@ -178,4 +179,19 @@ public class PitchController {
         String fieldNumber;
         long matchNumber;
     }
+
+    public List<Game> getActiveRoundGames() {
+        return roundRepository.findByActiveTrue().stream()
+                .flatMap(round -> gameRepository.findByRound(round).stream())
+                .collect(Collectors.toList());
+    }
+
+    public List<Game> getActiveRoundGamesByPitchId(UUID pitchId) {
+        return roundRepository.findByActiveTrue().stream()
+                .flatMap(round -> gameRepository.findByRound(round).stream())
+                .filter(game -> game.getPitch().getId().equals(pitchId))
+                .collect(Collectors.toList());
+    }
+
+
 }
