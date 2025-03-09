@@ -9,21 +9,21 @@ part of 'result_entry_dto.dart';
 ResultEntryDto _$ResultEntryDtoFromJson(Map<String, dynamic> json) =>
     ResultEntryDto(
       json['teamName'] as String,
-      (json['points'] as num).toInt(),
-      (json['amountWins'] as num).toInt(),
-      (json['amountDraws'] as num).toInt(),
-      (json['amountDefeats'] as num).toInt(),
-      (json['goals'] as num).toInt(),
-      (json['goalsConceded'] as num).toInt(),
+      (json['totalPoints'] as num).toInt(),
+      (json['victories'] as num).toInt(),
+      (json['draws'] as num).toInt(),
+      (json['defeats'] as num).toInt(),
+      (json['ownScoredGoals'] as num).toInt(),
+      (json['enemyScoredGoals'] as num).toInt(),
     );
 
 Map<String, dynamic> _$ResultEntryDtoToJson(ResultEntryDto instance) =>
     <String, dynamic>{
       'teamName': instance.teamName,
-      'points': instance.points,
-      'amountWins': instance.amountWins,
-      'amountDraws': instance.amountDraws,
-      'amountDefeats': instance.amountDefeats,
-      'goals': instance.goals,
-      'goalsConceded': instance.goalsConceded,
+      'totalPoints': instance.totalPoints,
+      'victories': instance.victories,
+      'draws': instance.draws,
+      'defeats': instance.defeats,
+      'ownScoredGoals': instance.ownScoredGoals,
+      'enemyScoredGoals': instance.enemyScoredGoals,
     };

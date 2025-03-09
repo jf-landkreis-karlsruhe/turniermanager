@@ -7,25 +7,25 @@ import 'package:tournament_manager/src/serialization/results/results_dto.dart';
 
 class ResultsMapper {
   Results map(ResultsDto dto) {
-    return Results(dto.matchRound)
-      ..leagueResults =
-          dto.leagueResults.map((entry) => mapLeague(entry)).toList();
+    return Results(dto.roundName)
+      ..leagueTables =
+          dto.leagueTables.map((entry) => mapLeague(entry)).toList();
   }
 
   League mapLeague(LeagueDto dto) {
-    return League(dto.leagueNo)
-      ..gameResults = dto.gameResults.map((entry) => mapEntry(entry)).toList();
+    return League(dto.leagueName)
+      ..teams = dto.teams.map((entry) => mapEntry(entry)).toList();
   }
 
   ResultEntry mapEntry(ResultEntryDto dto) {
     return ResultEntry(
       dto.teamName,
-      dto.points,
-      dto.amountWins,
-      dto.amountDraws,
-      dto.amountDefeats,
-      dto.goals,
-      dto.goalsConceded,
+      dto.totalPoints,
+      dto.victories,
+      dto.draws,
+      dto.defeats,
+      dto.ownScoredGoals,
+      dto.enemyScoredGoals,
     );
   }
 }

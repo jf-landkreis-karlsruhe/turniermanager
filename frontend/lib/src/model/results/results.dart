@@ -1,8 +1,8 @@
 import 'package:tournament_manager/src/model/results/league.dart';
 
 class Results {
-  Results(this.matchRound);
+  Results(this.roundName);
 
-  int matchRound;
-  List<League> leagueResults = [];
+  String roundName;
+  List<League> leagueTables = [];
 }

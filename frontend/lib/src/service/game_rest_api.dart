@@ -219,15 +219,15 @@ class GameTestRestApi extends GameRestApi {
     );
 
     resultList.sort(
-      (a, b) => a.points.compareTo(b.points),
+      (a, b) => a.totalPoints.compareTo(b.totalPoints),
     );
 
-    return ResultsDto(1)
-      ..leagueResults = List.generate(
+    return ResultsDto('Runde 1')
+      ..leagueTables = List.generate(
         3,
         (index) {
-          return resultleague.LeagueDto(index + 1)
-            ..gameResults = resultList.reversed.toList();
+          return resultleague.LeagueDto('Liga ${index + 1}')
+            ..teams = resultList.reversed.toList();
         },
       );
   }

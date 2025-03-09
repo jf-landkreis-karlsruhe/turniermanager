@@ -1,19 +1,19 @@
 class ResultEntry {
   ResultEntry(
     this.teamName,
-    this.points,
-    this.amountWins,
-    this.amountDraws,
-    this.amountDefeats,
-    this.goals,
-    this.goalsConceded,
+    this.totalPoints,
+    this.victories,
+    this.draws,
+    this.defeats,
+    this.ownScoredGoals,
+    this.enemyScoredGoals,
   );
 
   String teamName;
-  int points;
-  int amountWins;
-  int amountDraws;
-  int amountDefeats;
-  int goals;
-  int goalsConceded;
+  int totalPoints;
+  int victories;
+  int draws;
+  int defeats;
+  int ownScoredGoals;
+  int enemyScoredGoals;
 }

@@ -63,7 +63,7 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
     notifyListeners();
   }
 
-  Results _results = Results(1);
+  Results _results = Results('Runde ??');
   @override
   Results get results => _results;
   set results(Results value) {

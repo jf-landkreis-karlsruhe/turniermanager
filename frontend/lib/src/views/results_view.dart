@@ -66,10 +66,10 @@ class _ResultsViewState extends State<ResultsView> {
   @override
   Widget build(BuildContext context) {
     var results = watchPropertyValue((GameManager manager) => manager.results);
-    amountItems = results.leagueResults.length;
+    amountItems = results.leagueTables.length;
 
     var screenSize = MediaQuery.sizeOf(context);
-    var amountLeagues = results.leagueResults.length;
+    var amountLeagues = results.leagueTables.length;
     var enclosingPadding = 20;
     var leaguePadding = amountLeagues > 1 ? 10 : 0;
     var displayFactor = amountLeagues > 1 ? 2 : 1;
@@ -100,7 +100,7 @@ class _ResultsViewState extends State<ResultsView> {
           ),
           const SizedBox(width: 5),
           Text(
-            'Spielrunde ${results.matchRound}',
+            results.roundName,
             style: TextStyle(fontSize: _headerFontSize),
           ),
           const SizedBox(width: 10),
@@ -111,9 +111,9 @@ class _ResultsViewState extends State<ResultsView> {
         child: ScrollablePositionedList.builder(
           itemScrollController: itemScrollController,
           scrollDirection: Axis.horizontal,
-          itemCount: results.leagueResults.length,
+          itemCount: results.leagueTables.length,
           itemBuilder: (context, index) {
-            var entry = results.leagueResults[index];
+            var entry = results.leagueTables[index];
             return LeagueView(
               league: entry,
               width: leagueWidgetSize,
@@ -239,8 +239,8 @@ class LeagueView extends StatelessWidget {
     ));
 
     List<DataRow> rows = [];
-    for (var result in league.gameResults) {
-      var index = league.gameResults.indexOf(result) + 1;
+    for (var result in league.teams) {
+      var index = league.teams.indexOf(result) + 1;
       List<DataCell> cells = [];
 
       cells.add(
@@ -266,7 +266,7 @@ class LeagueView extends StatelessWidget {
         cells.add(
           DataCell(
             Text(
-              result.amountWins.toString(),
+              result.victories.toString(),
               style: const TextStyle(color: Colors.black),
             ),
           ),
@@ -275,7 +275,7 @@ class LeagueView extends StatelessWidget {
         cells.add(
           DataCell(
             Text(
-              result.amountDraws.toString(),
+              result.draws.toString(),
               style: const TextStyle(color: Colors.black),
             ),
           ),
@@ -284,7 +284,7 @@ class LeagueView extends StatelessWidget {
         cells.add(
           DataCell(
             Text(
-              result.amountDefeats.toString(),
+              result.defeats.toString(),
               style: const TextStyle(color: Colors.black),
             ),
           ),
@@ -295,7 +295,7 @@ class LeagueView extends StatelessWidget {
         cells.add(
           DataCell(
             Text(
-              '${result.goals} : ${result.goalsConceded}',
+              '${result.ownScoredGoals} : ${result.enemyScoredGoals}',
               style: const TextStyle(color: Colors.black),
             ),
           ),
@@ -304,7 +304,7 @@ class LeagueView extends StatelessWidget {
         cells.add(
           DataCell(
             Text(
-              (result.goals - result.goalsConceded).toString(),
+              (result.ownScoredGoals - result.enemyScoredGoals).toString(),
               style: const TextStyle(color: Colors.black),
             ),
           ),
@@ -314,7 +314,7 @@ class LeagueView extends StatelessWidget {
       cells.add(
         DataCell(
           Text(
-            result.points.toString(),
+            result.totalPoints.toString(),
             style: const TextStyle(color: Colors.black),
           ),
         ),
@@ -334,7 +334,7 @@ class LeagueView extends StatelessWidget {
               child: Row(
                 children: [
                   Text(
-                    'Liga ${league.leagueNo}',
+                    league.leagueName,
                     style: const TextStyle(fontSize: _headerFontSize),
                   ),
                   const SizedBox(width: 10),

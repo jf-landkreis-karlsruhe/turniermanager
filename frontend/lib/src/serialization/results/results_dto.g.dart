@@ -7,13 +7,13 @@ part of 'results_dto.dart';
 // **************************************************************************
 
 ResultsDto _$ResultsDtoFromJson(Map<String, dynamic> json) => ResultsDto(
-      (json['matchRound'] as num).toInt(),
-    )..leagueResults = (json['leagueResults'] as List<dynamic>)
+      json['roundName'] as String,
+    )..leagueTables = (json['leagueTables'] as List<dynamic>)
         .map((e) => LeagueDto.fromJson(e as Map<String, dynamic>))
         .toList();
 
 Map<String, dynamic> _$ResultsDtoToJson(ResultsDto instance) =>
     <String, dynamic>{
-      'matchRound': instance.matchRound,
-      'leagueResults': instance.leagueResults.map((e) => e.toJson()).toList(),
+      'roundName': instance.roundName,
+      'leagueTables': instance.leagueTables.map((e) => e.toJson()).toList(),
     };
