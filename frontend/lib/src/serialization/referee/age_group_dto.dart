@@ -5,8 +5,9 @@ part 'age_group_dto.g.dart';
 
 @JsonSerializable()
 class AgeGroupDto {
-  AgeGroupDto(this.name);
+  AgeGroupDto(this.id, this.name);
 
+  String id;
   String name;
 
   factory AgeGroupDto.fromJson(Map<String, dynamic> json) =>

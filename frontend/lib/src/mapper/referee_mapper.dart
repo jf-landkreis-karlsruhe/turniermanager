@@ -13,7 +13,7 @@ import 'package:tournament_manager/src/serialization/referee/team_dto.dart';
 
 class RefereeMapper {
   AgeGroup mapAgeGroup(AgeGroupDto dto) {
-    return AgeGroup(dto.name);
+    return AgeGroup(dto.id, dto.name);
   }
 
   League mapLeague(LeagueDto dto) {
