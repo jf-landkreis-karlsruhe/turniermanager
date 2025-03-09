@@ -36,7 +36,7 @@ class MainWidget extends StatelessWidget {
             builder: (context, state) {
               var ageGroup =
                   state.uri.queryParameters[ScheduleView.ageGroupQueryParam] ??
-                      "1";
+                      "Altersklasse ??";
 
               final GameManager gameManager = di<GameManager>();
               gameManager.getScheduleCommand(ageGroup);
@@ -49,7 +49,7 @@ class MainWidget extends StatelessWidget {
             builder: (context, state) {
               var ageGroup =
                   state.uri.queryParameters[ResultsView.ageGroupQueryParam] ??
-                      "1";
+                      "Altersklasse ??";
 
               final GameManager gameManager = di<GameManager>();
               gameManager.getResultsCommand(ageGroup);

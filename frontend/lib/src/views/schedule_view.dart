@@ -81,7 +81,7 @@ class _ScheduleViewState extends State<ScheduleView> {
         leadingWidth: 150,
         actions: [
           Text(
-            'Altersklasse ${widget.ageGroup}',
+            widget.ageGroup,
             style: TextStyle(fontSize: _headerFontSize),
           ),
           const SizedBox(width: 5),

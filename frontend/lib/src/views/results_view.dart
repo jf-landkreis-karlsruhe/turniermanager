@@ -90,7 +90,7 @@ class _ResultsViewState extends State<ResultsView> {
         leadingWidth: 150,
         actions: [
           Text(
-            'Altersklasse ${widget.ageGroup}',
+            widget.ageGroup,
             style: TextStyle(fontSize: _headerFontSize),
           ),
           const SizedBox(width: 5),
