@@ -22,6 +22,8 @@ abstract class GameManager extends ChangeNotifier {
 
   late Command<void, void> getAgeGroupsCommand;
 
+  AgeGroup? getAgeGroupByName(String name);
+
   MatchSchedule get schedule;
   Results get results;
   Round get currentRound;
@@ -166,5 +168,12 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
         ageGroups = result.map((e) => _ageGroupMapper.map(e)).toList();
       },
     );
+  }
+
+  @override
+  AgeGroup? getAgeGroupByName(String name) {
+    var filtered = ageGroups.where((element) => element.name == name);
+
+    return filtered.isNotEmpty ? ageGroups.first : null;
   }
 }

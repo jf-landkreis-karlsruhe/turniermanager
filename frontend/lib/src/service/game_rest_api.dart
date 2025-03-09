@@ -33,23 +33,19 @@ abstract class GameRestApi {
 }
 
 class GameRestApiImplementation extends RestClient implements GameRestApi {
-  late final Uri getScheduleUri;
+  late final String getSchedulePath;
   late final Uri getResultsUri;
   late final Uri getAllAgeGroupsUri;
 
   GameRestApiImplementation() {
-    getScheduleUri = Uri.parse('$baseUri/schedule');
+    getSchedulePath = '$baseUri/gameplan/agegroup/';
     getResultsUri = Uri.parse('$baseUri/results');
     getAllAgeGroupsUri = Uri.parse('$baseUri/turniersetup/agegroups');
   }
 
   @override
   Future<MatchScheduleDto?> getSchedule(String ageGroup) async {
-    final uri = getScheduleUri.replace(
-      queryParameters: {
-        'ageGroup': ageGroup,
-      },
-    );
+    final uri = Uri.parse(getSchedulePath + ageGroup);
 
     final response = await client.get(uri, headers: headers);
 
@@ -137,9 +133,9 @@ class GameTestRestApi extends GameRestApi {
   @override
   Future<List<AgeGroupDto>> getAllAgeGroups() async {
     return [
-      AgeGroupDto('Altersklasse 1'),
-      AgeGroupDto('Altersklasse 2'),
-      AgeGroupDto('Altersklasse 3'),
+      AgeGroupDto('', 'Altersklasse 1'),
+      AgeGroupDto('', 'Altersklasse 2'),
+      AgeGroupDto('', 'Altersklasse 3'),
     ];
   }
 
@@ -152,12 +148,12 @@ class GameTestRestApi extends GameRestApi {
           PitchDto("1"),
           TeamDto(
             "Team A",
-            AgeGroupDto("1"),
+            AgeGroupDto('', "1"),
             referee_league.LeagueDto("1"),
           ),
           TeamDto(
             "Team B",
-            AgeGroupDto("1"),
+            AgeGroupDto('', "1"),
             referee_league.LeagueDto("1"),
           ),
         ),
@@ -166,12 +162,12 @@ class GameTestRestApi extends GameRestApi {
           PitchDto("2"),
           TeamDto(
             "Team A",
-            AgeGroupDto("2"),
+            AgeGroupDto('', "2"),
             referee_league.LeagueDto("1"),
           ),
           TeamDto(
             "Team B",
-            AgeGroupDto("2"),
+            AgeGroupDto('', "2"),
             referee_league.LeagueDto("1"),
           ),
         ),
@@ -180,12 +176,12 @@ class GameTestRestApi extends GameRestApi {
           PitchDto("1"),
           TeamDto(
             "Team A",
-            AgeGroupDto("1"),
+            AgeGroupDto('', "1"),
             referee_league.LeagueDto("1"),
           ),
           TeamDto(
             "Team B",
-            AgeGroupDto("1"),
+            AgeGroupDto('', "1"),
             referee_league.LeagueDto("1"),
           ),
         ),
@@ -194,12 +190,12 @@ class GameTestRestApi extends GameRestApi {
           PitchDto("2"),
           TeamDto(
             "Team A",
-            AgeGroupDto("2"),
+            AgeGroupDto('', "2"),
             referee_league.LeagueDto("2"),
           ),
           TeamDto(
             "Team B",
-            AgeGroupDto("2"),
+            AgeGroupDto('', "2"),
             referee_league.LeagueDto("2"),
           ),
         ),

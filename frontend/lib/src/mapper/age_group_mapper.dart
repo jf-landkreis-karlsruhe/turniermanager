@@ -3,6 +3,6 @@ import 'package:tournament_manager/src/serialization/referee/age_group_dto.dart'
 
 class AgeGroupMapper {
   AgeGroup map(AgeGroupDto dto) {
-    return AgeGroup(dto.name);
+    return AgeGroup(dto.id, dto.name);
   }
 }

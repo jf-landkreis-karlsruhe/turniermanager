@@ -1,5 +1,6 @@
 class AgeGroup {
-  AgeGroup(this.name);
+  AgeGroup(this.id, this.name);
 
+  String id;
   String name;
 }
