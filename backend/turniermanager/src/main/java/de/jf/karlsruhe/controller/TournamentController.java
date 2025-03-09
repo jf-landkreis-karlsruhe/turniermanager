@@ -127,7 +127,21 @@ public class TournamentController {
 
         return tournament;
     }
+    @PostMapping("/set-active-rounds")
+    @Transactional
+    public void setActiveRounds(@RequestBody List<UUID> activeRoundIds) {
+        // Alle Runden auf nicht aktiv setzen
+        List<Round> allRounds = roundRepository.findAll();
+        allRounds.forEach(round -> round.setActive(false));
+        roundRepository.saveAll(allRounds);
 
+        // Gegebene Runden auf aktiv setzen
+        if (activeRoundIds != null && !activeRoundIds.isEmpty()) {
+            List<Round> roundsToActivate = roundRepository.findAllById(activeRoundIds);
+            roundsToActivate.forEach(round -> round.setActive(true));
+            roundRepository.saveAll(roundsToActivate);
+        }
+    }
 
     @PostMapping("/addBreak")
     public void addBreakViaApi(@RequestParam LocalDateTime breakTime, @RequestParam int duration) {
