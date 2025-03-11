@@ -220,7 +220,7 @@ class _GameViewState extends State<GameView> {
                         ),
                       const SizedBox(width: 5),
                       CountDownView(
-                        timeInMinutes: 10,
+                        timeInMinutes: 10, //TODO: use value from model
                         textColor: currentlyRunning
                             ? selectedTextColor
                             : standardTextColor,
