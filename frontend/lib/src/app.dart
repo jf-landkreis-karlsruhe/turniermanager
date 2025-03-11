@@ -75,7 +75,12 @@ class MainWidget extends StatelessWidget {
           ),
           GoRoute(
             path: RefereeView.routeName,
-            builder: (context, state) => const RefereeView(),
+            builder: (context, state) {
+              final GameManager gameManager = di<GameManager>();
+              gameManager.getCurrentRoundCommand();
+
+              return const RefereeView();
+            },
           ),
         ],
       ),
