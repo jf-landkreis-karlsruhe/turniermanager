@@ -15,20 +15,8 @@ class RefereeView extends StatelessWidget with WatchItMixin {
   @override
   Widget build(BuildContext context) {
     var gameManager = di<GameManager>();
-    var currentRound =
-        watchPropertyValue((GameManager manager) => manager.currentRound);
-    Map<int, List<Game>> sortedGames = {};
-
-    for (var game in currentRound.games) {
-      sortedGames.update(
-        game.gameNumber,
-        (value) {
-          value.add(game);
-          return value;
-        },
-        ifAbsent: () => [game],
-      );
-    }
+    var gameGroups =
+        watchPropertyValue((GameManager manager) => manager.gameGroups);
 
     return Scaffold(
       appBar: AppBar(
@@ -116,13 +104,13 @@ class RefereeView extends StatelessWidget with WatchItMixin {
         padding: const EdgeInsets.all(10),
         child: ListView.builder(
           itemBuilder: (context, index) {
-            var games = sortedGames.values.toList()[index];
+            var gameGroup = gameGroups[index];
             return GameView(
               first: index == 0,
-              games: games,
+              games: gameGroup.games,
             );
           },
-          itemCount: sortedGames.keys.length,
+          itemCount: gameGroups.length,
         ),
       ),
     );

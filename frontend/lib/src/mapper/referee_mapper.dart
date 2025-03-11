@@ -1,14 +1,14 @@
 import 'package:tournament_manager/src/model/referee/age_group.dart';
 import 'package:tournament_manager/src/model/referee/game.dart';
+import 'package:tournament_manager/src/model/referee/game_group.dart';
 import 'package:tournament_manager/src/model/referee/league.dart';
 import 'package:tournament_manager/src/model/referee/pitch.dart';
-import 'package:tournament_manager/src/model/referee/round.dart';
 import 'package:tournament_manager/src/model/referee/team.dart';
 import 'package:tournament_manager/src/serialization/referee/age_group_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/game_dto.dart';
+import 'package:tournament_manager/src/serialization/referee/game_group_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/league_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/pitch_dto.dart';
-import 'package:tournament_manager/src/serialization/referee/round_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/team_dto.dart';
 
 class RefereeMapper {
@@ -24,8 +24,8 @@ class RefereeMapper {
     return Pitch(dto.name);
   }
 
-  Round mapRound(RoundDto dto) {
-    return Round(dto.name)
+  GameGroup mapGameGroup(GameGroupDto dto) {
+    return GameGroup(dto.startTime)
       ..games = dto.games.map((game) => mapGame(game)).toList();
   }
 

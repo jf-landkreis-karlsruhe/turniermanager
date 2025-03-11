@@ -5,7 +5,7 @@ import 'package:tournament_manager/src/mapper/referee_mapper.dart';
 import 'package:tournament_manager/src/mapper/results_mapper.dart';
 import 'package:tournament_manager/src/mapper/age_group_mapper.dart';
 import 'package:tournament_manager/src/model/referee/age_group.dart';
-import 'package:tournament_manager/src/model/referee/round.dart';
+import 'package:tournament_manager/src/model/referee/game_group.dart';
 import 'package:tournament_manager/src/model/results/results.dart';
 import 'package:tournament_manager/src/model/schedule/match_schedule.dart';
 import 'package:tournament_manager/src/service/game_rest_api.dart';
@@ -26,7 +26,7 @@ abstract class GameManager extends ChangeNotifier {
 
   MatchSchedule get schedule;
   Results get results;
-  Round get currentRound;
+  List<GameGroup> get gameGroups;
   List<AgeGroup> get ageGroups;
 }
 
@@ -71,11 +71,11 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
     notifyListeners();
   }
 
-  Round _currentRound = Round("");
+  List<GameGroup> _gameGroups = [];
   @override
-  Round get currentRound => _currentRound;
-  set currentRound(Round value) {
-    _currentRound = value;
+  List<GameGroup> get gameGroups => _gameGroups;
+  set gameGroups(List<GameGroup> value) {
+    _gameGroups = value;
     notifyListeners();
   }
 
@@ -154,11 +154,10 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
 
     getCurrentRoundCommand = Command.createAsyncNoParamNoResult(() async {
       var result = await _gameRestApi.getCurrentRound();
-      if (result == null) {
-        return; //TODO: error handling
-      }
 
-      currentRound = _refereeMapper.mapRound(result);
+      gameGroups = result
+          .map((gameGroup) => _refereeMapper.mapGameGroup(gameGroup))
+          .toList();
     });
 
     getAgeGroupsCommand = Command.createAsyncNoParamNoResult(

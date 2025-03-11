@@ -1,10 +1,8 @@
 import 'package:tournament_manager/src/model/referee/game.dart';
 
-class Round {
-  Round(
-    this.name,
-  );
+class GameGroup {
+  GameGroup(this.startTime);
 
-  String name;
+  DateTime startTime;
   List<Game> games = [];
 }
