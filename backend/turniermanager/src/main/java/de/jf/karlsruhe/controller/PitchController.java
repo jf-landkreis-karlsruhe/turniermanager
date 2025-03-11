@@ -4,12 +4,12 @@ import com.lowagie.text.*;
 import com.lowagie.text.Font;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfWriter;
+import com.lowagie.text.alignment.HorizontalAlignment;
 import de.jf.karlsruhe.model.base.Game;
 import de.jf.karlsruhe.model.base.Pitch;
 import de.jf.karlsruhe.model.repos.GameRepository;
 import de.jf.karlsruhe.model.repos.PitchRepository;
 import de.jf.karlsruhe.model.repos.RoundRepository;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -126,31 +126,41 @@ public class PitchController {
             writer.setCloseStream(false);
             document.open();
 
-            Font font = new Font(
+            Font headlineFont = new Font(
                     BaseFont.createFont(BaseFont.HELVETICA_BOLD, BaseFont.CP1252, BaseFont.NOT_EMBEDDED),
                     20F,
                     Font.BOLD,
                     Color.BLACK
             );
+            Font boldFont = new Font(
+                    BaseFont.createFont(BaseFont.HELVETICA_BOLD, BaseFont.CP1252, BaseFont.NOT_EMBEDDED),
+                    14F,
+                    Font.BOLD,
+                    Color.BLACK
+            );
 
             for (GameDTO game : games) {
-                Paragraph header = new Paragraph("Platz: " + game.fieldNumber + "    Spiel: " + game.matchNumber, font);
+                Paragraph header = new Paragraph("Platz: " + game.fieldNumber + "    Spiel: " + game.matchNumber, headlineFont);
                 header.setAlignment(Element.ALIGN_CENTER);
                 document.add(header);
                 document.add(new Paragraph("\n"));
 
                 Table table = new Table(2);
+                table.setBorderWidth(1F);
+                table.setBorderColor(new Color(0, 0, 0));
+                table.setPadding(5F);
                 table.setWidth(100);
-                table.addCell(createCell(game.team1));
+                table.addCell(createCell(game.team1 + "\n\n\n\n\n\n\n"));
                 table.addCell(createCell(game.team2));
-                table.addCell(createCell(game.team2));
+                table.endHeaders();
+                table.addCell(createCell(game.team2 + "\n\n\n\n\n\n\n"));
                 table.addCell(createCell(game.team1));
                 document.add(table);
                 document.add(new Paragraph("\n"));
 
-                document.add(new Paragraph("Endergebnis:", font));
-                document.add(new Paragraph(game.team1 + ": ________________"));
-                document.add(new Paragraph(game.team2 + ": ________________"));
+                document.add(new Paragraph("Endergebnis:", headlineFont));
+                document.add(new Paragraph("\n" + game.team1 + ": ________________", boldFont));
+                document.add(new Paragraph("\n" + game.team2 + ": ________________", boldFont));
 
                 document.newPage();
             }
@@ -162,11 +172,17 @@ public class PitchController {
         }
     }
 
-    private static Cell createCell(String text) {
-        Paragraph paragraph = new Paragraph(text);
+    private static Cell createCell(String text) throws IOException {
+        Font font = new Font(
+                BaseFont.createFont(BaseFont.HELVETICA_BOLD, BaseFont.CP1252, BaseFont.NOT_EMBEDDED),
+                13F,
+                Font.BOLD,
+                Color.BLACK
+        );
+        Paragraph paragraph = new Paragraph(text, font);
         paragraph.setAlignment(Element.ALIGN_CENTER);
         Cell cell = new Cell(paragraph);
-        cell.setBorder(0);
+        cell.setHorizontalAlignment(HorizontalAlignment.CENTER);
         return cell;
     }
 
