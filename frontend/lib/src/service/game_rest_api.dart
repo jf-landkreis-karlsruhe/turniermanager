@@ -36,11 +36,14 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   late final String getSchedulePath;
   late final String getResultsPath;
   late final Uri getAllAgeGroupsUri;
+  late final Uri getAllGameGroupsUri;
 
   GameRestApiImplementation() {
     getSchedulePath = '$baseUri/gameplan/agegroup/';
     getResultsPath = '$baseUri/stats/agegroup/';
     getAllAgeGroupsUri = Uri.parse('$baseUri/turniersetup/agegroups/getAll');
+    getAllGameGroupsUri =
+        Uri.parse('$baseUri/games/activeGamesSortedDateTimeList');
   }
 
   @override
@@ -114,9 +117,18 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   }
 
   @override
-  Future<List<GameGroupDto>> getCurrentRound() {
-    // TODO: implement getCurrentRound
-    throw UnimplementedError();
+  Future<List<GameGroupDto>> getCurrentRound() async {
+    final response = await client.get(getAllGameGroupsUri, headers: headers);
+
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+
+      if (json is List<Map<String, dynamic>>) {
+        return json.map((e) => GameGroupDto.fromJson(e)).toList();
+      }
+    }
+
+    return [];
   }
 }
 
