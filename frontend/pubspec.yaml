@@ -19,6 +19,7 @@ dependencies:
   go_router: ^14.6.2
   scrollable_positioned_list: ^0.3.8
   stop_watch_timer: ^3.2.1
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:

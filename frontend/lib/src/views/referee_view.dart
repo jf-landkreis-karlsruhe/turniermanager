@@ -3,7 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/model/referee/game.dart';
+import 'package:tournament_manager/src/model/referee/game_group.dart';
 import 'package:watch_it/watch_it.dart';
+import 'package:intl/intl.dart';
 
 class RefereeView extends StatelessWidget with WatchItMixin {
   const RefereeView({super.key});
@@ -107,7 +109,7 @@ class RefereeView extends StatelessWidget with WatchItMixin {
             var gameGroup = gameGroups[index];
             return GameView(
               first: index == 0,
-              games: gameGroup.games,
+              gameGroup: gameGroup,
             );
           },
           itemCount: gameGroups.length,
@@ -121,12 +123,12 @@ class GameView extends StatefulWidget {
   const GameView({
     super.key,
     required this.first,
-    required this.games,
+    required this.gameGroup,
   });
 
   static const double _headerFontSize = 20;
   final bool first;
-  final List<Game> games;
+  final GameGroup gameGroup;
 
   @override
   State<GameView> createState() => _GameViewState();
@@ -145,7 +147,7 @@ class _GameViewState extends State<GameView> {
 
     List<Widget> rows = [];
 
-    for (var game in widget.games) {
+    for (var game in widget.gameGroup.games) {
       rows.add(
         GameEntryView(
           gameRoundEntry: game,
@@ -173,21 +175,12 @@ class _GameViewState extends State<GameView> {
                   Row(
                     children: [
                       Text(
-                        'Spiel ${widget.games.first.gameNumber}',
+                        'Startzeit: ${DateFormat.Hm().format(widget.gameGroup.startTime)} Uhr',
                         style: TextStyle(
                             fontSize: GameView._headerFontSize,
                             color: currentlyRunning
                                 ? selectedTextColor
                                 : standardTextColor),
-                      ),
-                      const SizedBox(width: 10),
-                      CountDownView(
-                        timeInMinutes: 10,
-                        textColor: currentlyRunning
-                            ? selectedTextColor
-                            : standardTextColor,
-                        start: currentlyRunning,
-                        refresh: reset,
                       ),
                       const SizedBox(width: 10),
                       if (widget.first)
@@ -225,7 +218,16 @@ class _GameViewState extends State<GameView> {
                               : standardTextColor,
                           tooltip: "Spiel starten",
                         ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 5),
+                      CountDownView(
+                        timeInMinutes: 10,
+                        textColor: currentlyRunning
+                            ? selectedTextColor
+                            : standardTextColor,
+                        start: currentlyRunning,
+                        refresh: reset,
+                      ),
+                      const SizedBox(width: 5),
                       if (widget.first)
                         IconButton(
                           onPressed: () {
