@@ -43,6 +43,8 @@ class RefereeMapper {
       mapPitch(dto.pitch),
       mapTeam(dto.teamA),
       mapTeam(dto.teamB),
+      dto.leagueName,
+      dto.ageGroupName,
     );
   }
 }

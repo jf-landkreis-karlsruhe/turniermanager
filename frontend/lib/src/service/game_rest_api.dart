@@ -154,7 +154,7 @@ class GameTestRestApi extends GameRestApi {
         ..games = [
           GameDto(
             1,
-            PitchDto("1"),
+            PitchDto("Feld 1"),
             TeamDto(
               "Team A",
               AgeGroupDto('', "1"),
@@ -165,10 +165,12 @@ class GameTestRestApi extends GameRestApi {
               AgeGroupDto('', "1"),
               referee_league.LeagueDto("1"),
             ),
+            'Liga 1',
+            'Altersklasse 1',
           ),
           GameDto(
             1,
-            PitchDto("2"),
+            PitchDto("Feld 2"),
             TeamDto(
               "Team A",
               AgeGroupDto('', "2"),
@@ -179,10 +181,12 @@ class GameTestRestApi extends GameRestApi {
               AgeGroupDto('', "2"),
               referee_league.LeagueDto("1"),
             ),
+            'Liga 1',
+            'Altersklasse 2',
           ),
           GameDto(
             2,
-            PitchDto("1"),
+            PitchDto("Feld 1"),
             TeamDto(
               "Team A",
               AgeGroupDto('', "1"),
@@ -193,10 +197,12 @@ class GameTestRestApi extends GameRestApi {
               AgeGroupDto('', "1"),
               referee_league.LeagueDto("1"),
             ),
+            'Liga 2',
+            'Altersklasse 1',
           ),
           GameDto(
             2,
-            PitchDto("2"),
+            PitchDto("Feld 2"),
             TeamDto(
               "Team A",
               AgeGroupDto('', "2"),
@@ -207,13 +213,15 @@ class GameTestRestApi extends GameRestApi {
               AgeGroupDto('', "2"),
               referee_league.LeagueDto("2"),
             ),
+            'Liga 2',
+            'Altersklasse 2',
           ),
         ],
       GameGroupDto(DateTime.now())
         ..games = [
           GameDto(
             1,
-            PitchDto("1"),
+            PitchDto("Feld 1"),
             TeamDto(
               "Team A",
               AgeGroupDto('', "1"),
@@ -224,10 +232,12 @@ class GameTestRestApi extends GameRestApi {
               AgeGroupDto('', "1"),
               referee_league.LeagueDto("1"),
             ),
+            'Liga 1',
+            'Altersklasse 1',
           ),
           GameDto(
             1,
-            PitchDto("2"),
+            PitchDto("Feld 2"),
             TeamDto(
               "Team A",
               AgeGroupDto('', "2"),
@@ -238,10 +248,12 @@ class GameTestRestApi extends GameRestApi {
               AgeGroupDto('', "2"),
               referee_league.LeagueDto("1"),
             ),
+            'Liga 3',
+            'Altersklasse 1',
           ),
           GameDto(
             2,
-            PitchDto("1"),
+            PitchDto("Feld 1"),
             TeamDto(
               "Team A",
               AgeGroupDto('', "1"),
@@ -252,10 +264,12 @@ class GameTestRestApi extends GameRestApi {
               AgeGroupDto('', "1"),
               referee_league.LeagueDto("1"),
             ),
+            'Liga 1',
+            'Altersklasse 4',
           ),
           GameDto(
             2,
-            PitchDto("2"),
+            PitchDto("Feld 2"),
             TeamDto(
               "Team A",
               AgeGroupDto('', "2"),
@@ -266,13 +280,15 @@ class GameTestRestApi extends GameRestApi {
               AgeGroupDto('', "2"),
               referee_league.LeagueDto("2"),
             ),
+            'Liga 5',
+            'Altersklasse 1',
           ),
         ],
     ];
   }
 
   @override
-  Future<ResultsDto?> getResults(String ageGroup) async {
+  Future<ResultsDto?> getResults(String ageGroupId) async {
     var resultList = List.generate(
       10,
       (index) {
@@ -306,7 +322,7 @@ class GameTestRestApi extends GameRestApi {
   }
 
   @override
-  Future<MatchScheduleDto?> getSchedule(String ageGroup) async {
+  Future<MatchScheduleDto?> getSchedule(String ageGroupId) async {
     int fieldCount = 1;
     int teamCount = 1;
     int hourCount = 10;

@@ -12,12 +12,16 @@ class GameDto {
     this.pitch,
     this.teamA,
     this.teamB,
+    this.leagueName,
+    this.ageGroupName,
   );
 
   int gameNumber;
   PitchDto pitch;
   TeamDto teamA;
   TeamDto teamB;
+  String leagueName;
+  String ageGroupName;
 
   factory GameDto.fromJson(Map<String, dynamic> json) =>
       _$GameDtoFromJson(json);
