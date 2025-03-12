@@ -60,7 +60,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
 
   @override
   Future<ResultsDto?> getResults(String ageGroupId) async {
-    final uri = Uri.parse(getSchedulePath + ageGroupId);
+    final uri = Uri.parse(getResultsPath + ageGroupId);
 
     final response = await client.get(uri, headers: headers);
 
