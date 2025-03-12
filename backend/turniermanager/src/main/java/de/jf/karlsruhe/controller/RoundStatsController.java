@@ -112,10 +112,16 @@ public class RoundStatsController {
             List<Team> teams = league.getTeams();
             if (teams != null) {
                 // Jedes Team einzeln auswerten
+                List<TeamStatsDTO> teamStatsList = new ArrayList<>();
                 for (Team team : teams) {
                     TeamStatsDTO teamStats = computeTeamStats(round, team);
-                    leagueTableDTO.getTeams().add(teamStats);
+                    teamStatsList.add(teamStats);
                 }
+
+                // Teams nach totalPoints absteigend sortieren
+                teamStatsList.sort(Comparator.comparingInt(TeamStatsDTO::getTotalPoints).reversed());
+
+                leagueTableDTO.setTeams(teamStatsList);
             }
             roundStatsDTO.getLeagueTables().add(leagueTableDTO);
         }
