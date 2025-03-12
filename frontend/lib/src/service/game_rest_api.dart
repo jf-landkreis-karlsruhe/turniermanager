@@ -259,8 +259,6 @@ class GameTestRestApi extends GameRestApi {
   Future<MatchScheduleDto?> getSchedule(String ageGroupId) async {
     int fieldCount = 1;
     int teamCount = 1;
-    int hourCount = 10;
-    int timeCount = 10;
 
     var scheduleList = List.generate(
       10,
@@ -269,7 +267,7 @@ class GameTestRestApi extends GameRestApi {
           "Platz $fieldCount",
           "team${teamCount++}",
           "team${teamCount++}",
-          "$hourCount:$timeCount Uhr",
+          DateTime.now(),
         );
 
         fieldCount++;
@@ -281,17 +279,11 @@ class GameTestRestApi extends GameRestApi {
           teamCount = 1;
         }
 
-        timeCount += 10;
-        if (timeCount >= 60) {
-          timeCount = 10;
-          hourCount++;
-        }
-
         return result;
       },
     );
 
-    return MatchScheduleDto(1)
+    return MatchScheduleDto('Runde 1')
       ..leagues = List.generate(
         8,
         (index) {

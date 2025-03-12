@@ -54,7 +54,7 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
   @override
   late Command<void, void> getAgeGroupsCommand;
 
-  MatchSchedule _schedule = MatchSchedule(1);
+  MatchSchedule _schedule = MatchSchedule('Runde ??');
 
   @override
   MatchSchedule get schedule => _schedule;

@@ -12,7 +12,7 @@ MatchScheduleEntryDto _$MatchScheduleEntryDtoFromJson(
       json['pitchName'] as String,
       json['teamAName'] as String,
       json['teamBName'] as String,
-      json['startTime'] as String,
+      DateTime.parse(json['startTime'] as String),
     );
 
 Map<String, dynamic> _$MatchScheduleEntryDtoToJson(
@@ -21,5 +21,5 @@ Map<String, dynamic> _$MatchScheduleEntryDtoToJson(
       'pitchName': instance.pitchName,
       'teamAName': instance.teamAName,
       'teamBName': instance.teamBName,
-      'startTime': instance.startTime,
+      'startTime': instance.startTime.toIso8601String(),
     };

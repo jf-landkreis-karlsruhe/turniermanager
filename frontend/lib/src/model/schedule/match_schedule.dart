@@ -1,8 +1,8 @@
 import 'package:tournament_manager/src/model/schedule/league.dart';
 
 class MatchSchedule {
-  MatchSchedule(this.matchRound);
+  MatchSchedule(this.roundName);
 
-  int matchRound;
+  String roundName;
   List<League> leagueSchedules = [];
 }
