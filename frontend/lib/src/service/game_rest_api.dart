@@ -13,8 +13,6 @@ import 'package:tournament_manager/src/serialization/results/league_dto.dart'
 import 'package:tournament_manager/src/serialization/schedule/match_schedule_dto.dart';
 import 'package:tournament_manager/src/serialization/schedule/match_schedule_entry_dto.dart';
 import 'package:tournament_manager/src/service/rest_client.dart';
-import 'package:tournament_manager/src/serialization/referee/league_dto.dart'
-    as referee_league;
 
 abstract class GameRestApi {
   Future<MatchScheduleDto?> getSchedule(String ageGroupId);
@@ -155,64 +153,32 @@ class GameTestRestApi extends GameRestApi {
           GameDto(
             1,
             PitchDto("Feld 1"),
-            TeamDto(
-              "Team A",
-              AgeGroupDto('', "1"),
-              referee_league.LeagueDto("1"),
-            ),
-            TeamDto(
-              "Team B",
-              AgeGroupDto('', "1"),
-              referee_league.LeagueDto("1"),
-            ),
+            TeamDto("Team A"),
+            TeamDto("Team B"),
             'Liga 1',
             'Altersklasse 1',
           ),
           GameDto(
             1,
             PitchDto("Feld 2"),
-            TeamDto(
-              "Team A",
-              AgeGroupDto('', "2"),
-              referee_league.LeagueDto("1"),
-            ),
-            TeamDto(
-              "Team B",
-              AgeGroupDto('', "2"),
-              referee_league.LeagueDto("1"),
-            ),
+            TeamDto("Team A"),
+            TeamDto("Team B"),
             'Liga 1',
             'Altersklasse 2',
           ),
           GameDto(
             2,
             PitchDto("Feld 1"),
-            TeamDto(
-              "Team A",
-              AgeGroupDto('', "1"),
-              referee_league.LeagueDto("1"),
-            ),
-            TeamDto(
-              "Team B",
-              AgeGroupDto('', "1"),
-              referee_league.LeagueDto("1"),
-            ),
+            TeamDto("Team A"),
+            TeamDto("Team B"),
             'Liga 2',
             'Altersklasse 1',
           ),
           GameDto(
             2,
             PitchDto("Feld 2"),
-            TeamDto(
-              "Team A",
-              AgeGroupDto('', "2"),
-              referee_league.LeagueDto("2"),
-            ),
-            TeamDto(
-              "Team B",
-              AgeGroupDto('', "2"),
-              referee_league.LeagueDto("2"),
-            ),
+            TeamDto("Team A"),
+            TeamDto("Team B"),
             'Liga 2',
             'Altersklasse 2',
           ),
@@ -222,64 +188,32 @@ class GameTestRestApi extends GameRestApi {
           GameDto(
             1,
             PitchDto("Feld 1"),
-            TeamDto(
-              "Team A",
-              AgeGroupDto('', "1"),
-              referee_league.LeagueDto("1"),
-            ),
-            TeamDto(
-              "Team B",
-              AgeGroupDto('', "1"),
-              referee_league.LeagueDto("1"),
-            ),
+            TeamDto("Team A"),
+            TeamDto("Team B"),
             'Liga 1',
             'Altersklasse 1',
           ),
           GameDto(
             1,
             PitchDto("Feld 2"),
-            TeamDto(
-              "Team A",
-              AgeGroupDto('', "2"),
-              referee_league.LeagueDto("1"),
-            ),
-            TeamDto(
-              "Team B",
-              AgeGroupDto('', "2"),
-              referee_league.LeagueDto("1"),
-            ),
+            TeamDto("Team A"),
+            TeamDto("Team B"),
             'Liga 3',
             'Altersklasse 1',
           ),
           GameDto(
             2,
             PitchDto("Feld 1"),
-            TeamDto(
-              "Team A",
-              AgeGroupDto('', "1"),
-              referee_league.LeagueDto("1"),
-            ),
-            TeamDto(
-              "Team B",
-              AgeGroupDto('', "1"),
-              referee_league.LeagueDto("1"),
-            ),
+            TeamDto("Team A"),
+            TeamDto("Team B"),
             'Liga 1',
             'Altersklasse 4',
           ),
           GameDto(
             2,
             PitchDto("Feld 2"),
-            TeamDto(
-              "Team A",
-              AgeGroupDto('', "2"),
-              referee_league.LeagueDto("2"),
-            ),
-            TeamDto(
-              "Team B",
-              AgeGroupDto('', "2"),
-              referee_league.LeagueDto("2"),
-            ),
+            TeamDto("Team A"),
+            TeamDto("Team B"),
             'Liga 5',
             'Altersklasse 1',
           ),
