@@ -58,7 +58,7 @@ public class DataInitializer {
                 updateAllGamesWithRandomScores(gameRepository);
             }
 
-            if (false) {
+            if (true) {
                 UUID id = tournament.getId();
                 tournamentController.createTournamentRound(id, "World Cup FW");
             }

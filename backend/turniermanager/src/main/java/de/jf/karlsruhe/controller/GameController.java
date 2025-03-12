@@ -1,6 +1,7 @@
 package de.jf.karlsruhe.controller;
 
 import de.jf.karlsruhe.model.base.Game;
+import de.jf.karlsruhe.model.base.League;
 import de.jf.karlsruhe.model.base.Pitch;
 import de.jf.karlsruhe.model.base.Team;
 import de.jf.karlsruhe.model.repos.GameRepository;
@@ -142,7 +143,21 @@ public class GameController {
             TeamDTO teamADTO = new TeamDTO(game.getTeamA().getId(), game.getTeamA().getName());
             TeamDTO teamBDTO = new TeamDTO(game.getTeamB().getId(), game.getTeamB().getName());
             PitchDTO pitchDTO = new PitchDTO(game.getPitch().getId(), game.getPitch().getName());
-            GameDTO gameDTO = new GameDTO(game.getId(), game.getGameNumber(), teamADTO, teamBDTO, pitchDTO);
+
+            // Liga und Altersgruppe aus der aktiven Runde abrufen
+            String leagueName = game.getRound().getLeagues().stream()
+                    .filter(league -> (league.getTeams().contains(game.getTeamA()) || league.getTeams().contains(game.getTeamB())) && league.getRound().isActive())
+                    .findFirst()
+                    .map(League::getName)
+                    .orElse("Unbekannte Liga");
+
+            String ageGroupName = game.getRound().getLeagues().stream()
+                    .filter(league -> (league.getTeams().contains(game.getTeamA()) || league.getTeams().contains(game.getTeamB())) && league.getRound().isActive())
+                    .findFirst()
+                    .map(league -> league.getAgeGroup().getName())
+                    .orElse("Unbekannte Altersgruppe");
+
+            GameDTO gameDTO = new GameDTO(game.getId(), game.getGameNumber(), teamADTO, teamBDTO, pitchDTO, leagueName, ageGroupName);
             groupedGames.computeIfAbsent(startTime, k -> new ArrayList<>()).add(gameDTO);
         }
 
@@ -169,6 +184,8 @@ public class GameController {
         private TeamDTO teamA;
         private TeamDTO teamB;
         private PitchDTO pitch;
+        private String leagueName;
+        private String ageGroupName;
     }
 
     @Data
