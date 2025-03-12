@@ -4,7 +4,7 @@ import 'package:tournament_manager/src/mapper/match_schedule_mapper.dart';
 import 'package:tournament_manager/src/mapper/referee_mapper.dart';
 import 'package:tournament_manager/src/mapper/results_mapper.dart';
 import 'package:tournament_manager/src/mapper/age_group_mapper.dart';
-import 'package:tournament_manager/src/model/referee/age_group.dart';
+import 'package:tournament_manager/src/model/age_group.dart';
 import 'package:tournament_manager/src/model/referee/game_group.dart';
 import 'package:tournament_manager/src/model/results/results.dart';
 import 'package:tournament_manager/src/model/schedule/match_schedule.dart';

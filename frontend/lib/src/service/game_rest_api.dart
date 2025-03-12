@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:tournament_manager/src/serialization/referee/age_group_dto.dart';
+import 'package:tournament_manager/src/serialization/age_group_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/game_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/game_group_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/pitch_dto.dart';

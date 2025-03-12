@@ -1,19 +1,13 @@
-import 'package:tournament_manager/src/model/referee/age_group.dart';
 import 'package:tournament_manager/src/model/referee/game.dart';
 import 'package:tournament_manager/src/model/referee/game_group.dart';
 import 'package:tournament_manager/src/model/referee/pitch.dart';
 import 'package:tournament_manager/src/model/referee/team.dart';
-import 'package:tournament_manager/src/serialization/referee/age_group_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/game_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/game_group_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/pitch_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/team_dto.dart';
 
 class RefereeMapper {
-  AgeGroup mapAgeGroup(AgeGroupDto dto) {
-    return AgeGroup(dto.id, dto.name);
-  }
-
   Pitch mapPitch(PitchDto dto) {
     return Pitch(dto.name);
   }
