@@ -61,6 +61,7 @@ public class DataInitializer {
             if (true) {
                 UUID id = tournament.getId();
                 tournamentController.createTournamentRound(id, "World Cup FW");
+
             }
 
             if (false) {

@@ -1,9 +1,7 @@
 package de.jf.karlsruhe.controller;
 
-import de.jf.karlsruhe.model.base.Game;
-import de.jf.karlsruhe.model.base.League;
-import de.jf.karlsruhe.model.base.Round;
-import de.jf.karlsruhe.model.base.Team;
+import de.jf.karlsruhe.model.base.*;
+import de.jf.karlsruhe.model.repos.AgeGroupRepository;
 import de.jf.karlsruhe.model.repos.RoundRepository; // Beispielhafte Annahme, dass dieses Repo existiert
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,8 +17,32 @@ import java.util.stream.Collectors;
 @RequestMapping("/stats")
 public class RoundStatsController {
 
+
     @Autowired
     private RoundRepository roundRepository;
+
+    @Autowired
+    private AgeGroupRepository ageGroupRepository;
+
+
+    @GetMapping("/agegroup/{ageGroupId}")
+    @Transactional
+    public ResponseEntity<RoundStatsDTO> getRoundStatsByAgeGroup(@PathVariable UUID ageGroupId) {
+        Optional<AgeGroup> ageGroupOpt = ageGroupRepository.findById(ageGroupId);
+        if (ageGroupOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        AgeGroup ageGroup = ageGroupOpt.get();
+
+        Optional<Round> activeRoundOpt = roundRepository.findActiveRoundByAgeGroup(ageGroup);
+        if (activeRoundOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Round activeRound = activeRoundOpt.get();
+
+        RoundStatsDTO roundStatsDTO = getRoundStatsByRound(activeRound);
+        return ResponseEntity.ok(roundStatsDTO);
+    }
 
     /**
      * Endpunkt, um die Spieltabellen jeder Liga einer bestimmten Runde als JSON zu liefern.
