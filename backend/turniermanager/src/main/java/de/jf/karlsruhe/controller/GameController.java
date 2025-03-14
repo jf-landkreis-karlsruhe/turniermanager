@@ -1,10 +1,9 @@
 package de.jf.karlsruhe.controller;
 
-import de.jf.karlsruhe.model.base.Game;
-import de.jf.karlsruhe.model.base.League;
-import de.jf.karlsruhe.model.base.Pitch;
-import de.jf.karlsruhe.model.base.Team;
+import de.jf.karlsruhe.model.base.*;
 import de.jf.karlsruhe.model.repos.GameRepository;
+import de.jf.karlsruhe.model.repos.GameSettingsRepository;
+import de.jf.karlsruhe.model.repos.TournamentRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +23,7 @@ public class GameController {
 
     private final GameRepository gameRepository;
     private final PitchScheduler pitchScheduler;
+    private final GameSettingsRepository gameSettingsRepository;
 
     /**
      * Spielergebnisse eintragen/aktualisieren
@@ -160,9 +160,10 @@ public class GameController {
             GameDTO gameDTO = new GameDTO(game.getId(), game.getGameNumber(), teamADTO, teamBDTO, pitchDTO, leagueName, ageGroupName);
             groupedGames.computeIfAbsent(startTime, k -> new ArrayList<>()).add(gameDTO);
         }
+        GameSettings currentGameSettings = gameSettingsRepository.findAll().getFirst();
 
         List<GameScheduleDateTimeDTO> result = new ArrayList<>();
-        groupedGames.forEach((startTime, games) -> result.add(new GameScheduleDateTimeDTO(startTime, games)));
+        groupedGames.forEach((startTime, games) -> result.add(new GameScheduleDateTimeDTO(currentGameSettings.getPlayTime(), startTime, games)));
 
         return result;
     }
@@ -171,6 +172,7 @@ public class GameController {
     @NoArgsConstructor
     @AllArgsConstructor
     public class GameScheduleDateTimeDTO {
+        private int gameDurationInMinutes;
         private LocalDateTime startTime;
         private List<GameDTO> games;
     }

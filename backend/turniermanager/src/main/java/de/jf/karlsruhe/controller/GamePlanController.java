@@ -13,13 +13,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-
-@RestController("/gameplan")
+@RestController
+@RequestMapping("/gameplan")
 public class GamePlanController {
 
     @Autowired
@@ -65,7 +66,7 @@ public class GamePlanController {
             leagueSchedule.setEntries(entries);
             leagueSchedules.add(leagueSchedule);
         }
-
+        gamePlan.setRoundName(round.getName());
         gamePlan.setLeagues(leagueSchedules);
         return gamePlan;
     }
@@ -82,6 +83,7 @@ public class GamePlanController {
 
     @Data
     public static class GamePlan {
+        private String roundName;
         private List<LeagueSchedule> leagues;
     }
 
