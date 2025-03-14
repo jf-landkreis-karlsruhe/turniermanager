@@ -9,5 +9,5 @@ class MatchScheduleEntry {
   String pitchName;
   String teamAName;
   String teamBName;
-  String startTime;
+  DateTime startTime;
 }

@@ -15,7 +15,7 @@ class MatchScheduleEntryDto {
   String pitchName;
   String teamAName;
   String teamBName;
-  String startTime;
+  DateTime startTime;
 
   factory MatchScheduleEntryDto.fromJson(Map<String, dynamic> json) =>
       _$MatchScheduleEntryDtoFromJson(json);

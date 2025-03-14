@@ -7,10 +7,14 @@ class Game {
     this.pitch,
     this.teamA,
     this.teamB,
+    this.leagueName,
+    this.ageGroupName,
   );
 
   int gameNumber;
   Pitch pitch;
   Team teamA;
   Team teamB;
+  String leagueName;
+  String ageGroupName;
 }

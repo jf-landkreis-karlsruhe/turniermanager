@@ -377,7 +377,7 @@ class GameEntryView extends StatelessWidget {
         Row(
           children: [
             Text(
-              'Altersgruppe ${gameRoundEntry.teamA.ageGroup.name}',
+              gameRoundEntry.ageGroupName,
               style: TextStyle(color: textColor),
             ),
             const SizedBox(width: 5),
@@ -387,7 +387,7 @@ class GameEntryView extends StatelessWidget {
             ),
             const SizedBox(width: 5),
             Text(
-              'Liga ${gameRoundEntry.teamA.league.name}',
+              gameRoundEntry.leagueName,
               style: TextStyle(color: textColor),
             ),
             const SizedBox(width: 5),
@@ -397,7 +397,7 @@ class GameEntryView extends StatelessWidget {
             ),
             const SizedBox(width: 5),
             Text(
-              'Feld ${gameRoundEntry.pitch.name}',
+              gameRoundEntry.pitch.name,
               style: TextStyle(color: textColor),
             ),
           ],

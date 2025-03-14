@@ -11,6 +11,8 @@ GameDto _$GameDtoFromJson(Map<String, dynamic> json) => GameDto(
       PitchDto.fromJson(json['pitch'] as Map<String, dynamic>),
       TeamDto.fromJson(json['teamA'] as Map<String, dynamic>),
       TeamDto.fromJson(json['teamB'] as Map<String, dynamic>),
+      json['leagueName'] as String,
+      json['ageGroupName'] as String,
     );
 
 Map<String, dynamic> _$GameDtoToJson(GameDto instance) => <String, dynamic>{
@@ -18,4 +20,6 @@ Map<String, dynamic> _$GameDtoToJson(GameDto instance) => <String, dynamic>{
       'pitch': instance.pitch.toJson(),
       'teamA': instance.teamA.toJson(),
       'teamB': instance.teamB.toJson(),
+      'leagueName': instance.leagueName,
+      'ageGroupName': instance.ageGroupName,
     };

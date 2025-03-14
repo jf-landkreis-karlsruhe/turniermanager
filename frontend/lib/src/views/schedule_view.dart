@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
-import 'package:tournament_manager/src/model/referee/age_group.dart';
+import 'package:tournament_manager/src/model/age_group.dart';
 import 'package:tournament_manager/src/model/schedule/league.dart';
 import 'package:tournament_manager/src/model/schedule/match_schedule_entry.dart';
 import 'package:watch_it/watch_it.dart';
@@ -92,7 +93,7 @@ class _ScheduleViewState extends State<ScheduleView> {
           ),
           const SizedBox(width: 5),
           Text(
-            'Spielrunde ${schedule.matchRound}',
+            'Spielrunde ${schedule.roundName}',
             style: TextStyle(fontSize: _headerFontSize),
           ),
           const SizedBox(width: 10),
@@ -196,7 +197,7 @@ class ScheduleEntryView extends StatelessWidget {
               ),
               const SizedBox(width: 5),
               Text(
-                matchScheduleEntry.startTime,
+                DateFormat.Hm().format(matchScheduleEntry.startTime),
                 style: const TextStyle(color: Colors.black),
               ),
             ],
