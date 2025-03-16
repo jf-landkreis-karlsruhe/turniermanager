@@ -3,7 +3,6 @@ package de.jf.karlsruhe.logic;
 import de.jf.karlsruhe.controller.PitchScheduler;
 import de.jf.karlsruhe.controller.TournamentController;
 import de.jf.karlsruhe.model.base.*;
-import de.jf.karlsruhe.model.game.GameSettings;
 import de.jf.karlsruhe.model.repos.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -116,7 +115,7 @@ class TournamentControllerUnitTest {
 
         // *** Schritt 3: Erste zusätzliche Runde erstellen (z. B. Zwischenrunde) ***
         String firstRoundName = "Qualifikationsrunde";
-        Tournament firstRoundTournament = tournamentController.createTournamentRound(tournamentId, firstRoundName);
+        Tournament firstRoundTournament = tournamentController.createTournamentRound();
 
         // Verifizieren, dass die erste neue Runde erfolgreich erstellt wurde
         assertNotNull(firstRoundTournament);
@@ -134,7 +133,7 @@ class TournamentControllerUnitTest {
 
         // *** Schritt 4: Zweite zusätzliche Runde erstellen (Finalrunde) ***
         String finalRoundName = "Finalrunde";
-        Tournament finalRoundTournament = tournamentController.createTournamentRound(tournamentId, finalRoundName);
+        Tournament finalRoundTournament = tournamentController.createTournamentRound();
 
         // Verifizieren, dass die finale Runde erfolgreich erstellt wurde
         assertNotNull(finalRoundTournament);

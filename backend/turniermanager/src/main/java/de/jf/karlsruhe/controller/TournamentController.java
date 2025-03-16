@@ -90,13 +90,13 @@ public class TournamentController {
 
     @Transactional
     @PostMapping("/create/round")
-    public Tournament createTournamentRound(@RequestParam UUID tournamentId, @RequestParam String roundName) {
+    public Tournament createTournamentRound() {
         if (ageGroupRepository.count() == 0 && pitchRepository.count() == 0 && teamRepository.count() == 0)
-            return tournamentRepository.findById(tournamentId).orElseThrow();
+            return tournamentRepository.findAll().getFirst();
         List<Round> all = roundRepository.findAll();
         all.forEach(round -> {round.setActive(false);});
 
-        Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow();
+        Tournament tournament = tournamentRepository.findAll().getFirst();
         List<AgeGroup> ageGroups = ageGroupRepository.findAll();
 
         for (AgeGroup ageGroup : ageGroups) {
@@ -104,7 +104,7 @@ public class TournamentController {
             List<Game> allGames = gameRepository.findAll();
             List<Team> sortedTeams = !allGames.isEmpty() ? getTeamsSortedByPerformance(allGames, teams) : teams;
 
-            List<League> leagues = createBalancedLeaguesForAgeGroup(sortedTeams, 6, roundName, tournament);
+            List<League> leagues = createBalancedLeaguesForAgeGroup(sortedTeams, 6, "Turnier", tournament);
 
             // Erstelle eine Kopie der League-Liste
             List<League> leaguesCopy = new ArrayList<>(leagues);
