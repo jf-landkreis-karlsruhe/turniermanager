@@ -93,7 +93,7 @@ class _ScheduleViewState extends State<ScheduleView> {
           ),
           const SizedBox(width: 5),
           Text(
-            'Spielrunde ${schedule.roundName}',
+            schedule.roundName,
             style: TextStyle(fontSize: _headerFontSize),
           ),
           const SizedBox(width: 10),
