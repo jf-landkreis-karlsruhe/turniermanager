@@ -5,6 +5,7 @@ import 'package:tournament_manager/src/serialization/referee/game_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/game_group_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/pitch_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/team_dto.dart';
+import 'package:tournament_manager/src/serialization/referee/timing_request_dto.dart';
 import 'package:tournament_manager/src/serialization/results/result_entry_dto.dart';
 import 'package:tournament_manager/src/serialization/results/results_dto.dart';
 import 'package:tournament_manager/src/serialization/schedule/league_dto.dart';
@@ -19,7 +20,11 @@ abstract class GameRestApi {
 
   Future<ResultsDto?> getResults(String ageGroupId);
 
-  Future<bool?> endCurrentGames();
+  Future<bool> endCurrentGames(
+    DateTime originalStart,
+    DateTime actualStart,
+    DateTime end,
+  );
 
   Future<bool> startNextRound();
 
@@ -34,6 +39,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   late final Uri getAllAgeGroupsUri;
   late final Uri getAllGameGroupsUri;
   late final Uri createRoundUri;
+  late final Uri endGamesUri;
 
   GameRestApiImplementation() {
     getSchedulePath = '$baseUri/gameplan/agegroup/';
@@ -42,6 +48,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
     getAllGameGroupsUri =
         Uri.parse('$baseUri/games/activeGamesSortedDateTimeList');
     createRoundUri = Uri.parse('$baseUri/turniersetup/create/round');
+    endGamesUri = Uri.parse('$baseUri/games/refreshTimings');
   }
 
   @override
@@ -73,11 +80,33 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   }
 
   @override
-  Future<bool?> endCurrentGames() async {
+  Future<bool> endCurrentGames(
+    DateTime originalStart,
+    DateTime actualStart,
+    DateTime end,
+  ) async {
+    var dto = TimingRequestDto(
+      originalStart,
+      actualStart,
+      end,
+    );
+
+    var serialized = jsonEncode(dto);
+
     try {
-      return true; // TODO: implement endCurrentGames
+      final response = await client.post(
+        endGamesUri,
+        body: serialized,
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+
+      return false;
     } catch (e) {
-      return null;
+      return false;
     }
   }
 
@@ -128,7 +157,11 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
 
 class GameTestRestApi extends GameRestApi {
   @override
-  Future<bool?> endCurrentGames() async {
+  Future<bool> endCurrentGames(
+    DateTime originalStart,
+    DateTime actualStart,
+    DateTime end,
+  ) async {
     return true;
   }
 

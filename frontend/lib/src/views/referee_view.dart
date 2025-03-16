@@ -137,6 +137,7 @@ class GameView extends StatefulWidget {
 class _GameViewState extends State<GameView> {
   bool currentlyRunning = false;
   bool reset = false;
+  DateTime? currentGamesActualStart;
 
   Color selectedTextColor = Colors.black;
   Color standardTextColor = Colors.white;
@@ -186,6 +187,11 @@ class _GameViewState extends State<GameView> {
                       if (widget.first)
                         IconButton(
                           onPressed: () async {
+                            if (!currentlyRunning &&
+                                currentGamesActualStart == null) {
+                              currentGamesActualStart = DateTime.now();
+                            }
+
                             setState(() {
                               reset = false;
                               currentlyRunning = !currentlyRunning;
@@ -216,6 +222,8 @@ class _GameViewState extends State<GameView> {
                               currentlyRunning = false;
                               reset = true;
                             });
+
+                            currentGamesActualStart = null;
                           },
                           icon: const Icon(Icons.refresh),
                           color: currentlyRunning
@@ -228,12 +236,25 @@ class _GameViewState extends State<GameView> {
                   if (widget.first)
                     IconButton(
                       onPressed: () async {
+                        if (currentGamesActualStart == null) {
+                          showError(
+                              context, 'Spiele konnten nicht beendet werden');
+                          return;
+                        }
+
                         var result = await gameManager.endCurrentGamesCommand
-                            .executeWithFuture();
+                            .executeWithFuture(
+                          (
+                            widget.gameGroup.startTime,
+                            currentGamesActualStart!,
+                            DateTime.now(),
+                          ),
+                        );
 
                         setState(() {
                           currentlyRunning = false;
                           reset = true;
+                          currentGamesActualStart = null;
                         });
 
                         if (result) {

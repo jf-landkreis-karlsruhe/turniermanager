@@ -15,7 +15,8 @@ abstract class GameManager extends ChangeNotifier {
   late Command<String, void> getScheduleCommand;
   late Command<String, void> getResultsCommand;
 
-  late Command<void, bool> endCurrentGamesCommand;
+  late Command<(DateTime originalStart, DateTime actualStart, DateTime end),
+      bool> endCurrentGamesCommand;
   late Command<void, bool> startNextRoundCommand;
   late Command<void, void> getCurrentRoundCommand;
 
@@ -42,7 +43,8 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
   late Command<String, void> getResultsCommand;
 
   @override
-  late Command<void, bool> endCurrentGamesCommand;
+  late Command<(DateTime originalStart, DateTime actualStart, DateTime end),
+      bool> endCurrentGamesCommand;
   @override
   late Command<void, bool> startNextRoundCommand;
   @override
@@ -113,14 +115,9 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
       },
     );
 
-    endCurrentGamesCommand = Command.createAsyncNoParam(
-      () async {
-        var result = await _gameRestApi.endCurrentGames();
-        if (result == null) {
-          return false; //TODO: error handling
-        }
-
-        return result;
+    endCurrentGamesCommand = Command.createAsync(
+      (param) async {
+        return await _gameRestApi.endCurrentGames(param.$1, param.$2, param.$3);
       },
       initialValue: false,
     );
