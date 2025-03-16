@@ -27,6 +27,8 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@CrossOrigin(origins = "*")
+
 @RestController
 @RequestMapping("/turniersetup/pitches")
 @RequiredArgsConstructor

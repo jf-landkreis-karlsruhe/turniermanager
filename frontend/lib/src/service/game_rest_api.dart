@@ -102,7 +102,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
 
-      if (json is List<Map<String, dynamic>>) {
+      if (json is List) {
         return json.map((e) => AgeGroupDto.fromJson(e)).toList();
       }
     }

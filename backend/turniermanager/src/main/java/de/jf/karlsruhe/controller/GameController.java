@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
+@CrossOrigin(origins = "*")
+
 @RestController
 @RequestMapping("/games")
 @RequiredArgsConstructor
