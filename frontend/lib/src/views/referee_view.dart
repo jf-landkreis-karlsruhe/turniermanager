@@ -237,8 +237,8 @@ class _GameViewState extends State<GameView> {
                     IconButton(
                       onPressed: () async {
                         if (currentGamesActualStart == null) {
-                          showError(
-                              context, 'Spiele konnten nicht beendet werden');
+                          showError(context,
+                              'Spiele wurden nicht gestartet und konnten daher nicht beendet werden');
                           return;
                         }
 
