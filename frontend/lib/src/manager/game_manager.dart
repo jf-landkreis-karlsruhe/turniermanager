@@ -127,12 +127,7 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
 
     startNextRoundCommand = Command.createAsyncNoParam(
       () async {
-        var result = await _gameRestApi.startNextRound();
-        if (result == null) {
-          return false; //TODO: error handling
-        }
-
-        return result;
+        return await _gameRestApi.startNextRound();
       },
       initialValue: false,
     );

@@ -12,5 +12,5 @@ abstract class RestClient {
   };
 
   @protected
-  final String baseUri = '127.0.0.1:8080';
+  final String baseUri = 'http://127.0.0.1:8080';
 }

@@ -7,9 +7,9 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 
 void setup() {
   // register REST API services
-  // di.registerSingleton<GameRestApi>(GameRestApiImplementation());
-  di.registerSingleton<GameRestApi>(
-      GameTestRestApi()); //TODO: remove test data / switch to backend
+  di.registerSingleton<GameRestApi>(GameRestApiImplementation());
+  // di.registerSingleton<GameRestApi>(
+  //     GameTestRestApi()); //TODO: remove test data / switch to backend
 
   // register managers
   di.registerSingleton<GameManager>(GameManagerImplementation());

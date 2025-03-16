@@ -21,7 +21,7 @@ abstract class GameRestApi {
 
   Future<bool?> endCurrentGames();
 
-  Future<bool?> startNextRound();
+  Future<bool> startNextRound();
 
   Future<List<GameGroupDto>> getCurrentRound();
 
@@ -33,6 +33,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   late final String getResultsPath;
   late final Uri getAllAgeGroupsUri;
   late final Uri getAllGameGroupsUri;
+  late final Uri createRoundUri;
 
   GameRestApiImplementation() {
     getSchedulePath = '$baseUri/gameplan/agegroup/';
@@ -40,6 +41,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
     getAllAgeGroupsUri = Uri.parse('$baseUri/turniersetup/agegroups/getAll');
     getAllGameGroupsUri =
         Uri.parse('$baseUri/games/activeGamesSortedDateTimeList');
+    createRoundUri = Uri.parse('$baseUri/turniersetup/create/round');
   }
 
   @override
@@ -80,11 +82,16 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   }
 
   @override
-  Future<bool?> startNextRound() async {
+  Future<bool> startNextRound() async {
     try {
-      return true; // TODO: implement endCurrentGames
+      final response = await client.post(createRoundUri, headers: headers);
+      if (response.statusCode == 200) {
+        return true;
+      }
+
+      return false;
     } catch (e) {
-      return null;
+      return false;
     }
   }
 
@@ -286,7 +293,7 @@ class GameTestRestApi extends GameRestApi {
   }
 
   @override
-  Future<bool?> startNextRound() async {
+  Future<bool> startNextRound() async {
     return true;
   }
 }
