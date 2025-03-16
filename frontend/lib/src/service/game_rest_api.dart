@@ -148,8 +148,10 @@ class GameTestRestApi extends GameRestApi {
   @override
   Future<List<GameGroupDto>> getCurrentRound() async {
     return [
-      GameGroupDto(DateTime.now())
-        ..games = [
+      GameGroupDto(
+        DateTime.now(),
+        10,
+      )..games = [
           GameDto(
             1,
             PitchDto("Feld 1"),
@@ -183,8 +185,10 @@ class GameTestRestApi extends GameRestApi {
             'Altersklasse 2',
           ),
         ],
-      GameGroupDto(DateTime.now())
-        ..games = [
+      GameGroupDto(
+        DateTime.now(),
+        12,
+      )..games = [
           GameDto(
             1,
             PitchDto("Feld 1"),

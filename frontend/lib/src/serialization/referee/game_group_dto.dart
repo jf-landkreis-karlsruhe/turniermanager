@@ -6,9 +6,13 @@ part 'game_group_dto.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class GameGroupDto {
-  GameGroupDto(this.startTime);
+  GameGroupDto(
+    this.startTime,
+    this.gameDurationInMinutes,
+  );
 
   DateTime startTime;
+  int gameDurationInMinutes;
   List<GameDto> games = [];
 
   factory GameGroupDto.fromJson(Map<String, dynamic> json) =>

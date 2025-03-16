@@ -13,8 +13,10 @@ class RefereeMapper {
   }
 
   GameGroup mapGameGroup(GameGroupDto dto) {
-    return GameGroup(dto.startTime)
-      ..games = dto.games.map((game) => mapGame(game)).toList();
+    return GameGroup(
+      dto.startTime,
+      dto.gameDurationInMinutes,
+    )..games = dto.games.map((game) => mapGame(game)).toList();
   }
 
   Team mapTeam(TeamDto dto) {
