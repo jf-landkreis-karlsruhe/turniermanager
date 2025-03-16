@@ -21,7 +21,7 @@ public class DataInitializer {
     @Bean
     CommandLineRunner initData(AgeGroupRepository ageGroupRepository, PitchRepository pitchRepository, TeamRepository teamRepository, GameRepository gameRepository, TournamentController tournamentController, RoundStatsController statsController, TournamentRepository tournamentRepository, RoundRepository roundRepository, GamePlanController gamePlanController) {
         return args -> {
-            if(false) return;
+            if(true) return;
             // Altersgruppen initialisieren
             if (ageGroupRepository.count() == 0) {
                 AgeGroup kinder = ageGroupRepository.save(AgeGroup.builder().name("Kinder").build());
@@ -58,7 +58,7 @@ public class DataInitializer {
                 updateAllGamesWithRandomScores(gameRepository);
             }
 
-            if (true) {
+            if (false) {
                 UUID id = tournament.getId();
                 tournamentController.createTournamentRound();
                 updateAllGamesWithRandomScores(gameRepository);

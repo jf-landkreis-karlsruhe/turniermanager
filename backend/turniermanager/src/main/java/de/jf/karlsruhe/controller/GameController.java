@@ -115,6 +115,13 @@ public class GameController {
         return ResponseEntity.ok(games);
     }
 
+    @GetMapping("/getAll")
+    public ResponseEntity<List<Game>> getAllGames() {
+        List<Game> games = gameRepository.findAll();
+        return ResponseEntity.ok(games);
+    }
+
+
     @PostMapping("/refreshTimings")
     public ResponseEntity<String> refreshTimings(@RequestBody TimingRequest request) {
         LocalDateTime startTime = request.getStartTime();

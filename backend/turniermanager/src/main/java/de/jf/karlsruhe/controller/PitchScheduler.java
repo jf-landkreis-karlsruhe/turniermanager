@@ -4,6 +4,7 @@ import de.jf.karlsruhe.model.base.AgeGroup;
 import de.jf.karlsruhe.model.base.Game;
 import de.jf.karlsruhe.model.base.Pitch;
 import de.jf.karlsruhe.model.base.GameSettings;
+import de.jf.karlsruhe.model.repos.GameRepository;
 import de.jf.karlsruhe.model.repos.PitchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import java.util.*;
 public class PitchScheduler {
 
     private final PitchRepository pitchRepository; // Repository, um sicherzustellen, dass die Pitches korrekt geladen werden
+    private final GameRepository gameRepository;
 
     private List<Pitch> pitches; // Liste der verfügbaren Spielfelder
     private GameSettings gameSettings; // Spieleinstellungen (Dauer, Pausen...)
@@ -119,6 +121,7 @@ public class PitchScheduler {
                 pitchSchedules.put(entry.getKey(), scheduledTime.plusMinutes(minutes));
             }
         }
+        gameRepository.find
     }
 
     public void advanceGamesAfter(LocalDateTime afterTime, int minutes) {

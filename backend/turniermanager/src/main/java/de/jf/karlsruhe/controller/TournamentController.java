@@ -158,8 +158,9 @@ public class TournamentController {
     }
 
     @PostMapping("/addBreak")
-    public void addBreakViaApi(@RequestParam LocalDateTime breakTime, @RequestParam int duration) {
-        pitchScheduler.delayGamesAfter(breakTime, duration);
+    public void addBreakViaApi(@RequestBody BreakRequest breakRequest) {
+        pitchScheduler.delayGamesAfter(breakRequest.getBreakTime(), breakRequest.getDuration());
+
     }
 
     @PostMapping("/advanceAfter")
@@ -318,5 +319,25 @@ public class TournamentController {
         round.setLeagues(leagues);
         tournament.addRound(round);
         return leagues;
+    }
+    public static class BreakRequest {
+        private LocalDateTime breakTime;
+        private int duration;
+
+        public LocalDateTime getBreakTime() {
+            return breakTime;
+        }
+
+        public void setBreakTime(LocalDateTime breakTime) {
+            this.breakTime = breakTime;
+        }
+
+        public int getDuration() {
+            return duration;
+        }
+
+        public void setDuration(int duration) {
+            this.duration = duration;
+        }
     }
 }
