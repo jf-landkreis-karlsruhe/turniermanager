@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/service/game_rest_api.dart';
+import 'package:tournament_manager/src/service/sound_player_service.dart';
 import 'package:watch_it/watch_it.dart';
 import 'src/app.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
 void setup() {
+  // register services
+  di.registerSingleton<SoundPlayerService>(SoundPlayerServiceImplementation());
+
   // register REST API services
 
   di.registerSingleton<GameRestApi>(

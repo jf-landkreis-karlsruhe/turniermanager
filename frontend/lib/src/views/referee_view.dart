@@ -1,10 +1,10 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/model/referee/game.dart';
 import 'package:tournament_manager/src/model/referee/game_group.dart';
+import 'package:tournament_manager/src/service/sound_player_service.dart';
 import 'package:watch_it/watch_it.dart';
 import 'package:intl/intl.dart';
 
@@ -143,7 +143,7 @@ class _GameViewState extends State<GameView> {
   Color selectedTextColor = Colors.black;
   Color standardTextColor = Colors.white;
 
-  final player = AudioPlayer();
+  final soundPlayerService = di<SoundPlayerService>();
 
   @override
   Widget build(BuildContext context) {
@@ -193,8 +193,7 @@ class _GameViewState extends State<GameView> {
                             if (!currentlyRunning &&
                                 currentGamesActualStart == null) {
                               currentGamesActualStart = DateTime.now();
-                              await player
-                                  .play(AssetSource('sounds/gong_sound.wav'));
+                              soundPlayerService.playSound(Sounds.gong);
                             }
 
                             setState(() {
@@ -320,9 +319,10 @@ class CountDownView extends StatefulWidget {
 
 class _CountDownViewState extends State<CountDownView> {
   String currentTime = '';
-  final player = AudioPlayer();
   bool onEndedCalled = false;
   bool halfTimeSoundPlayed = false;
+
+  final soundPlayerService = di<SoundPlayerService>();
 
   late final StopWatchTimer _stopWatchTimer;
 
@@ -335,20 +335,20 @@ class _CountDownViewState extends State<CountDownView> {
     _stopWatchTimer = StopWatchTimer(
       mode: StopWatchMode.countDown,
       presetMillisecond: totalTimeInMilliSeconds,
-      onChange: (value) async {
+      onChange: (value) {
         final displayTime = StopWatchTimer.getDisplayTime(value);
         setState(() {
           currentTime = displayTime;
         });
 
         if ((value <= totalTimeInMilliSeconds / 2) && !halfTimeSoundPlayed) {
-          await player.play(AssetSource('sounds/gong_sound.wav'));
+          soundPlayerService.playSound(Sounds.gong);
           setState(() {
             halfTimeSoundPlayed = true;
           });
         }
       },
-      onEnded: () async {
+      onEnded: () {
         if (widget.onEnded != null) {
           widget.onEnded!();
         }
@@ -357,7 +357,7 @@ class _CountDownViewState extends State<CountDownView> {
           return;
         }
 
-        await player.play(AssetSource('sounds/gong_sound.wav'));
+        soundPlayerService.playSound(Sounds.gong);
 
         setState(() {
           onEndedCalled = true;
