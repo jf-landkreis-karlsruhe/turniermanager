@@ -87,9 +87,9 @@ public class RoundStatsController {
         return ResponseEntity.ok(roundStatsDTO);
     }
 
-    @GetMapping("/{tournamentId}")
+    @GetMapping("/getForTournament")
     @Transactional
-    public ResponseEntity<List<RoundStatsDTO>> getRoundStatsByTournament() {
+    public ResponseEntity<List<RoundStatsDTO>> getRoundStatsForTournament() {
         Tournament tournamentId = tournamentRepository.findAll().getFirst();
         List<Round> allRoundsByTournamentId = roundRepository.findAllRoundsByTournamentId(tournamentId.getId());
         List<RoundStatsDTO> roundStatsDTOList = new ArrayList<>();

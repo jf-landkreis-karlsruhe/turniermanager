@@ -76,7 +76,7 @@ public class DataInitializer {
 
             if (true) return;
             Tournament first = tournamentRepository.findAll().getFirst();
-            ResponseEntity<List<RoundStatsController.RoundStatsDTO>> roundStatsByTournament = statsController.getRoundStatsByTournament();
+            ResponseEntity<List<RoundStatsController.RoundStatsDTO>> roundStatsByTournament = statsController.getRoundStatsForTournament();
             System.out.println(roundStatsByTournament.toString());
 
 
