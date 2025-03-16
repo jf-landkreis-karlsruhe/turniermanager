@@ -320,24 +320,49 @@ class CountDownView extends StatefulWidget {
 
 class _CountDownViewState extends State<CountDownView> {
   String currentTime = '';
+  final player = AudioPlayer();
+  bool onEndedCalled = false;
+  bool halfTimeSoundPlayed = false;
 
   late final StopWatchTimer _stopWatchTimer;
 
   @override
   void initState() {
     currentTime = '00:${widget.timeInMinutes}:00.00';
+    var totalTimeInMilliSeconds =
+        StopWatchTimer.getMilliSecFromMinute(widget.timeInMinutes);
 
     _stopWatchTimer = StopWatchTimer(
       mode: StopWatchMode.countDown,
-      presetMillisecond:
-          StopWatchTimer.getMilliSecFromMinute(widget.timeInMinutes),
-      onChange: (value) {
+      presetMillisecond: totalTimeInMilliSeconds,
+      onChange: (value) async {
         final displayTime = StopWatchTimer.getDisplayTime(value);
         setState(() {
           currentTime = displayTime;
         });
+
+        if ((value <= totalTimeInMilliSeconds / 2) && !halfTimeSoundPlayed) {
+          await player.play(AssetSource('sounds/gong_sound.wav'));
+          setState(() {
+            halfTimeSoundPlayed = true;
+          });
+        }
       },
-      onEnded: widget.onEnded,
+      onEnded: () async {
+        if (widget.onEnded != null) {
+          widget.onEnded!();
+        }
+
+        if (onEndedCalled) {
+          return;
+        }
+
+        await player.play(AssetSource('sounds/gong_sound.wav'));
+
+        setState(() {
+          onEndedCalled = true;
+        });
+      },
     );
     super.initState();
   }
@@ -352,6 +377,10 @@ class _CountDownViewState extends State<CountDownView> {
   Widget build(BuildContext context) {
     if (widget.refresh) {
       _stopWatchTimer.onResetTimer();
+      setState(() {
+        onEndedCalled = false;
+        halfTimeSoundPlayed = false;
+      });
     } else {
       if (widget.start) {
         _stopWatchTimer.onStartTimer();
