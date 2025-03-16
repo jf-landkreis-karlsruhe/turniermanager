@@ -3,6 +3,7 @@ package de.jf.karlsruhe.controller;
 import de.jf.karlsruhe.model.base.*;
 import de.jf.karlsruhe.model.repos.AgeGroupRepository;
 import de.jf.karlsruhe.model.repos.RoundRepository; // Beispielhafte Annahme, dass dieses Repo existiert
+import de.jf.karlsruhe.model.repos.TournamentRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ public class RoundStatsController {
 
     @Autowired
     private AgeGroupRepository ageGroupRepository;
+    @Autowired
+    private TournamentRepository tournamentRepository;
 
 
     @GetMapping("/agegroup/{ageGroupId}")
@@ -86,8 +89,9 @@ public class RoundStatsController {
 
     @GetMapping("/{tournamentId}")
     @Transactional
-    public ResponseEntity<List<RoundStatsDTO>> getRoundStatsByTournament(@PathVariable UUID tournamentId) {
-        List<Round> allRoundsByTournamentId = roundRepository.findAllRoundsByTournamentId(tournamentId);
+    public ResponseEntity<List<RoundStatsDTO>> getRoundStatsByTournament() {
+        Tournament tournamentId = tournamentRepository.findAll().getFirst();
+        List<Round> allRoundsByTournamentId = roundRepository.findAllRoundsByTournamentId(tournamentId.getId());
         List<RoundStatsDTO> roundStatsDTOList = new ArrayList<>();
         for (Round round : allRoundsByTournamentId) {
             RoundStatsDTO roundStatsByRound = getRoundStatsByRound(round);

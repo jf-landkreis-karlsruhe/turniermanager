@@ -99,7 +99,7 @@ class TournamentControllerUnitTest {
         when(teamRepository.findByAgeGroupId(ageGroups.get(0).getId())).thenReturn(teamsU10);
         when(teamRepository.findByAgeGroupId(ageGroups.get(1).getId())).thenReturn(teamsU12);
 
-        Tournament qualificationTournament = tournamentController.createQualificationTournament(tournamentId);
+        Tournament qualificationTournament = tournamentController.createQualificationTournament();
 
         assertNotNull(qualificationTournament);
         verify(leagueRepository, atLeast(1)).save(any(League.class));

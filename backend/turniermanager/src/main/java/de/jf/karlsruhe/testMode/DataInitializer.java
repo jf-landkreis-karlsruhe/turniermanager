@@ -52,7 +52,7 @@ public class DataInitializer {
             // Test-Turnier erstellen
             if (true) {
                 tournament = tournamentController.createTournament("Test-Tournier", LocalDateTime.now(), 10, 1);
-                tournamentController.createQualificationTournament(tournament.getId());
+                tournamentController.createQualificationTournament();
 
                 // Zufällige Scores für alle Spiele setzen
                 updateAllGamesWithRandomScores(gameRepository);
@@ -76,7 +76,7 @@ public class DataInitializer {
 
             if (true) return;
             Tournament first = tournamentRepository.findAll().getFirst();
-            ResponseEntity<List<RoundStatsController.RoundStatsDTO>> roundStatsByTournament = statsController.getRoundStatsByTournament(first.getId());
+            ResponseEntity<List<RoundStatsController.RoundStatsDTO>> roundStatsByTournament = statsController.getRoundStatsByTournament();
             System.out.println(roundStatsByTournament.toString());
 
 
