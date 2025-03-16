@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
@@ -142,6 +143,8 @@ class _GameViewState extends State<GameView> {
   Color selectedTextColor = Colors.black;
   Color standardTextColor = Colors.white;
 
+  final player = AudioPlayer();
+
   @override
   Widget build(BuildContext context) {
     var gameManager = di<GameManager>();
@@ -190,6 +193,8 @@ class _GameViewState extends State<GameView> {
                             if (!currentlyRunning &&
                                 currentGamesActualStart == null) {
                               currentGamesActualStart = DateTime.now();
+                              await player
+                                  .play(AssetSource('sounds/gong_sound.wav'));
                             }
 
                             setState(() {

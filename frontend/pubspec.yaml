@@ -20,6 +20,7 @@ dependencies:
   scrollable_positioned_list: ^0.3.8
   stop_watch_timer: ^3.2.1
   intl: ^0.20.2
+  audioplayers: ^6.4.0
 
 dev_dependencies:
   flutter_test:
@@ -33,3 +34,7 @@ flutter:
 
   # Enable generation of localized Strings from arb files.
   generate: true
+
+  assets:
+    - assets/images/
+    - assets/sounds/
