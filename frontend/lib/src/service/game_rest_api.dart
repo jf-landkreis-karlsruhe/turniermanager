@@ -19,8 +19,6 @@ abstract class GameRestApi {
 
   Future<ResultsDto?> getResults(String ageGroupId);
 
-  Future<bool?> startCurrentGames();
-
   Future<bool?> endCurrentGames();
 
   Future<bool?> startNextRound();
@@ -74,15 +72,6 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
 
   @override
   Future<bool?> endCurrentGames() async {
-    try {
-      return true; // TODO: implement endCurrentGames
-    } catch (e) {
-      return null;
-    }
-  }
-
-  @override
-  Future<bool?> startCurrentGames() async {
     try {
       return true; // TODO: implement endCurrentGames
     } catch (e) {
@@ -294,11 +283,6 @@ class GameTestRestApi extends GameRestApi {
           return LeagueDto('Liga ${index + 1}')..entries = scheduleList;
         },
       );
-  }
-
-  @override
-  Future<bool?> startCurrentGames() async {
-    return true;
   }
 
   @override

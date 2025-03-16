@@ -190,25 +190,6 @@ class _GameViewState extends State<GameView> {
                               reset = false;
                               currentlyRunning = !currentlyRunning;
                             });
-
-                            var result = await gameManager
-                                .startCurrentGamesCommand
-                                .executeWithFuture();
-                            if (result) {
-                              return;
-                            }
-
-                            setState(() {
-                              currentlyRunning = false;
-                              reset = true;
-                            });
-
-                            if (!context.mounted) {
-                              return;
-                            }
-
-                            showError(context,
-                                'Spiele konnten nicht gestartet werden');
                           },
                           icon: Icon(currentlyRunning
                               ? Icons.pause
