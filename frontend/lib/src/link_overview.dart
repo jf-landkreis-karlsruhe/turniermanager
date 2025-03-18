@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/model/age_group.dart';
+import 'package:tournament_manager/src/views/admin_view.dart';
 import 'package:tournament_manager/src/views/referee_view.dart';
 import 'package:tournament_manager/src/views/results_view.dart';
 import 'package:tournament_manager/src/views/schedule_view.dart';
@@ -81,7 +82,9 @@ class LinkContentView extends StatelessWidget with WatchItMixin {
                 Expanded(
                   child: LinkView(
                     header: 'Admin',
-                    onPressed: () {},
+                    onPressed: () {
+                      context.go(".${Uri(path: AdminView.routeName)}");
+                    },
                   ),
                 ),
               ],
