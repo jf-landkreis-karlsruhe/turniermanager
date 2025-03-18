@@ -72,6 +72,17 @@ class _ScheduleViewState extends State<ScheduleView> {
         watchPropertyValue((GameManager manager) => manager.schedule);
     amountItems = schedule.leagueSchedules.length;
 
+    var screenSize = MediaQuery.sizeOf(context);
+    var amountLeagues = schedule.leagueSchedules.length;
+    var enclosingPadding = 20;
+    var leaguePadding = amountLeagues > 1 ? 10 : 0;
+    var displayFactor = amountLeagues > 1 ? 2 : 1;
+    var leagueWidgetSize =
+        (screenSize.width - enclosingPadding - leaguePadding) / displayFactor;
+    leagueWidgetSize = leagueWidgetSize < 500
+        ? screenSize.width - enclosingPadding
+        : leagueWidgetSize;
+
     return Scaffold(
       appBar: AppBar(
         leading: Center(
@@ -107,7 +118,10 @@ class _ScheduleViewState extends State<ScheduleView> {
           itemCount: schedule.leagueSchedules.length,
           itemBuilder: (context, index) {
             var entry = schedule.leagueSchedules[index];
-            return LeagueView(league: entry);
+            return LeagueView(
+              league: entry,
+              width: leagueWidgetSize,
+            );
           },
         ),
       ),
@@ -119,9 +133,11 @@ class LeagueView extends StatelessWidget {
   const LeagueView({
     super.key,
     required this.league,
+    required this.width,
   });
 
   final League league;
+  final double width;
 
   static const double _headerFontSize = 20;
 
@@ -150,7 +166,7 @@ class LeagueView extends StatelessWidget {
           Expanded(
             child: Container(
               color: Colors.indigo,
-              width: 500,
+              width: width,
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: ListView.separated(
