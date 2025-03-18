@@ -150,6 +150,6 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
   AgeGroup? getAgeGroupByName(String name) {
     var filtered = ageGroups.where((element) => element.name == name);
 
-    return filtered.isNotEmpty ? ageGroups.first : null;
+    return filtered.isNotEmpty ? filtered.first : null;
   }
 }
