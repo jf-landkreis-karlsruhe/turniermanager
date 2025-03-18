@@ -142,6 +142,7 @@ class LeagueView extends StatelessWidget {
   final double width;
 
   static const double _headerFontSize = 20;
+  final Color textColor = Colors.black;
 
   @override
   Widget build(BuildContext context) {
@@ -153,21 +154,21 @@ class LeagueView extends StatelessWidget {
     }
 
     List<DataColumn> columns = [];
-    columns.add(const DataColumn(
+    columns.add(DataColumn(
       label: Text(
         '#',
         style: TextStyle(
-          color: Colors.black,
+          color: textColor,
           fontWeight: FontWeight.bold,
         ),
       ),
     ));
 
-    columns.add(const DataColumn(
+    columns.add(DataColumn(
       label: Text(
         'Mannschaft',
         style: TextStyle(
-          color: Colors.black,
+          color: textColor,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -175,31 +176,31 @@ class LeagueView extends StatelessWidget {
 
     if (leagueWidgetSize == LeagueWidgetSize.large ||
         leagueWidgetSize == LeagueWidgetSize.medium) {
-      columns.add(const DataColumn(
+      columns.add(DataColumn(
         label: Text(
           'S',
           style: TextStyle(
-            color: Colors.black,
+            color: textColor,
             fontWeight: FontWeight.bold,
           ),
         ),
       ));
 
-      columns.add(const DataColumn(
+      columns.add(DataColumn(
         label: Text(
           'U',
           style: TextStyle(
-            color: Colors.black,
+            color: textColor,
             fontWeight: FontWeight.bold,
           ),
         ),
       ));
 
-      columns.add(const DataColumn(
+      columns.add(DataColumn(
         label: Text(
           'N',
           style: TextStyle(
-            color: Colors.black,
+            color: textColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -207,32 +208,32 @@ class LeagueView extends StatelessWidget {
     }
 
     if (leagueWidgetSize == LeagueWidgetSize.large) {
-      columns.add(const DataColumn(
+      columns.add(DataColumn(
         label: Text(
           'Sätze',
           style: TextStyle(
-            color: Colors.black,
+            color: textColor,
             fontWeight: FontWeight.bold,
           ),
         ),
       ));
 
-      columns.add(const DataColumn(
+      columns.add(DataColumn(
         label: Text(
           'Diff.',
           style: TextStyle(
-            color: Colors.black,
+            color: textColor,
             fontWeight: FontWeight.bold,
           ),
         ),
       ));
     }
 
-    columns.add(const DataColumn(
+    columns.add(DataColumn(
       label: Text(
         'Pkt.',
         style: TextStyle(
-          color: Colors.black,
+          color: textColor,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -247,7 +248,7 @@ class LeagueView extends StatelessWidget {
         DataCell(
           Text(
             index.toString(),
-            style: const TextStyle(color: Colors.black),
+            style: TextStyle(color: textColor),
           ),
         ),
       );
@@ -256,7 +257,7 @@ class LeagueView extends StatelessWidget {
         DataCell(
           Text(
             result.teamName,
-            style: const TextStyle(color: Colors.black),
+            style: TextStyle(color: textColor),
           ),
         ),
       );
@@ -267,7 +268,7 @@ class LeagueView extends StatelessWidget {
           DataCell(
             Text(
               result.victories.toString(),
-              style: const TextStyle(color: Colors.black),
+              style: TextStyle(color: textColor),
             ),
           ),
         );
@@ -276,7 +277,7 @@ class LeagueView extends StatelessWidget {
           DataCell(
             Text(
               result.draws.toString(),
-              style: const TextStyle(color: Colors.black),
+              style: TextStyle(color: textColor),
             ),
           ),
         );
@@ -285,7 +286,7 @@ class LeagueView extends StatelessWidget {
           DataCell(
             Text(
               result.defeats.toString(),
-              style: const TextStyle(color: Colors.black),
+              style: TextStyle(color: textColor),
             ),
           ),
         );
@@ -296,7 +297,7 @@ class LeagueView extends StatelessWidget {
           DataCell(
             Text(
               '${result.ownScoredGoals} : ${result.enemyScoredGoals}',
-              style: const TextStyle(color: Colors.black),
+              style: TextStyle(color: textColor),
             ),
           ),
         );
@@ -305,7 +306,7 @@ class LeagueView extends StatelessWidget {
           DataCell(
             Text(
               (result.ownScoredGoals - result.enemyScoredGoals).toString(),
-              style: const TextStyle(color: Colors.black),
+              style: TextStyle(color: textColor),
             ),
           ),
         );
@@ -315,7 +316,7 @@ class LeagueView extends StatelessWidget {
         DataCell(
           Text(
             result.totalPoints.toString(),
-            style: const TextStyle(color: Colors.black),
+            style: TextStyle(color: textColor),
           ),
         ),
       );

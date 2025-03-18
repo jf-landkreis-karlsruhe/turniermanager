@@ -165,7 +165,7 @@ class LeagueView extends StatelessWidget {
           ),
           Expanded(
             child: Container(
-              color: Colors.indigo,
+              color: Colors.grey[800],
               width: width,
               child: Padding(
                 padding: const EdgeInsets.all(10),
@@ -193,6 +193,7 @@ class ScheduleEntryView extends StatelessWidget {
   });
 
   final MatchScheduleEntry matchScheduleEntry;
+  final Color textColor = Colors.white;
 
   @override
   Widget build(BuildContext context) {
@@ -204,17 +205,17 @@ class ScheduleEntryView extends StatelessWidget {
             children: [
               Text(
                 matchScheduleEntry.pitchName,
-                style: const TextStyle(color: Colors.black),
+                style: TextStyle(color: textColor),
               ),
               const SizedBox(width: 5),
-              const Text(
+              Text(
                 '|',
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(color: textColor),
               ),
               const SizedBox(width: 5),
               Text(
                 DateFormat.Hm().format(matchScheduleEntry.startTime),
-                style: const TextStyle(color: Colors.black),
+                style: TextStyle(color: textColor),
               ),
             ],
           ),
@@ -226,17 +227,17 @@ class ScheduleEntryView extends StatelessWidget {
             children: [
               Text(
                 matchScheduleEntry.teamAName,
-                style: const TextStyle(color: Colors.black),
+                style: TextStyle(color: textColor),
               ),
               const SizedBox(width: 5),
-              const Text(
+              Text(
                 ':',
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(color: textColor),
               ),
               const SizedBox(width: 5),
               Text(
                 matchScheduleEntry.teamBName,
-                style: const TextStyle(color: Colors.black),
+                style: TextStyle(color: textColor),
               ),
             ],
           ),
