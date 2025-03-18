@@ -5,23 +5,63 @@ import de.jf.karlsruhe.model.base.Game;
 import de.jf.karlsruhe.model.base.Pitch;
 import de.jf.karlsruhe.model.base.GameSettings;
 import de.jf.karlsruhe.model.repos.GameRepository;
+import de.jf.karlsruhe.model.repos.GameSettingsRepository;
 import de.jf.karlsruhe.model.repos.PitchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Component
-@RequiredArgsConstructor
 public class PitchScheduler {
 
     private final PitchRepository pitchRepository; // Repository, um sicherzustellen, dass die Pitches korrekt geladen werden
     private final GameRepository gameRepository;
+    private final GameSettingsRepository gamesettingsRepository;
 
     private List<Pitch> pitches; // Liste der verfügbaren Spielfelder
     private GameSettings gameSettings; // Spieleinstellungen (Dauer, Pausen...)
     private Map<Pitch, LocalDateTime> pitchSchedules = new HashMap<>(); // Nächste verfügbare Zeit für jedes Spielfeld
+
+    public PitchScheduler(PitchRepository pitchRepository, GameRepository gameRepository, GameSettingsRepository gamesettingsRepository) {
+        this.pitchRepository = pitchRepository;
+        this.gameRepository = gameRepository;
+        this.gamesettingsRepository = gamesettingsRepository;
+        List<GameSettings> settings = gamesettingsRepository.findAll();
+        this.pitches = pitchRepository.findAll();
+
+        if (!settings.isEmpty() && !pitches.isEmpty()) {
+            this.gameSettings = settings.getFirst();
+            loadSchedules();
+        }
+    }
+
+    private void loadSchedules() {
+        pitchSchedules.clear(); // Stelle sicher, dass die Map leer ist, bevor sie neu befüllt wird
+
+        List<Game> allGames = gameRepository.findAllByOrderByStartTimeAsc();
+
+        for (Game game : allGames) {
+            Pitch pitch = game.getPitch();
+            LocalDateTime startTime = game.getStartTime();
+
+            // Wenn das Feld noch nicht in der Map ist, füge es hinzu
+            pitchSchedules.putIfAbsent(pitch, gameSettings.getStartTime());
+
+            // Aktualisiere die Startzeit, wenn das Spiel später als die aktuelle geplante Zeit ist
+            if (startTime.isAfter(pitchSchedules.get(pitch))) {
+                pitchSchedules.put(pitch, startTime.plusMinutes(gameSettings.getPlayTime() + gameSettings.getBreakTime()));
+            }
+        }
+
+        // Falls es Spielfelder gibt, für die keine Spiele geplant sind, initialisiere sie mit der Startzeit der Spieleinstellungen
+        for (Pitch pitch : pitches) {
+            pitchSchedules.putIfAbsent(pitch, gameSettings.getStartTime());
+        }
+    }
 
     /**
      * Initialisiert den Scheduler mit Feldern und Spieleinstellungen.
@@ -45,6 +85,7 @@ public class PitchScheduler {
         // Lade alle relevanten Daten für Pitches vorab, damit keine LazyInitializationException auftritt
         pitches = pitchRepository.findAll(); // Sicherstellen, dass die Pitches und ihre Altersgruppen in der aktuellen Transaktion sind
     }
+
 
     /**
      * Plant die Spiele auf die verfügbaren Felder, sodass Felder gleichmäßig verteilt werden.
@@ -112,49 +153,67 @@ public class PitchScheduler {
      * @param minutes   Anzahl der Minuten, um die jedes Spiel verzögert werden soll
      */
     public void delayGamesAfter(LocalDateTime afterTime, int minutes) {
-        for (Map.Entry<Pitch, LocalDateTime> entry : pitchSchedules.entrySet()) {
-            LocalDateTime scheduledTime = entry.getValue();
-
-            // Überprüft, ob das Spiel nach der Pausenzeit stattfindet oder genau zur gleichen Stunde und Minute
-            if (scheduledTime.isAfter(afterTime) ||
-                    (scheduledTime.getHour() == afterTime.getHour() && scheduledTime.getMinute() == afterTime.getMinute())) {
-                pitchSchedules.put(entry.getKey(), scheduledTime.plusMinutes(minutes));
+        List<Game> allGames = gameRepository.findAll();
+        for (Game game : allGames) {
+            if (game.getStartTime().isAfter(afterTime) || game.getStartTime().isEqual(afterTime)) {
+                game.setStartTime(game.getStartTime().plusMinutes(minutes));
             }
         }
-        gameRepository.find
+        gameRepository.saveAll(allGames);
+        updatePitchSchedules();
     }
 
     public void advanceGamesAfter(LocalDateTime afterTime, int minutes) {
-        for (Map.Entry<Pitch, LocalDateTime> entry : pitchSchedules.entrySet()) {
-            LocalDateTime scheduledTime = entry.getValue();
-
-            // Überprüft, ob das Spiel nach der angegebenen Zeit stattfindet oder genau zur gleichen Stunde und Minute
-            if (scheduledTime.isAfter(afterTime) ||
-                    (scheduledTime.getHour() == afterTime.getHour() && scheduledTime.getMinute() == afterTime.getMinute())) {
-                pitchSchedules.put(entry.getKey(), scheduledTime.minusMinutes(minutes));
+        List<Game> allGames = gameRepository.findAll();
+        for (Game game : allGames) {
+            if (game.getStartTime().isAfter(afterTime) || game.getStartTime().isEqual(afterTime)) {
+                game.setStartTime(game.getStartTime().minusMinutes(minutes));
             }
         }
+        gameRepository.saveAll(allGames);
+        updatePitchSchedules();
     }
 
     public void shiftGamesBetweenForward(LocalDateTime startTime, LocalDateTime endTime, int minutes) {
-        for (Map.Entry<Pitch, LocalDateTime> entry : pitchSchedules.entrySet()) {
-            LocalDateTime scheduledTime = entry.getValue();
-
-            if (!scheduledTime.isBefore(startTime) && !scheduledTime.isAfter(endTime)) {
-                pitchSchedules.put(entry.getKey(), scheduledTime.minusMinutes(minutes));
+        List<Game> allGames = gameRepository.findAll();
+        for (Game game : allGames) {
+            if ((game.getStartTime().isAfter(startTime) || game.getStartTime().isEqual(startTime)) &&
+                    (game.getStartTime().isBefore(endTime) || game.getStartTime().isEqual(endTime))) {
+                game.setStartTime(game.getStartTime().minusMinutes(minutes));
             }
         }
+        gameRepository.saveAll(allGames);
+        updatePitchSchedules();
     }
 
     public void shiftGamesBetweenBackward(LocalDateTime startTime, LocalDateTime endTime, int minutes) {
-        for (Map.Entry<Pitch, LocalDateTime> entry : pitchSchedules.entrySet()) {
-            LocalDateTime scheduledTime = entry.getValue();
-
-            if (!scheduledTime.isBefore(startTime) && !scheduledTime.isAfter(endTime)) {
-                pitchSchedules.put(entry.getKey(), scheduledTime.plusMinutes(minutes));
+        List<Game> allGames = gameRepository.findAll();
+        for (Game game : allGames) {
+            if ((game.getStartTime().isAfter(startTime) || game.getStartTime().isEqual(startTime)) &&
+                    (game.getStartTime().isBefore(endTime) || game.getStartTime().isEqual(endTime))) {
+                game.setStartTime(game.getStartTime().plusMinutes(minutes));
             }
         }
+        gameRepository.saveAll(allGames);
+        updatePitchSchedules();
     }
+
+    private void updatePitchSchedules() {
+        pitchSchedules.clear();
+        List<Game> allGames = gameRepository.findAll();
+        for (Game game : allGames) {
+            Pitch pitch = game.getPitch();
+            LocalDateTime startTime = game.getStartTime();
+            pitchSchedules.putIfAbsent(pitch, gameSettings.getStartTime());
+            if (startTime.isAfter(pitchSchedules.get(pitch))) {
+                pitchSchedules.put(pitch, startTime.plusMinutes(gameSettings.getPlayTime() + gameSettings.getBreakTime()));
+            }
+        }
+        for (Pitch pitch : pitches) {
+            pitchSchedules.putIfAbsent(pitch, gameSettings.getStartTime());
+        }
+    }
+
 
 
 }

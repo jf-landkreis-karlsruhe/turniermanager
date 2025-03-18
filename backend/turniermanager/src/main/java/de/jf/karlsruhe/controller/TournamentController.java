@@ -2,6 +2,7 @@ package de.jf.karlsruhe.controller;//package de.jf.karlsruhe.controller;
 
 import de.jf.karlsruhe.model.base.*;
 import de.jf.karlsruhe.model.repos.*;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -164,18 +165,18 @@ public class TournamentController {
     }
 
     @PostMapping("/advanceAfter")
-    public void advanceGamesAfterViaApi(@RequestParam LocalDateTime afterTime, @RequestParam int minutes) {
-        pitchScheduler.advanceGamesAfter(afterTime, minutes);
+    public void advanceGamesAfterViaApi(@RequestBody BreakRequest breakRequest) {
+        pitchScheduler.advanceGamesAfter(breakRequest.getBreakTime(), breakRequest.getDuration());
     }
 
     @PostMapping("/shiftBetweenForward")
-    public void shiftGamesBetweenForwardViaApi(@RequestParam LocalDateTime startTime, @RequestParam LocalDateTime endTime, @RequestParam int minutes) {
-        pitchScheduler.shiftGamesBetweenForward(startTime, endTime, minutes);
+    public void shiftGamesBetweenForwardViaApi(@RequestBody ShiftRequest shiftrequest) {
+        pitchScheduler.shiftGamesBetweenForward(shiftrequest.getBreakTime(), shiftrequest.getEndTime(), shiftrequest.getDuration());
     }
 
     @PostMapping("/shiftBetweenBackward")
-    public void shiftGamesBetweenBackwardViaApi(@RequestParam LocalDateTime startTime, @RequestParam LocalDateTime endTime, @RequestParam int minutes) {
-        pitchScheduler.shiftGamesBetweenBackward(startTime, endTime, minutes);
+    public void shiftGamesBetweenBackwardViaApi(@RequestBody ShiftRequest shiftrequest) {
+        pitchScheduler.shiftGamesBetweenBackward(shiftrequest.getBreakTime(), shiftrequest.getEndTime(), shiftrequest.getDuration());
     }
 
     @DeleteMapping("/reset")
@@ -320,24 +321,19 @@ public class TournamentController {
         tournament.addRound(round);
         return leagues;
     }
+
+    @Data
     public static class BreakRequest {
         private LocalDateTime breakTime;
         private int duration;
-
-        public LocalDateTime getBreakTime() {
-            return breakTime;
-        }
-
-        public void setBreakTime(LocalDateTime breakTime) {
-            this.breakTime = breakTime;
-        }
-
-        public int getDuration() {
-            return duration;
-        }
-
-        public void setDuration(int duration) {
-            this.duration = duration;
-        }
     }
+
+    @Data
+    public static class ShiftRequest {
+        private LocalDateTime breakTime;
+        private LocalDateTime endTime;
+        private int duration;
+    }
+
+
 }
