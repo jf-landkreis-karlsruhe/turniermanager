@@ -93,6 +93,7 @@ public class PitchScheduler {
      * @param games Liste der zu planenden Spiele
      * @return Geplante Spiele mit zugewiesenen Feldern und Zeiten
      */
+    /**
     public List<Game> scheduleGames(List<Game> games) {
         // Falls die Pitches nicht geladen sind, sicherstellen, dass sie vorab geladen werden
         if (pitches == null || pitches.isEmpty()) {
@@ -131,6 +132,48 @@ public class PitchScheduler {
         }
 
         return games;
+    }
+**/
+
+    public List<Game> scheduleGames(List<Game> games) {
+        if (pitches == null || pitches.isEmpty()) {
+            preLoadPitchData();
+        }
+
+        for (Game game : games) {
+            Pitch assignedPitch = findBestAvailablePitch(game);
+            LocalDateTime assignedStartTime = pitchSchedules.get(assignedPitch);
+            LocalDateTime now = LocalDateTime.now();
+
+            // Überprüfe, ob die aktuelle Zeit hinter der geplanten Zeit liegt
+            if (now.isAfter(assignedStartTime)) {
+                assignedStartTime = now; // Verwende die aktuelle Zeit
+            }
+
+            game.setStartTime(assignedStartTime);
+            game.setPitch(assignedPitch);
+
+            pitchSchedules.put(assignedPitch, assignedStartTime.plusMinutes(gameSettings.getPlayTime() + gameSettings.getBreakTime()));
+        }
+
+        return games;
+    }
+
+    private Pitch findBestAvailablePitch(Game game) {
+        Pitch bestPitch = null;
+        LocalDateTime bestStartTime = LocalDateTime.MAX;
+
+        for (Pitch pitch : pitches) {
+            if (supportsAgeGroup(pitch, game)) {
+                LocalDateTime startTime = pitchSchedules.get(pitch);
+                if (startTime.isBefore(bestStartTime)) {
+                    bestStartTime = startTime;
+                    bestPitch = pitch;
+                }
+            }
+        }
+
+        return bestPitch;
     }
 
     /**

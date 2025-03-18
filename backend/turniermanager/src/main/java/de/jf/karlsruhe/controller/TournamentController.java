@@ -68,6 +68,7 @@ public class TournamentController {
 
         Tournament tournament = tournamentRepository.findAll().getFirst();
         List<AgeGroup> ageGroups = ageGroupRepository.findAll();
+        List<Game> allGamesToSchedule = new ArrayList<>(); // Zwischenspeicher für alle Spiele
 
         for (AgeGroup ageGroup : ageGroups) {
             League league = League.builder()
@@ -83,20 +84,19 @@ public class TournamentController {
             tournament.addRound(round);
             roundRepository.save(round);  // save round
             leagueRepository.save(league);  // save league
-        }
 
-        List<League> allLeagues = leagueRepository.findAll();
-        for (League league : allLeagues) {
             List<Game> games = generateLeagueGames(league);
-            List<Game> scheduledGames = setGameTags(pitchScheduler.scheduleGames(games));
-
-            league.getRound().addGames(scheduledGames);
-            leagueRepository.save(league);  // save updated league
-            gameRepository.saveAll(scheduledGames); // save all scheduled games
+            allGamesToSchedule.addAll(games); // Spiele zum Zwischenspeicher hinzufügen
+            league.getRound().addGames(games);
         }
+        //Collections.shuffle(allGamesToSchedule);
+        List<Game> scheduledGames = setGameTags(pitchScheduler.scheduleGames(allGamesToSchedule));
+        gameRepository.saveAll(scheduledGames);
 
-        roundRepository.flush();  // ensure all changes are flushed to DB
-        gameRepository.flush();  // ensure all game updates are flushed to DB
+        // Hier werden alle Spiele, Ligen und Runden in einem einzigen Transaktionsblock gespeichert
+        roundRepository.flush();
+        gameRepository.flush();
+
         return tournament;
     }
 
@@ -111,7 +111,12 @@ public class TournamentController {
         });
 
         Tournament tournament = tournamentRepository.findAll().getFirst();
-        List<AgeGroup> ageGroups = ageGroupRepository.findAll();
+        List<AgeGroup> ageGroups = new ArrayList<>(ageGroupRepository.findAll()); // Erstelle eine Kopie, um die Originaldaten nicht zu verändern
+        Collections.shuffle(ageGroups); // Zufällige Reihenfolge der Altersgruppen
+
+        List<Game> allGamesToSchedule = new ArrayList<>(); // Zwischenspeicher für alle Spiele
+        List<League> allLeagues = new ArrayList<>();
+        List<Round> allRounds = new ArrayList<>();
 
         for (AgeGroup ageGroup : ageGroups) {
             List<Team> teams = teamRepository.findByAgeGroupId(ageGroup.getId());
@@ -125,19 +130,21 @@ public class TournamentController {
 
             leaguesCopy.forEach(league -> {
                 league.setAgeGroup(ageGroup);
-                //league.setTournament(tournament); // Sicherstellen, dass das Tournament gesetzt ist
 
                 List<Game> games = generateLeagueGames(league);
-                List<Game> scheduledGames = setGameTags(pitchScheduler.scheduleGames(games));
-
-
-                // Hier vermeiden wir das Hinzufügen von Games zur Liste während der Iteration
-                league.getRound().addGames(scheduledGames);
-
-                roundRepository.save(league.getRound());  // save round
-                leagueRepository.save(league);  // save league
+                Collections.shuffle(games); // Zufällige Reihenfolge der Spiele innerhalb der Altersgruppe
+                allGamesToSchedule.addAll(games); // Spiele zum Zwischenspeicher hinzufügen
+                league.getRound().addGames(games);
+                allLeagues.add(league);
+                allRounds.add(league.getRound());
             });
         }
+        Collections.shuffle(allGamesToSchedule); // Zufällige Reihenfolge aller Spiele.
+        List<Game> scheduledGames = setGameTags(pitchScheduler.scheduleGames(allGamesToSchedule));
+        gameRepository.saveAll(scheduledGames);
+
+        roundRepository.saveAll(allRounds);
+        leagueRepository.saveAll(allLeagues);
 
         return tournament;
     }
@@ -194,8 +201,7 @@ public class TournamentController {
 
     @Transactional
     public synchronized List<Game> setGameTags(List<Game> games) {
-        gameRepository.flush();
-        long maxGameNumber = gameRepository.count();
+        long maxGameNumber = gameRepository.findAll().stream().map(Game::getGameNumber).max(Long::compareTo).orElse(0L);
 
         // Sortiere die Spiele nach startTime
         Collections.sort(games, Comparator.comparing(Game::getStartTime));
