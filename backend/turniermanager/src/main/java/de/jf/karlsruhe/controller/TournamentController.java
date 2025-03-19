@@ -1,4 +1,4 @@
-package de.jf.karlsruhe.controller;//package de.jf.karlsruhe.controller;
+package de.jf.karlsruhe.controller;
 
 import de.jf.karlsruhe.model.base.*;
 import de.jf.karlsruhe.model.repos.*;

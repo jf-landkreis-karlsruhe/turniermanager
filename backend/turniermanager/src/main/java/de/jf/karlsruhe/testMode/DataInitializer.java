@@ -26,27 +26,40 @@ public class DataInitializer {
             if (ageGroupRepository.count() == 0) {
                 AgeGroup kinder = ageGroupRepository.save(AgeGroup.builder().name("Kinder").build());
                 AgeGroup jugendliche = ageGroupRepository.save(AgeGroup.builder().name("Jugendliche").build());
+                AgeGroup erwachsene = ageGroupRepository.save(AgeGroup.builder().name("Erwachsene").build());
                 System.out.println("Drei AgeGroups wurden initial gespeichert.");
 
                 // Pitches initialisieren
                 if (pitchRepository.count() == 0) {
                     pitchRepository.save(Pitch.builder().name("Platz1").ageGroups(List.of(kinder)).build());
-                    pitchRepository.save(Pitch.builder().name("Platz2").ageGroups(List.of(kinder)).build());
-                    pitchRepository.save(Pitch.builder().name("Platz3").ageGroups(List.of(kinder)).build());
-                    pitchRepository.save(Pitch.builder().name("Platz4").ageGroups(List.of(jugendliche)).build());
-                    pitchRepository.save(Pitch.builder().name("Platz5").ageGroups(List.of(jugendliche)).build());
-                    pitchRepository.save(Pitch.builder().name("Platz6").ageGroups(List.of(jugendliche)).build());
+                    pitchRepository.save(Pitch.builder().name("Platz2").ageGroups(List.of(jugendliche)).build());
+                    pitchRepository.save(Pitch.builder().name("Platz3").ageGroups(List.of(erwachsene)).build());
+                    //pitchRepository.save(Pitch.builder().name("Platz4").ageGroups(List.of(jugendliche)).build());
+                    //pitchRepository.save(Pitch.builder().name("Platz5").ageGroups(List.of(jugendliche)).build());
+                    //pitchRepository.save(Pitch.builder().name("Platz6").ageGroups(List.of(jugendliche)).build());
                     System.out.println("Zwei Pitches wurden initial gespeichert.");
                 }
             }
 
             // Teams initialisieren
             if (teamRepository.count() == 0) {
-                for (int i = 1; i <= 30; i++) {
-                    AgeGroup ageGroup = (i % 2 == 0) ? ageGroupRepository.findAll().getFirst() : ageGroupRepository.findAll().getLast();
-                    teamRepository.save(Team.builder().name("Team " + i).ageGroup(ageGroup).build());
+                for (int i = 1; i <= 20; i++) {
+                    int j = i % 3;
+                    AgeGroup ageGroup;
+                    if(j == 0) {
+                        ageGroup = ageGroupRepository.findAll().getFirst();
+                        teamRepository.save(Team.builder().name("Team " + i).ageGroup(ageGroup).build());
+                    }else if(j == 1) {
+                        ageGroup = ageGroupRepository.findAll().get(1);
+                        teamRepository.save(Team.builder().name("Team " + i).ageGroup(ageGroup).build());
+
+                    } else {
+                        ageGroup = ageGroupRepository.findAll().getLast();
+                        teamRepository.save(Team.builder().name("Team " + i).ageGroup(ageGroup).build());
+
+                    }
                 }
-                System.out.println("30 Teams wurden initial gespeichert.");
+                System.out.println("20 Teams wurden initial gespeichert.");
             }
             Tournament tournament;
             // Test-Turnier erstellen
@@ -57,7 +70,7 @@ public class DataInitializer {
                 // Zufällige Scores für alle Spiele setzen
                 updateAllGamesWithRandomScores(gameRepository);
             }
-            if(true)return;
+            if(false)return;
 
             if (true) {
                 UUID id = tournament.getId();

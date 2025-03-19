@@ -118,6 +118,7 @@ public class GameController {
     @GetMapping("/getAll")
     public ResponseEntity<List<Game>> getAllGames() {
         List<Game> games = gameRepository.findAll();
+
         return ResponseEntity.ok(games);
     }
 

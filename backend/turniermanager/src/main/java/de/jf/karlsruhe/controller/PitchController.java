@@ -105,6 +105,7 @@ public class PitchController {
 
         Pitch pitch = optionalPitch.get();
         List<Game> byPitchId = getActiveRoundGamesByPitchId(pitch.getId());
+        byPitchId.sort(Comparator.comparing(Game::getGameNumber));
         if(byPitchId.isEmpty())return ResponseEntity.noContent().build();
         byPitchId.forEach(game -> {
             games.add(new GameDTO(game.getTeamA().getName(), game.getTeamB().getName(), pitch.getName(), game.getGameNumber()));
