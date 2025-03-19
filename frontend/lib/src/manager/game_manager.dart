@@ -24,6 +24,8 @@ abstract class GameManager extends ChangeNotifier {
   late Command<void, void> getAgeGroupsCommand;
 
   late Command<void, void> getAllGamesCommand;
+  late Command<(int gameNumber, int teamAScore, int teamBScore), void>
+      saveGameCommand;
 
   AgeGroup? getAgeGroupByName(String name);
 
@@ -60,6 +62,8 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
 
   @override
   late Command<void, void> getAllGamesCommand;
+  @override
+  late Command<(int, int, int), void> saveGameCommand;
 
   MatchSchedule _schedule = MatchSchedule('Runde ??');
 
@@ -165,6 +169,13 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
       () async {
         var result = await _gameRestApi.getAllGames();
         games = result.map((e) => _refereeMapper.mapGame(e)).toList();
+      },
+    );
+
+    saveGameCommand = Command.createAsyncNoResult(
+      (gameResult) async {
+        await _gameRestApi.saveGame(
+            gameResult.$1, gameResult.$2, gameResult.$3);
       },
     );
   }

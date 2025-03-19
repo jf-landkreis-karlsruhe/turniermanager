@@ -18,6 +18,8 @@ class AdminView extends StatelessWidget with WatchItMixin {
   final _teamAController = TextEditingController();
   final _teamBController = TextEditingController();
 
+  final _gameManager = di<GameManager>();
+
   @override
   Widget build(BuildContext context) {
     var games = watchPropertyValue((GameManager manager) => manager.games);
@@ -196,7 +198,21 @@ class AdminView extends StatelessWidget with WatchItMixin {
       cells.add(
         DataCell(
           IconButton(
-            onPressed: () {},
+            onPressed: () async {
+              var teamAScore = int.tryParse(_teamAController.text);
+              var teamBScore = int.tryParse(_teamAController.text);
+
+              if (teamAScore == null || teamBScore == null) {
+                return;
+              }
+
+              var result =
+                  await _gameManager.saveGameCommand.executeWithFuture((
+                game.gameNumber,
+                teamAScore,
+                teamBScore,
+              ));
+            },
             icon: const Icon(Icons.save),
           ),
         ),

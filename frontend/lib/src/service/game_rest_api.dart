@@ -33,6 +33,7 @@ abstract class GameRestApi {
   Future<List<AgeGroupDto>> getAllAgeGroups();
 
   Future<List<GameDto>> getAllGames();
+  Future<bool> saveGame(int gameNumber, int teamAScore, int teamBScore);
 }
 
 class GameRestApiImplementation extends RestClient implements GameRestApi {
@@ -43,6 +44,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   late final Uri createRoundUri;
   late final Uri endGamesUri;
   late final Uri getAllGamesUri;
+  late final String saveGamePath;
 
   GameRestApiImplementation() {
     getSchedulePath = '$baseUri/gameplan/agegroup/';
@@ -53,6 +55,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
     createRoundUri = Uri.parse('$baseUri/turniersetup/create/round');
     endGamesUri = Uri.parse('$baseUri/games/refreshTimings');
     getAllGamesUri = Uri.parse('$baseUri/games/getAll');
+    saveGamePath = '$baseUri/games/update/';
   }
 
   @override
@@ -171,6 +174,29 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
     }
 
     return [];
+  }
+
+  @override
+  Future<bool> saveGame(int gameNumber, int teamAScore, int teamBScore) async {
+    try {
+      final uri = Uri.parse(saveGamePath + gameNumber.toString());
+      uri.replace(
+        queryParameters: {
+          'teamAScore': teamAScore.toString(),
+          'teamBScore': teamBScore.toString(),
+        },
+      );
+
+      final response = await client.post(uri, headers: headers);
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+
+      return false;
+    } on Exception {
+      return false;
+    }
   }
 }
 
@@ -369,5 +395,10 @@ class GameTestRestApi extends GameRestApi {
         'Altersklasse 2',
       ),
     ];
+  }
+
+  @override
+  Future<bool> saveGame(int gameNumber, int teamAScore, int teamBScore) async {
+    return true;
   }
 }
