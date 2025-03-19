@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:tournament_manager/src/Constants.dart';
 import 'package:tournament_manager/src/helper/error_helper.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/model/referee/game.dart';
@@ -14,8 +15,6 @@ class RefereeView extends StatelessWidget with WatchItMixin {
 
   static const routeName = '/referee';
 
-  static const _headerTextSize = 26.0;
-
   @override
   Widget build(BuildContext context) {
     var gameManager = di<GameManager>();
@@ -27,7 +26,7 @@ class RefereeView extends StatelessWidget with WatchItMixin {
         leading: const Center(
           child: Text(
             'Spielübersicht',
-            style: TextStyle(fontSize: _headerTextSize),
+            style: Constants.largeHeaderTextStyle,
           ),
         ),
         leadingWidth: 200,
@@ -83,21 +82,18 @@ class RefereeView extends StatelessWidget with WatchItMixin {
                 Icon(
                   Icons.double_arrow,
                   color: Colors.white,
-                  size: 40,
+                  size: Constants.headerIonSize,
                 ),
                 SizedBox(width: 5),
                 Text(
                   'Nächste Runde',
-                  style: TextStyle(
-                    fontSize: _headerTextSize,
-                    color: Colors.white,
-                  ),
+                  style: Constants.largeHeaderTextStyle,
                 ),
                 SizedBox(width: 5),
                 Icon(
                   Icons.double_arrow,
                   color: Colors.white,
-                  size: 40,
+                  size: Constants.headerIonSize,
                 ),
               ],
             ),
@@ -128,7 +124,6 @@ class GameView extends StatefulWidget {
     required this.gameGroup,
   });
 
-  static const double _headerFontSize = 20;
   final bool first;
   final GameGroup gameGroup;
 
@@ -165,6 +160,11 @@ class _GameViewState extends State<GameView> {
 
     rows.removeLast();
 
+    var color = currentlyRunning ? selectedTextColor : standardTextColor;
+    var headerTextStyle = Constants.mediumHeaderTextStyle.copyWith(
+      color: color,
+    );
+
     return Card(
       color: currentlyRunning ? Colors.blue : null,
       child: Column(
@@ -181,11 +181,7 @@ class _GameViewState extends State<GameView> {
                     children: [
                       Text(
                         'Startzeit: ${DateFormat.Hm().format(widget.gameGroup.startTime)} Uhr',
-                        style: TextStyle(
-                            fontSize: GameView._headerFontSize,
-                            color: currentlyRunning
-                                ? selectedTextColor
-                                : standardTextColor),
+                        style: headerTextStyle,
                       ),
                       const SizedBox(width: 10),
                       if (widget.first)
@@ -204,17 +200,13 @@ class _GameViewState extends State<GameView> {
                           icon: Icon(currentlyRunning
                               ? Icons.pause
                               : Icons.play_arrow),
-                          color: currentlyRunning
-                              ? selectedTextColor
-                              : standardTextColor,
+                          color: color,
                           tooltip: "Spiel starten",
                         ),
                       const SizedBox(width: 5),
                       CountDownView(
                         timeInMinutes: widget.gameGroup.gameDurationInMinutes,
-                        textColor: currentlyRunning
-                            ? selectedTextColor
-                            : standardTextColor,
+                        textColor: color,
                         start: currentlyRunning,
                         refresh: reset,
                         onHalftime: () {
@@ -235,9 +227,7 @@ class _GameViewState extends State<GameView> {
                             currentGamesActualStart = null;
                           },
                           icon: const Icon(Icons.refresh),
-                          color: currentlyRunning
-                              ? selectedTextColor
-                              : standardTextColor,
+                          color: color,
                           tooltip: "Spiel zurücksetzen",
                         ),
                     ],
@@ -280,9 +270,7 @@ class _GameViewState extends State<GameView> {
                       },
                       icon: Icon(
                         Icons.start,
-                        color: currentlyRunning
-                            ? selectedTextColor
-                            : standardTextColor,
+                        color: color,
                       ),
                       tooltip: "Spiel beenden",
                     )
@@ -291,7 +279,11 @@ class _GameViewState extends State<GameView> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+            padding: const EdgeInsets.only(
+              left: 10,
+              right: 10,
+              bottom: 10,
+            ),
             child: Column(
               children: rows.toList(),
             ),
@@ -413,7 +405,7 @@ class _CountDownViewState extends State<CountDownView> {
 
     return Text(
       currentTime,
-      style: TextStyle(color: widget.textColor),
+      style: Constants.mediumHeaderTextStyle.copyWith(color: widget.textColor),
     );
   }
 }
@@ -430,33 +422,35 @@ class GameEntryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var textStyle = Constants.standardTextStyle.copyWith(color: textColor);
+
     return Row(
       children: [
         Row(
           children: [
             Text(
               gameRoundEntry.ageGroupName,
-              style: TextStyle(color: textColor),
+              style: textStyle,
             ),
             const SizedBox(width: 5),
             Text(
               '|',
-              style: TextStyle(color: textColor),
+              style: textStyle,
             ),
             const SizedBox(width: 5),
             Text(
               gameRoundEntry.leagueName,
-              style: TextStyle(color: textColor),
+              style: textStyle,
             ),
             const SizedBox(width: 5),
             Text(
               '|',
-              style: TextStyle(color: textColor),
+              style: textStyle,
             ),
             const SizedBox(width: 5),
             Text(
               gameRoundEntry.pitch.name,
-              style: TextStyle(color: textColor),
+              style: textStyle,
             ),
           ],
         ),
@@ -467,17 +461,17 @@ class GameEntryView extends StatelessWidget {
             children: [
               Text(
                 gameRoundEntry.teamA.name,
-                style: TextStyle(color: textColor),
+                style: textStyle,
               ),
               const SizedBox(width: 5),
               Text(
                 ':',
-                style: TextStyle(color: textColor),
+                style: textStyle,
               ),
               const SizedBox(width: 5),
               Text(
                 gameRoundEntry.teamB.name,
-                style: TextStyle(color: textColor),
+                style: textStyle,
               ),
             ],
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tournament_manager/src/Constants.dart';
 import 'package:tournament_manager/src/helper/error_helper.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:watch_it/watch_it.dart';
@@ -7,109 +8,106 @@ class AdminView extends StatelessWidget with WatchItMixin {
   AdminView({super.key});
 
   static const routeName = '/admin';
-  final double _headerFontSize = 26;
-  static const Color _textColor = Colors.white;
-  static const _columnHeaderTextStyle = TextStyle(
-    color: _textColor,
-    fontWeight: FontWeight.bold,
-  );
-
-  static const _textStyle = TextStyle(color: _textColor);
 
   final _gameManager = di<GameManager>();
 
   @override
   Widget build(BuildContext context) {
+    var textStyle = Constants.standardTextStyle;
+    var columnHeaderTextStyle = Constants.standardTextStyle.copyWith(
+      fontWeight: FontWeight.bold,
+    );
+
     var games = watchPropertyValue((GameManager manager) => manager.games);
 
     List<DataColumn> columns = [];
 
     columns.add(
-      const DataColumn(
+      DataColumn(
         label: Text(
           '#',
-          style: _columnHeaderTextStyle,
+          style: columnHeaderTextStyle,
         ),
       ),
     );
 
     columns.add(
-      const DataColumn(
+      DataColumn(
         label: Text(
           'Platz',
-          style: _columnHeaderTextStyle,
+          style: columnHeaderTextStyle,
         ),
       ),
     );
 
     columns.add(
-      const DataColumn(
+      DataColumn(
         label: Text(
           'Altersklasse',
-          style: _columnHeaderTextStyle,
+          style: columnHeaderTextStyle,
         ),
       ),
     );
 
     columns.add(
-      const DataColumn(
+      DataColumn(
         label: Text(
           'Liga',
-          style: _columnHeaderTextStyle,
+          style: columnHeaderTextStyle,
         ),
       ),
     );
 
     columns.add(
-      const DataColumn(
+      DataColumn(
         label: Text(
           'Team A Name',
-          style: _columnHeaderTextStyle,
+          style: columnHeaderTextStyle,
         ),
       ),
     );
 
     columns.add(
-      const DataColumn(
+      DataColumn(
         label: Text(
           'Team A Score',
-          style: _columnHeaderTextStyle,
+          style: columnHeaderTextStyle,
         ),
       ),
     );
 
     columns.add(
-      const DataColumn(
+      DataColumn(
         label: Text(
           ':',
-          style: _columnHeaderTextStyle,
+          style: columnHeaderTextStyle,
         ),
       ),
     );
 
     columns.add(
-      const DataColumn(
+      DataColumn(
         label: Text(
           'Team B Score',
-          style: _columnHeaderTextStyle,
+          style: columnHeaderTextStyle,
         ),
       ),
     );
 
     columns.add(
-      const DataColumn(
+      DataColumn(
         label: Text(
           'Team B Name',
-          style: _columnHeaderTextStyle,
+          style: columnHeaderTextStyle,
         ),
       ),
     );
 
     columns.add(
-      const DataColumn(
+      DataColumn(
         label: Text(
           'Actions',
-          style: _columnHeaderTextStyle,
+          style: columnHeaderTextStyle,
         ),
       ),
     );
@@ -124,7 +122,7 @@ class AdminView extends StatelessWidget with WatchItMixin {
         DataCell(
           Text(
             game.gameNumber.toString(),
-            style: _textStyle,
+            style: textStyle,
           ),
         ),
       );
@@ -133,7 +131,7 @@ class AdminView extends StatelessWidget with WatchItMixin {
         DataCell(
           Text(
             game.pitch.name,
-            style: _textStyle,
+            style: textStyle,
           ),
         ),
       );
@@ -142,7 +140,7 @@ class AdminView extends StatelessWidget with WatchItMixin {
         DataCell(
           Text(
             game.ageGroupName,
-            style: _textStyle,
+            style: textStyle,
           ),
         ),
       );
@@ -151,7 +149,7 @@ class AdminView extends StatelessWidget with WatchItMixin {
         DataCell(
           Text(
             game.leagueName,
-            style: _textStyle,
+            style: textStyle,
           ),
         ),
       );
@@ -160,7 +158,7 @@ class AdminView extends StatelessWidget with WatchItMixin {
         DataCell(
           Text(
             game.teamA.name,
-            style: _textStyle,
+            style: textStyle,
           ),
         ),
       );
@@ -172,10 +170,10 @@ class AdminView extends StatelessWidget with WatchItMixin {
       );
 
       cells.add(
-        const DataCell(
+        DataCell(
           Text(
             ':',
-            style: _textStyle,
+            style: textStyle,
           ),
         ),
       );
@@ -190,7 +188,7 @@ class AdminView extends StatelessWidget with WatchItMixin {
         DataCell(
           Text(
             game.teamB.name,
-            style: _textStyle,
+            style: textStyle,
           ),
         ),
       );
@@ -234,10 +232,10 @@ class AdminView extends StatelessWidget with WatchItMixin {
 
     return Scaffold(
       appBar: AppBar(
-        leading: Center(
+        leading: const Center(
           child: Text(
             'Admin',
-            style: TextStyle(fontSize: _headerFontSize),
+            style: Constants.largeHeaderTextStyle,
           ),
         ),
         leadingWidth: 100,
