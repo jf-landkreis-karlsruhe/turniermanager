@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tournament_manager/src/Constants.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/model/age_group.dart';
 import 'package:tournament_manager/src/views/admin_view.dart';
@@ -19,7 +20,10 @@ class LinkOverview extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'Turniermanager',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 30,
+          ),
         ),
         leadingWidth: 80,
       ),
@@ -48,7 +52,7 @@ class LinkContentView extends StatelessWidget with WatchItMixin {
                 children: [
                   const Text(
                     'Spielplan & Ergebnisse',
-                    style: TextStyle(fontSize: 26),
+                    style: Constants.largeHeaderTextStyle,
                   ),
                   const SizedBox(height: 10),
                   SizedBox(
@@ -116,7 +120,7 @@ class LinkView extends StatelessWidget {
           children: [
             Text(
               header,
-              style: const TextStyle(fontSize: 26),
+              style: Constants.largeHeaderTextStyle,
             ),
             const SizedBox(height: 20),
             Expanded(
@@ -179,9 +183,9 @@ class ScheduleAndResultsLinkView extends StatelessWidget {
             children: [
               Text(
                 ageGroup.name,
-                style: const TextStyle(
-                  color: Colors.black,
+                style: Constants.standardTextStyle.copyWith(
                   fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 10),
@@ -200,7 +204,10 @@ class ScheduleAndResultsLinkView extends StatelessWidget {
                           )}",
                         );
                       },
-                      child: const Text('Spielübersicht'),
+                      child: const Text(
+                        'Spielübersicht',
+                        style: Constants.standardTextStyle,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -216,7 +223,10 @@ class ScheduleAndResultsLinkView extends StatelessWidget {
                           )}",
                         );
                       },
-                      child: const Text('Ergebnisse'),
+                      child: const Text(
+                        'Ergebnisse',
+                        style: Constants.standardTextStyle,
+                      ),
                     ),
                   ),
                 ],

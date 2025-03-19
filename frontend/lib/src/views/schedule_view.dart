@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:tournament_manager/src/Constants.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/model/age_group.dart';
 import 'package:tournament_manager/src/model/schedule/league.dart';
@@ -26,7 +27,6 @@ class ScheduleView extends StatefulWidget with WatchItStatefulWidgetMixin {
 
 class _ScheduleViewState extends State<ScheduleView> {
   Timer? refreshTimer;
-  final double _headerFontSize = 26;
 
   final ItemScrollController itemScrollController = ItemScrollController();
   var currentScrollIndex = 1;
@@ -85,27 +85,27 @@ class _ScheduleViewState extends State<ScheduleView> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: Center(
+        leading: const Center(
           child: Text(
             'Spielplan',
-            style: TextStyle(fontSize: _headerFontSize),
+            style: Constants.largeHeaderTextStyle,
           ),
         ),
         leadingWidth: 150,
         actions: [
           Text(
             widget.ageGroup.name,
-            style: TextStyle(fontSize: _headerFontSize),
+            style: Constants.largeHeaderTextStyle,
           ),
           const SizedBox(width: 5),
-          Text(
+          const Text(
             '|',
-            style: TextStyle(fontSize: _headerFontSize),
+            style: Constants.largeHeaderTextStyle,
           ),
           const SizedBox(width: 5),
           Text(
             schedule.roundName,
-            style: TextStyle(fontSize: _headerFontSize),
+            style: Constants.largeHeaderTextStyle,
           ),
           const SizedBox(width: 10),
         ],
@@ -139,8 +139,6 @@ class LeagueView extends StatelessWidget {
   final League league;
   final double width;
 
-  static const double _headerFontSize = 20;
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -155,7 +153,7 @@ class LeagueView extends StatelessWidget {
                 children: [
                   Text(
                     league.leagueName,
-                    style: const TextStyle(fontSize: _headerFontSize),
+                    style: Constants.mediumHeaderTextStyle,
                   ),
                   const SizedBox(width: 10),
                   const Icon(Icons.sports_volleyball),
@@ -205,17 +203,17 @@ class ScheduleEntryView extends StatelessWidget {
             children: [
               Text(
                 matchScheduleEntry.pitchName,
-                style: TextStyle(color: textColor),
+                style: Constants.standardTextStyle,
               ),
               const SizedBox(width: 5),
-              Text(
+              const Text(
                 '|',
-                style: TextStyle(color: textColor),
+                style: Constants.standardTextStyle,
               ),
               const SizedBox(width: 5),
               Text(
                 DateFormat.Hm().format(matchScheduleEntry.startTime),
-                style: TextStyle(color: textColor),
+                style: Constants.standardTextStyle,
               ),
             ],
           ),
@@ -227,17 +225,17 @@ class ScheduleEntryView extends StatelessWidget {
             children: [
               Text(
                 matchScheduleEntry.teamAName,
-                style: TextStyle(color: textColor),
+                style: Constants.standardTextStyle,
               ),
               const SizedBox(width: 5),
-              Text(
+              const Text(
                 ':',
-                style: TextStyle(color: textColor),
+                style: Constants.standardTextStyle,
               ),
               const SizedBox(width: 5),
               Text(
                 matchScheduleEntry.teamBName,
-                style: TextStyle(color: textColor),
+                style: Constants.standardTextStyle,
               ),
             ],
           ),
