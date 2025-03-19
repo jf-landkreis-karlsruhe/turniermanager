@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:tournament_manager/src/serialization/age_group_dto.dart';
+import 'package:tournament_manager/src/serialization/referee/break_request_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/game_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/game_group_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/pitch_dto.dart';
@@ -34,6 +35,8 @@ abstract class GameRestApi {
 
   Future<List<GameDto>> getAllGames();
   Future<bool> saveGame(int gameNumber, int teamAScore, int teamBScore);
+
+  Future<bool> addBreak(DateTime start, int durationInMinutes);
 }
 
 class GameRestApiImplementation extends RestClient implements GameRestApi {
@@ -45,6 +48,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   late final Uri endGamesUri;
   late final Uri getAllGamesUri;
   late final String saveGamePath;
+  late final Uri addBreakUri;
 
   GameRestApiImplementation() {
     getSchedulePath = '$baseUri/gameplan/agegroup/';
@@ -56,6 +60,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
     endGamesUri = Uri.parse('$baseUri/games/refreshTimings');
     getAllGamesUri = Uri.parse('$baseUri/games/getAll');
     saveGamePath = '$baseUri/games/update/';
+    addBreakUri = Uri.parse('/turniersetup/addBreak');
   }
 
   @override
@@ -188,6 +193,28 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
       );
 
       final response = await client.post(uri, headers: headers);
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+
+      return false;
+    } on Exception {
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> addBreak(DateTime start, int durationInMinutes) async {
+    try {
+      var dto = BreakRequestDto(start, durationInMinutes);
+      var serialized = jsonEncode(dto);
+
+      final response = await client.post(
+        addBreakUri,
+        body: serialized,
+        headers: headers,
+      );
 
       if (response.statusCode == 200) {
         return true;
@@ -399,6 +426,11 @@ class GameTestRestApi extends GameRestApi {
 
   @override
   Future<bool> saveGame(int gameNumber, int teamAScore, int teamBScore) async {
+    return true;
+  }
+
+  @override
+  Future<bool> addBreak(DateTime start, int durationInMinutes) async {
     return true;
   }
 }

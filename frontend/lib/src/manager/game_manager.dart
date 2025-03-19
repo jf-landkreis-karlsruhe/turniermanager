@@ -27,6 +27,8 @@ abstract class GameManager extends ChangeNotifier {
   late Command<(int gameNumber, int teamAScore, int teamBScore), bool>
       saveGameCommand;
 
+  late Command<(DateTime start, int durationInMinutes), bool> addBreakCommand;
+
   AgeGroup? getAgeGroupByName(String name);
 
   MatchSchedule get schedule;
@@ -64,6 +66,9 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
   late Command<void, void> getAllGamesCommand;
   @override
   late Command<(int, int, int), bool> saveGameCommand;
+
+  @override
+  late Command<(DateTime, int), bool> addBreakCommand;
 
   MatchSchedule _schedule = MatchSchedule('Runde ??');
 
@@ -176,6 +181,16 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
       (gameResult) async {
         return await _gameRestApi.saveGame(
             gameResult.$1, gameResult.$2, gameResult.$3);
+      },
+      initialValue: false,
+    );
+
+    addBreakCommand = Command.createAsync(
+      (breakRequest) async {
+        return await _gameRestApi.addBreak(
+          breakRequest.$1,
+          breakRequest.$2,
+        );
       },
       initialValue: false,
     );

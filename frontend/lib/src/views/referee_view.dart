@@ -244,6 +244,49 @@ class _GameViewState extends State<GameView> {
                         ),
                     ],
                   ),
+                  if (!widget.first)
+                    SizedBox(
+                      width: 100,
+                      child: Tooltip(
+                        message: 'Pause einfügen (vorher)',
+                        child: TextField(
+                          decoration: const InputDecoration(
+                            suffixIcon: Icon(Icons.more_time),
+                          ),
+                          onSubmitted: (value) async {
+                            var parsed = int.tryParse(value);
+                            if (parsed == null) {
+                              showError(context, 'Falsches Zahlenformat!');
+                              return;
+                            }
+
+                            var result = await gameManager.addBreakCommand
+                                .executeWithFuture(
+                              (
+                                widget.gameGroup.startTime.subtract(
+                                  const Duration(
+                                    minutes: 1,
+                                  ), //subtract one minute to start the break before these games
+                                ),
+                                parsed,
+                              ),
+                            );
+
+                            if (result) {
+                              gameManager.getCurrentRoundCommand();
+                              return;
+                            }
+
+                            if (!context.mounted) {
+                              return;
+                            }
+
+                            showError(context,
+                                'Pause konnte nicht eingefügt werden!');
+                          },
+                        ),
+                      ),
+                    ),
                   if (widget.first)
                     IconButton(
                       onPressed: () async {
