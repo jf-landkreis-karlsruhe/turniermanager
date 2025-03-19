@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:separated_column/separated_column.dart';
 import 'package:tournament_manager/src/Constants.dart';
 import 'package:tournament_manager/src/helper/error_helper.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
@@ -113,9 +114,22 @@ class GameScoreView extends StatelessWidget with WatchItMixin {
 
     return Padding(
       padding: const EdgeInsets.all(10),
-      child: DataTable(
-        columns: columns,
-        rows: rows,
+      child: SeparatedColumn(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        separatorBuilder: (context, index) => const SizedBox(height: 10),
+        children: [
+          const Text(
+            'Spielwertungen',
+            style: Constants.mediumHeaderTextStyle,
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              columns: columns,
+              rows: rows,
+            ),
+          ),
+        ],
       ),
     );
   }
