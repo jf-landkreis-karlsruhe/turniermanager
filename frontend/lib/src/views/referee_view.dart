@@ -193,7 +193,6 @@ class _GameViewState extends State<GameView> {
                             if (!currentlyRunning &&
                                 currentGamesActualStart == null) {
                               currentGamesActualStart = DateTime.now();
-                              soundPlayerService.playSound(Sounds.gong);
                             }
 
                             setState(() {
