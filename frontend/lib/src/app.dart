@@ -86,7 +86,10 @@ class MainWidget extends StatelessWidget {
           GoRoute(
             path: AdminView.routeName,
             builder: (context, state) {
-              return const AdminView();
+              final GameManager gameManager = di<GameManager>();
+              gameManager.getAllGamesCommand();
+
+              return AdminView();
             },
           ),
         ],

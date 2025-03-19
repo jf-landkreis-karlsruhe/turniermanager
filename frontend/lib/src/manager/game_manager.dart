@@ -5,6 +5,7 @@ import 'package:tournament_manager/src/mapper/referee_mapper.dart';
 import 'package:tournament_manager/src/mapper/results_mapper.dart';
 import 'package:tournament_manager/src/mapper/age_group_mapper.dart';
 import 'package:tournament_manager/src/model/age_group.dart';
+import 'package:tournament_manager/src/model/referee/game.dart';
 import 'package:tournament_manager/src/model/referee/game_group.dart';
 import 'package:tournament_manager/src/model/results/results.dart';
 import 'package:tournament_manager/src/model/schedule/match_schedule.dart';
@@ -22,12 +23,16 @@ abstract class GameManager extends ChangeNotifier {
 
   late Command<void, void> getAgeGroupsCommand;
 
+  late Command<void, void> getAllGamesCommand;
+
   AgeGroup? getAgeGroupByName(String name);
 
   MatchSchedule get schedule;
   Results get results;
   List<GameGroup> get gameGroups;
   List<AgeGroup> get ageGroups;
+
+  List<Game> get games;
 }
 
 class GameManagerImplementation extends ChangeNotifier implements GameManager {
@@ -52,6 +57,9 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
 
   @override
   late Command<void, void> getAgeGroupsCommand;
+
+  @override
+  late Command<void, void> getAllGamesCommand;
 
   MatchSchedule _schedule = MatchSchedule('Runde ??');
 
@@ -83,6 +91,14 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
   List<AgeGroup> get ageGroups => _ageGroups;
   set ageGroups(List<AgeGroup> value) {
     _ageGroups = value;
+    notifyListeners();
+  }
+
+  List<Game> _games = [];
+  @override
+  List<Game> get games => _games;
+  set games(List<Game> value) {
+    _games = value;
     notifyListeners();
   }
 
@@ -142,6 +158,13 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
         var result = await _gameRestApi.getAllAgeGroups();
 
         ageGroups = result.map((e) => _ageGroupMapper.map(e)).toList();
+      },
+    );
+
+    getAllGamesCommand = Command.createAsyncNoParamNoResult(
+      () async {
+        var result = await _gameRestApi.getAllGames();
+        games = result.map((e) => _refereeMapper.mapGame(e)).toList();
       },
     );
   }

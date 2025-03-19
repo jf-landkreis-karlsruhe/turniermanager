@@ -31,6 +31,8 @@ abstract class GameRestApi {
   Future<List<GameGroupDto>> getCurrentRound();
 
   Future<List<AgeGroupDto>> getAllAgeGroups();
+
+  Future<List<GameDto>> getAllGames();
 }
 
 class GameRestApiImplementation extends RestClient implements GameRestApi {
@@ -40,6 +42,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   late final Uri getAllGameGroupsUri;
   late final Uri createRoundUri;
   late final Uri endGamesUri;
+  late final Uri getAllGamesUri;
 
   GameRestApiImplementation() {
     getSchedulePath = '$baseUri/gameplan/agegroup/';
@@ -49,6 +52,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
         Uri.parse('$baseUri/games/activeGamesSortedDateTimeList');
     createRoundUri = Uri.parse('$baseUri/turniersetup/create/round');
     endGamesUri = Uri.parse('$baseUri/games/refreshTimings');
+    getAllGamesUri = Uri.parse('$baseUri/games/getAll');
   }
 
   @override
@@ -148,6 +152,21 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
 
       if (json is List) {
         return json.map((e) => GameGroupDto.fromJson(e)).toList();
+      }
+    }
+
+    return [];
+  }
+
+  @override
+  Future<List<GameDto>> getAllGames() async {
+    final response = await client.get(getAllGamesUri, headers: headers);
+
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+
+      if (json is List) {
+        return json.map((e) => GameDto.fromJson(e)).toList();
       }
     }
 
@@ -328,5 +347,27 @@ class GameTestRestApi extends GameRestApi {
   @override
   Future<bool> startNextRound() async {
     return true;
+  }
+
+  @override
+  Future<List<GameDto>> getAllGames() async {
+    return [
+      GameDto(
+        1,
+        PitchDto('Platz 1'),
+        TeamDto('Team 1'),
+        TeamDto('Team 2'),
+        'Liga 1',
+        'Altersklasse 1',
+      ),
+      GameDto(
+        2,
+        PitchDto('Platz 2'),
+        TeamDto('Team 3'),
+        TeamDto('Team 4'),
+        'Liga 2',
+        'Altersklasse 2',
+      ),
+    ];
   }
 }
