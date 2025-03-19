@@ -31,6 +31,18 @@ class RefereeView extends StatelessWidget with WatchItMixin {
         ),
         leadingWidth: 200,
         actions: [
+          const SizedBox(
+            width: 200,
+            child: TextField(
+              //TODO: use value from textfield in call to start next round
+              decoration: InputDecoration(
+                  label: Text(
+                'max. # Teams / Runde',
+                style: Constants.standardTextStyle,
+              )),
+            ),
+          ),
+          const SizedBox(width: 10),
           ElevatedButton(
             onPressed: () async {
               showDialog(
