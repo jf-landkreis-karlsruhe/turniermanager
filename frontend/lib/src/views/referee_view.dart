@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:tournament_manager/src/helper/error_helper.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/model/referee/game.dart';
 import 'package:tournament_manager/src/model/referee/game_group.dart';
@@ -484,25 +485,4 @@ class GameEntryView extends StatelessWidget {
       ],
     );
   }
-}
-
-void showError(context, String errorText) {
-  if (!context.mounted) {
-    return;
-  }
-
-  var scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
-
-  scaffoldMessenger?.showSnackBar(
-    SnackBar(
-      content: Center(
-        child: Text(
-          'Fehler: $errorText',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-      ),
-      backgroundColor: Colors.red,
-      behavior: SnackBarBehavior.floating,
-    ),
-  );
 }

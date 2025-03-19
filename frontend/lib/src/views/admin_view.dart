@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tournament_manager/src/helper/error_helper.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:watch_it/watch_it.dart';
 
@@ -203,6 +204,8 @@ class AdminView extends StatelessWidget with WatchItMixin {
               var teamBScore = int.tryParse(_teamAController.text);
 
               if (teamAScore == null || teamBScore == null) {
+                showError(context,
+                    "Spiel #${game.gameNumber} konnte nicht gespeichert werden! Falsches Zahlenformat!");
                 return;
               }
 
@@ -212,6 +215,15 @@ class AdminView extends StatelessWidget with WatchItMixin {
                 teamAScore,
                 teamBScore,
               ));
+
+              if (!context.mounted) {
+                return;
+              }
+
+              if (!result) {
+                showError(context,
+                    "Spiel #${game.gameNumber} konnte nicht gespeichert werden!");
+              }
             },
             icon: const Icon(Icons.save),
           ),
