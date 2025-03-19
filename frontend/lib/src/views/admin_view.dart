@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tournament_manager/src/Constants.dart';
 import 'package:tournament_manager/src/helper/error_helper.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
@@ -26,6 +27,15 @@ class AdminView extends StatelessWidget with WatchItMixin {
       DataColumn(
         label: Text(
           '#',
+          style: columnHeaderTextStyle,
+        ),
+      ),
+    );
+
+    columns.add(
+      DataColumn(
+        label: Text(
+          'Startzeit',
           style: columnHeaderTextStyle,
         ),
       ),
@@ -122,6 +132,16 @@ class AdminView extends StatelessWidget with WatchItMixin {
         DataCell(
           Text(
             game.gameNumber.toString(),
+            style: textStyle,
+          ),
+        ),
+      );
+
+      cells.add(
+        DataCell(
+          Text(
+            DateFormat.Hm()
+                .format(DateTime.now()), //TODO: get starttime from dto & sort
             style: textStyle,
           ),
         ),
@@ -242,7 +262,10 @@ class AdminView extends StatelessWidget with WatchItMixin {
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
-        child: DataTable(columns: columns, rows: rows),
+        child: DataTable(
+          columns: columns,
+          rows: rows,
+        ),
       ),
     );
   }
