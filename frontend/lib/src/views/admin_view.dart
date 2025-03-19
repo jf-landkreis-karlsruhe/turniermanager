@@ -29,7 +29,7 @@ class AdminView extends StatelessWidget {
         child: ListView(children: [
           GameScoreView(),
           const SizedBox(height: 10),
-          const PitchPrinter(),
+          PitchPrinter(),
         ]),
       ),
     );
@@ -37,7 +37,9 @@ class AdminView extends StatelessWidget {
 }
 
 class PitchPrinter extends StatelessWidget with WatchItMixin {
-  const PitchPrinter({super.key});
+  PitchPrinter({super.key});
+
+  final _gameManager = di<GameManager>();
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +51,9 @@ class PitchPrinter extends StatelessWidget with WatchItMixin {
           children: [
             Text('${pitch.name} (ID: ${pitch.id})'),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                _gameManager.printPitchCommand(pitch.id);
+              },
               icon: const Icon(Icons.print),
             ),
           ],
@@ -69,7 +73,11 @@ class PitchPrinter extends StatelessWidget with WatchItMixin {
               style: Constants.mediumHeaderTextStyle,
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                for (var pitch in pitches) {
+                  _gameManager.printPitchCommand(pitch.id);
+                }
+              },
               icon: const Icon(Icons.print),
               tooltip: 'Alles drucken',
             ),

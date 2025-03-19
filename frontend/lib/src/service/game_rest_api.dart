@@ -39,6 +39,7 @@ abstract class GameRestApi {
   Future<bool> addBreak(DateTime start, int durationInMinutes);
 
   Future<List<PitchDto>> getAllPitches();
+  Future printPitch(String pitchId);
 }
 
 class GameRestApiImplementation extends RestClient implements GameRestApi {
@@ -52,6 +53,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   late final String saveGamePath;
   late final Uri addBreakUri;
   late final Uri getAllPitchesUri;
+  late final String printPitchPath;
 
   GameRestApiImplementation() {
     getSchedulePath = '$baseUri/gameplan/agegroup/';
@@ -64,7 +66,8 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
     getAllGamesUri = Uri.parse('$baseUri/games/getAll');
     saveGamePath = '$baseUri/games/update/';
     addBreakUri = Uri.parse('/turniersetup/addBreak');
-    getAllPitchesUri = Uri.parse('$baseUri//turniersetup/pitches');
+    getAllPitchesUri = Uri.parse('$baseUri/turniersetup/pitches');
+    printPitchPath = '$baseUri/turniersetup/pitches/result-card/';
   }
 
   @override
@@ -243,6 +246,17 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
     }
 
     return [];
+  }
+
+  @override
+  Future printPitch(String pitchId) async {
+    final uri = Uri.parse(printPitchPath + pitchId);
+
+    final response = await client.get(uri, headers: headers);
+
+    if (response.statusCode == 200) {
+      //TODO: print / save pdf
+    }
   }
 }
 
@@ -470,4 +484,7 @@ class GameTestRestApi extends GameRestApi {
       ),
     ];
   }
+
+  @override
+  Future printPitch(String pitchId) async {}
 }
