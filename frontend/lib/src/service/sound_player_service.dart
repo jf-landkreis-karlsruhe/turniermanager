@@ -9,6 +9,10 @@ class SoundPlayerServiceImplementation implements SoundPlayerService {
 
   @override
   void playSound(Sounds sound) async {
+    if (_player.state == PlayerState.playing) {
+      return;
+    }
+
     String? soundPath;
 
     switch (sound) {
@@ -19,6 +23,7 @@ class SoundPlayerServiceImplementation implements SoundPlayerService {
         soundPath = 'sounds/horn.wav';
         break;
       case Sounds.endMusic:
+        soundPath = 'sounds/end_of_game.wav';
         break;
       default:
     }

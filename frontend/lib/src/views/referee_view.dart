@@ -217,6 +217,11 @@ class _GameViewState extends State<GameView> {
                             : standardTextColor,
                         start: currentlyRunning,
                         refresh: reset,
+                        onHalftime: () {
+                          setState(() {
+                            currentlyRunning = false;
+                          });
+                        },
                       ),
                       const SizedBox(width: 5),
                       if (widget.first)
@@ -305,6 +310,7 @@ class CountDownView extends StatefulWidget {
     required this.start,
     required this.refresh,
     this.onEnded,
+    this.onHalftime,
   });
 
   final int timeInMinutes;
@@ -312,6 +318,7 @@ class CountDownView extends StatefulWidget {
   final bool start;
   final bool refresh;
   final void Function()? onEnded;
+  final void Function()? onHalftime;
 
   @override
   State<CountDownView> createState() => _CountDownViewState();
@@ -346,6 +353,20 @@ class _CountDownViewState extends State<CountDownView> {
           setState(() {
             halfTimeSoundPlayed = true;
           });
+
+          if (widget.onHalftime == null) {
+            return;
+          }
+
+          widget.onHalftime!();
+        }
+
+        // end music is 32 seconds, where 3 seconds are the horn that signals the end
+        if (value <= (29 * 1000) && !onEndedCalled) {
+          soundPlayerService.playSound(Sounds.endMusic);
+          setState(() {
+            onEndedCalled = true;
+          });
         }
       },
       onEnded: () {
@@ -357,6 +378,7 @@ class _CountDownViewState extends State<CountDownView> {
           return;
         }
 
+        // in case the end music was not yet played (maybe because of too short duration), play horn at the end
         soundPlayerService.playSound(Sounds.horn);
 
         setState(() {
