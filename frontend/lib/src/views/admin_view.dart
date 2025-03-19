@@ -16,9 +16,6 @@ class AdminView extends StatelessWidget with WatchItMixin {
 
   static const _textStyle = TextStyle(color: _textColor);
 
-  final _teamAController = TextEditingController();
-  final _teamBController = TextEditingController();
-
   final _gameManager = di<GameManager>();
 
   @override
@@ -119,6 +116,8 @@ class AdminView extends StatelessWidget with WatchItMixin {
 
     List<DataRow> rows = [];
     for (var game in games) {
+      final teamAController = TextEditingController();
+      final teamBController = TextEditingController();
       List<DataCell> cells = [];
 
       cells.add(
@@ -168,7 +167,7 @@ class AdminView extends StatelessWidget with WatchItMixin {
 
       cells.add(
         DataCell(TextField(
-          controller: _teamAController,
+          controller: teamAController,
         )),
       );
 
@@ -183,7 +182,7 @@ class AdminView extends StatelessWidget with WatchItMixin {
 
       cells.add(
         DataCell(TextField(
-          controller: _teamBController,
+          controller: teamBController,
         )),
       );
 
@@ -200,8 +199,8 @@ class AdminView extends StatelessWidget with WatchItMixin {
         DataCell(
           IconButton(
             onPressed: () async {
-              var teamAScore = int.tryParse(_teamAController.text);
-              var teamBScore = int.tryParse(_teamAController.text);
+              var teamAScore = int.tryParse(teamAController.text);
+              var teamBScore = int.tryParse(teamAController.text);
 
               if (teamAScore == null || teamBScore == null) {
                 showError(context,
