@@ -9,26 +9,30 @@ class SoundPlayerServiceImplementation implements SoundPlayerService {
 
   @override
   void playSound(Sounds sound) async {
-    AssetSource? source;
+    String? soundPath;
 
     switch (sound) {
       case Sounds.gong:
-        source = AssetSource('sounds/gong_sound.wav');
+        soundPath = 'sounds/gong_sound.wav';
+        break;
+      case Sounds.horn:
+        soundPath = 'sounds/horn.wav';
         break;
       case Sounds.endMusic:
         break;
       default:
     }
 
-    if (source == null) {
+    if (soundPath == null || soundPath.isEmpty) {
       return;
     }
 
-    await _player.play(source);
+    await _player.play(AssetSource(soundPath));
   }
 }
 
 enum Sounds {
   gong,
+  horn,
   endMusic;
 }

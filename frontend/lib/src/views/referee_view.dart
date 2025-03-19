@@ -342,7 +342,7 @@ class _CountDownViewState extends State<CountDownView> {
         });
 
         if ((value <= totalTimeInMilliSeconds / 2) && !halfTimeSoundPlayed) {
-          soundPlayerService.playSound(Sounds.gong);
+          soundPlayerService.playSound(Sounds.horn);
           setState(() {
             halfTimeSoundPlayed = true;
           });
@@ -357,7 +357,7 @@ class _CountDownViewState extends State<CountDownView> {
           return;
         }
 
-        soundPlayerService.playSound(Sounds.gong);
+        soundPlayerService.playSound(Sounds.horn);
 
         setState(() {
           onEndedCalled = true;
