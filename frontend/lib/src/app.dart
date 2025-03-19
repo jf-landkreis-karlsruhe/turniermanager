@@ -89,7 +89,7 @@ class MainWidget extends StatelessWidget {
               final GameManager gameManager = di<GameManager>();
               gameManager.getAllGamesCommand();
 
-              return AdminView();
+              return const AdminView();
             },
           ),
         ],
