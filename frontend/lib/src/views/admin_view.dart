@@ -200,7 +200,7 @@ class AdminView extends StatelessWidget with WatchItMixin {
           IconButton(
             onPressed: () async {
               var teamAScore = int.tryParse(teamAController.text);
-              var teamBScore = int.tryParse(teamAController.text);
+              var teamBScore = int.tryParse(teamBController.text);
 
               if (teamAScore == null || teamBScore == null) {
                 showError(context,
@@ -221,7 +221,7 @@ class AdminView extends StatelessWidget with WatchItMixin {
 
               if (!result) {
                 showError(context,
-                    "Spiel #${game.gameNumber} konnte nicht gespeichert werden!");
+                    "Spiel #${game.gameNumber} konnte nicht gespeichert werden! Server-Fehler / Exception!");
               }
             },
             icon: const Icon(Icons.save),
