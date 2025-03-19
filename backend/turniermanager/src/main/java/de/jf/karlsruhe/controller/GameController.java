@@ -36,12 +36,9 @@ public class GameController {
      * @return Das aktualisierte Spiel
      */
     @PostMapping("/updatebyid/{gameId}")
-    public ResponseEntity<Game> updateGameScores(@PathVariable UUID gameId,
-                                                 @RequestParam int teamAScore,
-                                                 @RequestParam int teamBScore) {
+    public ResponseEntity<Game> updateGameScores(@PathVariable UUID gameId, @RequestParam int teamAScore, @RequestParam int teamBScore) {
         // Spiel aus der Datenbank abrufen
-        Game game = gameRepository.findById(gameId)
-                .orElseThrow(() -> new IllegalArgumentException("Spiel mit ID " + gameId + " nicht gefunden"));
+        Game game = gameRepository.findById(gameId).orElseThrow(() -> new IllegalArgumentException("Spiel mit ID " + gameId + " nicht gefunden"));
 
         // Ergebnisse setzen
         game.setTeamAScore(teamAScore);
@@ -53,12 +50,9 @@ public class GameController {
     }
 
     @PostMapping("/update/{gameNumber}")
-    public ResponseEntity<Game> updateGameScoresByNumber(@PathVariable int gameNumber,
-                                                         @RequestParam int teamAScore,
-                                                         @RequestParam int teamBScore) {
+    public ResponseEntity<Game> updateGameScoresByNumber(@PathVariable int gameNumber, @RequestParam int teamAScore, @RequestParam int teamBScore) {
         // Spiel anhand der gameNumber abrufen
-        Game game = gameRepository.findByGameNumber(gameNumber)
-                .orElseThrow(() -> new IllegalArgumentException("Spiel mit Nummer " + gameNumber + " nicht gefunden"));
+        Game game = gameRepository.findByGameNumber(gameNumber).orElseThrow(() -> new IllegalArgumentException("Spiel mit Nummer " + gameNumber + " nicht gefunden"));
 
         // Ergebnisse setzen
         game.setTeamAScore(teamAScore);
@@ -78,22 +72,10 @@ public class GameController {
      */
     @GetMapping("/{gameId}/details")
     public ResponseEntity<String> getGameDetails(@PathVariable UUID gameId) {
-        Game game = gameRepository.findById(gameId)
-                .orElseThrow(() -> new IllegalArgumentException("Spiel mit ID " + gameId + " nicht gefunden"));
+        Game game = gameRepository.findById(gameId).orElseThrow(() -> new IllegalArgumentException("Spiel mit ID " + gameId + " nicht gefunden"));
 
         // Details des Spiels formatiert zurückgeben
-        String gameDetails = String.format(
-                "Spiel-ID: %s\n" +
-                        "Spielbeginn: %s\n" +
-                        "Team A: %s [Punkte: %d]\n" +
-                        "Team B: %s [Punkte: %d]\n" +
-                        "Spielfeld: %s",
-                game.getId(),
-                game.getStartTime(),
-                game.getTeamA().getName(), game.getTeamAScore(),
-                game.getTeamB().getName(), game.getTeamBScore(),
-                game.getPitch() != null ? game.getPitch().getName() : "Kein Spielfeld"
-        );
+        String gameDetails = String.format("Spiel-ID: %s\n" + "Spielbeginn: %s\n" + "Team A: %s [Punkte: %d]\n" + "Team B: %s [Punkte: %d]\n" + "Spielfeld: %s", game.getId(), game.getStartTime(), game.getTeamA().getName(), game.getTeamAScore(), game.getTeamB().getName(), game.getTeamBScore(), game.getPitch() != null ? game.getPitch().getName() : "Kein Spielfeld");
         return ResponseEntity.ok(gameDetails);
     }
 
@@ -116,10 +98,17 @@ public class GameController {
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<Game>> getAllGames() {
+    public ResponseEntity<List<ExtendedGameDTO>> getAllGames() {
         List<Game> games = gameRepository.findAll();
+        List<ExtendedGameDTO> extendedGameDTOs = new ArrayList<>();
+        games.forEach(game -> {
+            String leagueName = game.getRound().getLeagues().stream().filter(league -> (league.getTeams().contains(game.getTeamA()) || league.getTeams().contains(game.getTeamB()))).findFirst().map(League::getName).orElse("Unbekannte Liga");
 
-        return ResponseEntity.ok(games);
+            String ageGroupName = game.getRound().getLeagues().stream().filter(league -> (league.getTeams().contains(game.getTeamA()) || league.getTeams().contains(game.getTeamB()))).findFirst().map(league -> league.getAgeGroup().getName()).orElse("Unbekannte Altersgruppe");
+
+            extendedGameDTOs.add(new ExtendedGameDTO(game.getId(), game.getGameNumber(), game.getTeamA().getName(), game.getTeamB().getName(), game.getPitch() != null ? game.getPitch().getName() : "Kein Spielfeld", leagueName, ageGroupName, game.getTeamAScore(), game.getTeamBScore()));
+        });
+        return ResponseEntity.ok(extendedGameDTOs);
     }
 
 
@@ -145,37 +134,50 @@ public class GameController {
 
     @GetMapping("/activeGamesSortedDateTimeList")
     public List<GameScheduleDateTimeDTO> getActiveGamesSortedDateTimeList() {
-        List<Game> activeGames = gameRepository.findByRound_ActiveTrueOrderByStartTimeAsc();
+        List<Game> allGames = gameRepository.findAll(); // Alle Spiele abrufen
         TreeMap<LocalDateTime, List<GameDTO>> groupedGames = new TreeMap<>();
 
-        for (Game game : activeGames) {
+        for (Game game : allGames) {
+            // Spiele mit actualStartTime und endTime überspringen
+            if (game.getActualStartTime() != null && game.getActualEndTime() != null) {
+                continue;
+            }
+
             LocalDateTime startTime = game.getStartTime();
             TeamDTO teamADTO = new TeamDTO(game.getTeamA().getId(), game.getTeamA().getName());
             TeamDTO teamBDTO = new TeamDTO(game.getTeamB().getId(), game.getTeamB().getName());
             PitchDTO pitchDTO = new PitchDTO(game.getPitch().getId(), game.getPitch().getName());
 
             // Liga und Altersgruppe aus der aktiven Runde abrufen
-            String leagueName = game.getRound().getLeagues().stream()
-                    .filter(league -> (league.getTeams().contains(game.getTeamA()) || league.getTeams().contains(game.getTeamB())) && league.getRound().isActive())
-                    .findFirst()
-                    .map(League::getName)
-                    .orElse("Unbekannte Liga");
+            String leagueName = game.getRound().getLeagues().stream().filter(league -> (league.getTeams().contains(game.getTeamA()) || league.getTeams().contains(game.getTeamB()))).findFirst().map(League::getName).orElse("Unbekannte Liga");
 
-            String ageGroupName = game.getRound().getLeagues().stream()
-                    .filter(league -> (league.getTeams().contains(game.getTeamA()) || league.getTeams().contains(game.getTeamB())) && league.getRound().isActive())
-                    .findFirst()
-                    .map(league -> league.getAgeGroup().getName())
-                    .orElse("Unbekannte Altersgruppe");
+            String ageGroupName = game.getRound().getLeagues().stream().filter(league -> (league.getTeams().contains(game.getTeamA()) || league.getTeams().contains(game.getTeamB()))).findFirst().map(league -> league.getAgeGroup().getName()).orElse("Unbekannte Altersgruppe");
 
             GameDTO gameDTO = new GameDTO(game.getId(), game.getGameNumber(), teamADTO, teamBDTO, pitchDTO, leagueName, ageGroupName);
             groupedGames.computeIfAbsent(startTime, k -> new ArrayList<>()).add(gameDTO);
         }
-        GameSettings currentGameSettings = gameSettingsRepository.findAll().getFirst();
 
+        GameSettings currentGameSettings = gameSettingsRepository.findAll().getFirst();
         List<GameScheduleDateTimeDTO> result = new ArrayList<>();
         groupedGames.forEach((startTime, games) -> result.add(new GameScheduleDateTimeDTO(currentGameSettings.getPlayTime(), startTime, games)));
 
         return result;
+    }
+
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class ExtendedGameDTO {
+        private UUID id;
+        private long gameNumber;
+        private String teamA;
+        private String teamB;
+        private String pitch;
+        private String leagueName;
+        private String ageGroupName;
+        private int pointsTeamA;
+        private int pointsTeamB;
     }
 
     @Data
@@ -217,9 +219,12 @@ public class GameController {
     }
 
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     private static class TimingRequest {
         private LocalDateTime startTime;
         private LocalDateTime actualStartTime;
         private LocalDateTime endTime;
     }
+
 }
