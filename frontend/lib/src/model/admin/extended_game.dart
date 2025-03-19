@@ -1,0 +1,21 @@
+class ExtendedGame {
+  ExtendedGame(
+    this.gameNumber,
+    this.pitch,
+    this.teamA,
+    this.teamB,
+    this.leagueName,
+    this.ageGroupName,
+    this.pointsTeamA,
+    this.pointsTeamB,
+  );
+
+  int gameNumber;
+  String pitch;
+  String teamA;
+  String teamB;
+  String leagueName;
+  String ageGroupName;
+  int pointsTeamA;
+  int pointsTeamB;
+}

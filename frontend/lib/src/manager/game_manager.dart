@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_command/flutter_command.dart';
+import 'package:tournament_manager/src/mapper/admin_mapper.dart';
 import 'package:tournament_manager/src/mapper/match_schedule_mapper.dart';
 import 'package:tournament_manager/src/mapper/referee_mapper.dart';
 import 'package:tournament_manager/src/mapper/results_mapper.dart';
 import 'package:tournament_manager/src/mapper/age_group_mapper.dart';
+import 'package:tournament_manager/src/model/admin/extended_game.dart';
 import 'package:tournament_manager/src/model/age_group.dart';
-import 'package:tournament_manager/src/model/referee/game.dart';
 import 'package:tournament_manager/src/model/referee/game_group.dart';
 import 'package:tournament_manager/src/model/referee/pitch.dart';
 import 'package:tournament_manager/src/model/results/results.dart';
@@ -40,7 +41,7 @@ abstract class GameManager extends ChangeNotifier {
   List<GameGroup> get gameGroups;
   List<AgeGroup> get ageGroups;
 
-  List<Game> get games;
+  List<ExtendedGame> get games;
 
   List<Pitch> get pitches;
 }
@@ -51,6 +52,7 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
   late final ResultsMapper _resultsMapper;
   late final RefereeMapper _refereeMapper;
   late final AgeGroupMapper _ageGroupMapper;
+  late final AdminMapper _adminMapper;
 
   @override
   late Command<String, void> getScheduleCommand;
@@ -114,10 +116,10 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
     notifyListeners();
   }
 
-  List<Game> _games = [];
+  List<ExtendedGame> _games = [];
   @override
-  List<Game> get games => _games;
-  set games(List<Game> value) {
+  List<ExtendedGame> get games => _games;
+  set games(List<ExtendedGame> value) {
     _games = value;
     notifyListeners();
   }
@@ -136,6 +138,7 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
     _resultsMapper = ResultsMapper();
     _refereeMapper = RefereeMapper();
     _ageGroupMapper = AgeGroupMapper();
+    _adminMapper = AdminMapper();
 
     getScheduleCommand = Command.createAsyncNoResult(
       (input) async {
@@ -192,7 +195,7 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
     getAllGamesCommand = Command.createAsyncNoParamNoResult(
       () async {
         var result = await _gameRestApi.getAllGames();
-        games = result.map((e) => _refereeMapper.mapGame(e)).toList();
+        games = result.map((e) => _adminMapper.map(e)).toList();
       },
     );
 

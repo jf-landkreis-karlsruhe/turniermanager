@@ -114,17 +114,19 @@ class GameScoreView extends StatelessWidget with WatchItMixin {
 
     List<DataRow> rows = [];
     for (var game in games) {
-      final teamAController = TextEditingController();
-      final teamBController = TextEditingController();
+      final teamAController =
+          TextEditingController(text: game.pointsTeamA.toString());
+      final teamBController =
+          TextEditingController(text: game.pointsTeamB.toString());
 
       List<DataCell> cells = [
         addDataCell(game.gameNumber.toString()),
         addDataCell(DateFormat.Hm()
             .format(DateTime.now())), //TODO: get starttime from dto & sort
-        addDataCell(game.pitch.name),
+        addDataCell(game.pitch),
         addDataCell(game.ageGroupName),
         addDataCell(game.leagueName),
-        addDataCell(game.teamA.name),
+        addDataCell(game.teamA),
         DataCell(
           TextField(
             controller: teamAController,
@@ -136,7 +138,7 @@ class GameScoreView extends StatelessWidget with WatchItMixin {
             controller: teamBController,
           ),
         ),
-        addDataCell(game.teamB.name),
+        addDataCell(game.teamB),
         DataCell(
           IconButton(
             onPressed: () async {

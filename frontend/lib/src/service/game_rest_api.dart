@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:tournament_manager/src/serialization/admin/extended_game_dto.dart';
 import 'package:tournament_manager/src/serialization/age_group_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/break_request_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/game_dto.dart';
@@ -33,7 +34,7 @@ abstract class GameRestApi {
 
   Future<List<AgeGroupDto>> getAllAgeGroups();
 
-  Future<List<GameDto>> getAllGames();
+  Future<List<ExtendedGameDto>> getAllGames();
   Future<bool> saveGame(int gameNumber, int teamAScore, int teamBScore);
 
   Future<bool> addBreak(DateTime start, int durationInMinutes);
@@ -174,14 +175,14 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   }
 
   @override
-  Future<List<GameDto>> getAllGames() async {
+  Future<List<ExtendedGameDto>> getAllGames() async {
     final response = await client.get(getAllGamesUri, headers: headers);
 
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body);
 
       if (json is List) {
-        return json.map((e) => GameDto.fromJson(e)).toList();
+        return json.map((e) => ExtendedGameDto.fromJson(e)).toList();
       }
     }
 
@@ -436,23 +437,27 @@ class GameTestRestApi extends GameRestApi {
   }
 
   @override
-  Future<List<GameDto>> getAllGames() async {
+  Future<List<ExtendedGameDto>> getAllGames() async {
     return [
-      GameDto(
+      ExtendedGameDto(
         1,
-        PitchDto('1', 'Platz 1'),
-        TeamDto('Team 1'),
-        TeamDto('Team 2'),
+        'Platz 1',
+        'Team 1',
+        'Team 2',
         'Liga 1',
         'Altersklasse 1',
-      ),
-      GameDto(
         2,
-        PitchDto('2', 'Platz 2'),
-        TeamDto('Team 3'),
-        TeamDto('Team 4'),
+        3,
+      ),
+      ExtendedGameDto(
+        2,
+        'Platz 2',
+        'Team 3',
+        'Team 4',
         'Liga 2',
         'Altersklasse 2',
+        5,
+        6,
       ),
     ];
   }
