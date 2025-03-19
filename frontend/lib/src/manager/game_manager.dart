@@ -7,6 +7,7 @@ import 'package:tournament_manager/src/mapper/age_group_mapper.dart';
 import 'package:tournament_manager/src/model/age_group.dart';
 import 'package:tournament_manager/src/model/referee/game.dart';
 import 'package:tournament_manager/src/model/referee/game_group.dart';
+import 'package:tournament_manager/src/model/referee/pitch.dart';
 import 'package:tournament_manager/src/model/results/results.dart';
 import 'package:tournament_manager/src/model/schedule/match_schedule.dart';
 import 'package:tournament_manager/src/service/game_rest_api.dart';
@@ -29,6 +30,8 @@ abstract class GameManager extends ChangeNotifier {
 
   late Command<(DateTime start, int durationInMinutes), bool> addBreakCommand;
 
+  late Command<void, void> getAllPitchesCommand;
+
   AgeGroup? getAgeGroupByName(String name);
 
   MatchSchedule get schedule;
@@ -37,6 +40,8 @@ abstract class GameManager extends ChangeNotifier {
   List<AgeGroup> get ageGroups;
 
   List<Game> get games;
+
+  List<Pitch> get pitches;
 }
 
 class GameManagerImplementation extends ChangeNotifier implements GameManager {
@@ -69,6 +74,9 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
 
   @override
   late Command<(DateTime, int), bool> addBreakCommand;
+
+  @override
+  late Command<void, void> getAllPitchesCommand;
 
   MatchSchedule _schedule = MatchSchedule('Runde ??');
 
@@ -108,6 +116,14 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
   List<Game> get games => _games;
   set games(List<Game> value) {
     _games = value;
+    notifyListeners();
+  }
+
+  List<Pitch> _pitches = [];
+  @override
+  List<Pitch> get pitches => _pitches;
+  set pitches(List<Pitch> value) {
+    _pitches = value;
     notifyListeners();
   }
 
@@ -193,6 +209,13 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
         );
       },
       initialValue: false,
+    );
+
+    getAllPitchesCommand = Command.createAsyncNoParamNoResult(
+      () async {
+        var result = await _gameRestApi.getAllPitches();
+        pitches = result.map((e) => _refereeMapper.mapPitch(e)).toList();
+      },
     );
   }
 

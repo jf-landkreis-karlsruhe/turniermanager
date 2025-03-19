@@ -1,5 +1,9 @@
 class Pitch {
-  Pitch(this.name);
+  Pitch(
+    this.id,
+    this.name,
+  );
 
+  String id;
   String name;
 }

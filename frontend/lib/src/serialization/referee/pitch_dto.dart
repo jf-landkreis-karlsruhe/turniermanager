@@ -5,8 +5,12 @@ part 'pitch_dto.g.dart';
 
 @JsonSerializable()
 class PitchDto {
-  PitchDto(this.name);
+  PitchDto(
+    this.id,
+    this.name,
+  );
 
+  String id;
   String name;
 
   factory PitchDto.fromJson(Map<String, dynamic> json) =>

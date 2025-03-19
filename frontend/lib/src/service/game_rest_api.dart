@@ -37,6 +37,8 @@ abstract class GameRestApi {
   Future<bool> saveGame(int gameNumber, int teamAScore, int teamBScore);
 
   Future<bool> addBreak(DateTime start, int durationInMinutes);
+
+  Future<List<PitchDto>> getAllPitches();
 }
 
 class GameRestApiImplementation extends RestClient implements GameRestApi {
@@ -49,6 +51,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   late final Uri getAllGamesUri;
   late final String saveGamePath;
   late final Uri addBreakUri;
+  late final Uri getAllPitchesUri;
 
   GameRestApiImplementation() {
     getSchedulePath = '$baseUri/gameplan/agegroup/';
@@ -61,6 +64,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
     getAllGamesUri = Uri.parse('$baseUri/games/getAll');
     saveGamePath = '$baseUri/games/update/';
     addBreakUri = Uri.parse('/turniersetup/addBreak');
+    getAllPitchesUri = Uri.parse('$baseUri//turniersetup/pitches');
   }
 
   @override
@@ -225,6 +229,21 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
       return false;
     }
   }
+
+  @override
+  Future<List<PitchDto>> getAllPitches() async {
+    final response = await client.get(getAllPitchesUri, headers: headers);
+
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+
+      if (json is List) {
+        return json.map((e) => PitchDto.fromJson(e)).toList();
+      }
+    }
+
+    return [];
+  }
 }
 
 class GameTestRestApi extends GameRestApi {
@@ -255,7 +274,7 @@ class GameTestRestApi extends GameRestApi {
       )..games = [
           GameDto(
             1,
-            PitchDto("Feld 1"),
+            PitchDto('1', "Feld 1"),
             TeamDto("Team A"),
             TeamDto("Team B"),
             'Liga 1',
@@ -263,7 +282,7 @@ class GameTestRestApi extends GameRestApi {
           ),
           GameDto(
             1,
-            PitchDto("Feld 2"),
+            PitchDto('2', "Feld 2"),
             TeamDto("Team A"),
             TeamDto("Team B"),
             'Liga 1',
@@ -271,7 +290,7 @@ class GameTestRestApi extends GameRestApi {
           ),
           GameDto(
             2,
-            PitchDto("Feld 1"),
+            PitchDto('1', "Feld 1"),
             TeamDto("Team A"),
             TeamDto("Team B"),
             'Liga 2',
@@ -279,7 +298,7 @@ class GameTestRestApi extends GameRestApi {
           ),
           GameDto(
             2,
-            PitchDto("Feld 2"),
+            PitchDto('2', "Feld 2"),
             TeamDto("Team A"),
             TeamDto("Team B"),
             'Liga 2',
@@ -292,7 +311,7 @@ class GameTestRestApi extends GameRestApi {
       )..games = [
           GameDto(
             1,
-            PitchDto("Feld 1"),
+            PitchDto('1', "Feld 1"),
             TeamDto("Team A"),
             TeamDto("Team B"),
             'Liga 1',
@@ -300,7 +319,7 @@ class GameTestRestApi extends GameRestApi {
           ),
           GameDto(
             1,
-            PitchDto("Feld 2"),
+            PitchDto('2', "Feld 2"),
             TeamDto("Team A"),
             TeamDto("Team B"),
             'Liga 3',
@@ -308,7 +327,7 @@ class GameTestRestApi extends GameRestApi {
           ),
           GameDto(
             2,
-            PitchDto("Feld 1"),
+            PitchDto('1', "Feld 1"),
             TeamDto("Team A"),
             TeamDto("Team B"),
             'Liga 1',
@@ -316,7 +335,7 @@ class GameTestRestApi extends GameRestApi {
           ),
           GameDto(
             2,
-            PitchDto("Feld 2"),
+            PitchDto('2', "Feld 2"),
             TeamDto("Team A"),
             TeamDto("Team B"),
             'Liga 5',
@@ -407,7 +426,7 @@ class GameTestRestApi extends GameRestApi {
     return [
       GameDto(
         1,
-        PitchDto('Platz 1'),
+        PitchDto('1', 'Platz 1'),
         TeamDto('Team 1'),
         TeamDto('Team 2'),
         'Liga 1',
@@ -415,7 +434,7 @@ class GameTestRestApi extends GameRestApi {
       ),
       GameDto(
         2,
-        PitchDto('Platz 2'),
+        PitchDto('2', 'Platz 2'),
         TeamDto('Team 3'),
         TeamDto('Team 4'),
         'Liga 2',
@@ -432,5 +451,23 @@ class GameTestRestApi extends GameRestApi {
   @override
   Future<bool> addBreak(DateTime start, int durationInMinutes) async {
     return true;
+  }
+
+  @override
+  Future<List<PitchDto>> getAllPitches() async {
+    return [
+      PitchDto(
+        '1',
+        'Platz 1',
+      ),
+      PitchDto(
+        '2',
+        'Platz 2',
+      ),
+      PitchDto(
+        '3',
+        'Platz 3',
+      ),
+    ];
   }
 }

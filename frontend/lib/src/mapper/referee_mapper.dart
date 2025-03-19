@@ -9,7 +9,10 @@ import 'package:tournament_manager/src/serialization/referee/team_dto.dart';
 
 class RefereeMapper {
   Pitch mapPitch(PitchDto dto) {
-    return Pitch(dto.name);
+    return Pitch(
+      dto.id,
+      dto.name,
+    );
   }
 
   GameGroup mapGameGroup(GameGroupDto dto) {

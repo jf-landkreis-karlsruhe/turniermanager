@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:separated_column/separated_column.dart';
+import 'package:separated_row/separated_row.dart';
 import 'package:tournament_manager/src/Constants.dart';
 import 'package:tournament_manager/src/helper/error_helper.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
@@ -23,7 +24,59 @@ class AdminView extends StatelessWidget {
         ),
         leadingWidth: 100,
       ),
-      body: GameScoreView(),
+      body: Padding(
+        padding: const EdgeInsets.all(10),
+        child: ListView(children: [
+          GameScoreView(),
+          const SizedBox(height: 10),
+          const PitchPrinter(),
+        ]),
+      ),
+    );
+  }
+}
+
+class PitchPrinter extends StatelessWidget with WatchItMixin {
+  const PitchPrinter({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var pitches = watchPropertyValue((GameManager manager) => manager.pitches);
+    List<Widget> pitchWidgets = pitches.map(
+      (pitch) {
+        return SeparatedRow(
+          separatorBuilder: (context, index) => const SizedBox(width: 10),
+          children: [
+            Text('${pitch.name} (ID: ${pitch.id})'),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.print),
+            ),
+          ],
+        );
+      },
+    ).toList();
+
+    return SeparatedColumn(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      separatorBuilder: (_, index) => const SizedBox(height: 10),
+      children: [
+        SeparatedRow(
+          separatorBuilder: (context, index) => const SizedBox(width: 10),
+          children: [
+            const Text(
+              'Schiedsrichterzettel',
+              style: Constants.mediumHeaderTextStyle,
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.print),
+              tooltip: 'Alles drucken',
+            ),
+          ],
+        ),
+        ...pitchWidgets
+      ],
     );
   }
 }
@@ -112,25 +165,22 @@ class GameScoreView extends StatelessWidget with WatchItMixin {
       rows.add(DataRow(cells: cells));
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: SeparatedColumn(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        separatorBuilder: (context, index) => const SizedBox(height: 10),
-        children: [
-          const Text(
-            'Spielwertungen',
-            style: Constants.mediumHeaderTextStyle,
+    return SeparatedColumn(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      separatorBuilder: (context, index) => const SizedBox(height: 10),
+      children: [
+        const Text(
+          'Spielwertungen',
+          style: Constants.mediumHeaderTextStyle,
+        ),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            columns: columns,
+            rows: rows,
           ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              columns: columns,
-              rows: rows,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
