@@ -68,6 +68,7 @@ class RefereeView extends StatelessWidget with WatchItMixin {
                           var maxTeams = int.tryParse(maxTeamsController.text);
                           if (maxTeams == null) {
                             showError(context, 'Ungültiges Zahlenformat!');
+                            return;
                           }
 
                           var result = await gameManager.startNextRoundCommand
