@@ -14,6 +14,7 @@ class ExtendedGameDto {
     this.ageGroupName,
     this.pointsTeamA,
     this.pointsTeamB,
+    this.startTime,
   );
 
   int gameNumber;
@@ -24,6 +25,7 @@ class ExtendedGameDto {
   String ageGroupName;
   int pointsTeamA;
   int pointsTeamB;
+  DateTime startTime;
 
   factory ExtendedGameDto.fromJson(Map<String, dynamic> json) =>
       _$ExtendedGameDtoFromJson(json);

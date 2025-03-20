@@ -8,6 +8,7 @@ class ExtendedGame {
     this.ageGroupName,
     this.pointsTeamA,
     this.pointsTeamB,
+    this.startTime,
   );
 
   int gameNumber;
@@ -18,4 +19,5 @@ class ExtendedGame {
   String ageGroupName;
   int pointsTeamA;
   int pointsTeamB;
+  DateTime startTime;
 }

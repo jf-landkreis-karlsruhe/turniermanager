@@ -97,6 +97,17 @@ class GameScoreView extends StatelessWidget with WatchItMixin {
   @override
   Widget build(BuildContext context) {
     var games = watchPropertyValue((GameManager manager) => manager.games);
+    games.sort((a, b) {
+      if (a == b) {
+        return 0;
+      }
+
+      if (a.startTime.isBefore(b.startTime)) {
+        return -1;
+      }
+
+      return 1;
+    });
 
     List<DataColumn> columns = [
       addDataColumn('#'),
@@ -121,8 +132,7 @@ class GameScoreView extends StatelessWidget with WatchItMixin {
 
       List<DataCell> cells = [
         addDataCell(game.gameNumber.toString()),
-        addDataCell(DateFormat.Hm()
-            .format(DateTime.now())), //TODO: get starttime from dto & sort
+        addDataCell(DateFormat.Hm().format(game.startTime)),
         addDataCell(game.pitch),
         addDataCell(game.ageGroupName),
         addDataCell(game.leagueName),

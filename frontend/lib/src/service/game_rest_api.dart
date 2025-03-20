@@ -448,6 +448,7 @@ class GameTestRestApi extends GameRestApi {
         'Altersklasse 1',
         2,
         3,
+        DateTime.now().add(const Duration(minutes: 10)),
       ),
       ExtendedGameDto(
         2,
@@ -458,6 +459,7 @@ class GameTestRestApi extends GameRestApi {
         'Altersklasse 2',
         5,
         6,
+        DateTime.now(),
       ),
     ];
   }

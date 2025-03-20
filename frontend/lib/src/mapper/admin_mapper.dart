@@ -12,6 +12,7 @@ class AdminMapper {
       dto.ageGroupName,
       dto.pointsTeamA,
       dto.pointsTeamB,
+      dto.startTime,
     );
   }
 }
