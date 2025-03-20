@@ -106,7 +106,7 @@ public class GameController {
 
             String ageGroupName = game.getRound().getLeagues().stream().filter(league -> (league.getTeams().contains(game.getTeamA()) || league.getTeams().contains(game.getTeamB()))).findFirst().map(league -> league.getAgeGroup().getName()).orElse("Unbekannte Altersgruppe");
 
-            extendedGameDTOs.add(new ExtendedGameDTO(game.getId(), game.getGameNumber(), game.getTeamA().getName(), game.getTeamB().getName(), game.getPitch() != null ? game.getPitch().getName() : "Kein Spielfeld", leagueName, ageGroupName, game.getTeamAScore(), game.getTeamBScore()));
+            extendedGameDTOs.add(new ExtendedGameDTO(game.getId(), game.getStartTime(), game.getGameNumber(), game.getTeamA().getName(), game.getTeamB().getName(), game.getPitch() != null ? game.getPitch().getName() : "Kein Spielfeld", leagueName, ageGroupName, game.getTeamAScore(), game.getTeamBScore()));
         });
         return ResponseEntity.ok(extendedGameDTOs);
     }
@@ -114,18 +114,33 @@ public class GameController {
 
     @PostMapping("/refreshTimings")
     public ResponseEntity<String> refreshTimings(@RequestBody TimingRequest request) {
+        GameSettings settings = gameSettingsRepository.findAll().getFirst();
         LocalDateTime startTime = request.getStartTime();
         LocalDateTime actualStartTime = request.getActualStartTime();
+        LocalDateTime endTime = request.getEndTime();
+
+        LocalDateTime roundedStartTime = roundToMinute(startTime);
+
+        List<Game> gamesToUpdate = gameRepository.findAll().stream()
+                .filter(game -> roundToMinute(game.getStartTime()).equals(roundedStartTime))
+                .toList();
+
+        gamesToUpdate.forEach(game -> {
+            game.setActualStartTime(actualStartTime);
+            game.setActualEndTime(endTime);
+        });
+
+        gameRepository.saveAll(gamesToUpdate);
 
         if (actualStartTime.isBefore(startTime)) {
             Duration duration = Duration.between(actualStartTime, startTime);
             long minutes = duration.toMinutes();
-            pitchScheduler.advanceGamesAfter(startTime, (int) minutes);
+            pitchScheduler.advanceGamesAfter(startTime, (int) minutes + 1 + settings.getBreakTime());
             return ResponseEntity.ok("Actual start time was " + minutes + " minutes early.");
         } else if (actualStartTime.isAfter(startTime)) {
             Duration duration = Duration.between(startTime, actualStartTime);
             long minutes = duration.toMinutes();
-            pitchScheduler.delayGamesAfter(startTime, (int) minutes);
+            pitchScheduler.delayGamesAfter(startTime, (int) minutes + 1 + settings.getBreakTime());
             return ResponseEntity.ok("Actual start time was " + minutes + " minutes late.");
         } else {
             return ResponseEntity.ok("Actual start time was on time.");
@@ -143,15 +158,23 @@ public class GameController {
                 continue;
             }
 
-            LocalDateTime startTime = game.getStartTime();
+            LocalDateTime startTime = roundToMinute(game.getStartTime()); // Auf Minute runden
             TeamDTO teamADTO = new TeamDTO(game.getTeamA().getId(), game.getTeamA().getName());
             TeamDTO teamBDTO = new TeamDTO(game.getTeamB().getId(), game.getTeamB().getName());
             PitchDTO pitchDTO = new PitchDTO(game.getPitch().getId(), game.getPitch().getName());
 
             // Liga und Altersgruppe aus der aktiven Runde abrufen
-            String leagueName = game.getRound().getLeagues().stream().filter(league -> (league.getTeams().contains(game.getTeamA()) || league.getTeams().contains(game.getTeamB()))).findFirst().map(League::getName).orElse("Unbekannte Liga");
+            String leagueName = game.getRound().getLeagues().stream()
+                    .filter(league -> (league.getTeams().contains(game.getTeamA()) || league.getTeams().contains(game.getTeamB())))
+                    .findFirst()
+                    .map(League::getName)
+                    .orElse("Unbekannte Liga");
 
-            String ageGroupName = game.getRound().getLeagues().stream().filter(league -> (league.getTeams().contains(game.getTeamA()) || league.getTeams().contains(game.getTeamB()))).findFirst().map(league -> league.getAgeGroup().getName()).orElse("Unbekannte Altersgruppe");
+            String ageGroupName = game.getRound().getLeagues().stream()
+                    .filter(league -> (league.getTeams().contains(game.getTeamA()) || league.getTeams().contains(game.getTeamB())))
+                    .findFirst()
+                    .map(league -> league.getAgeGroup().getName())
+                    .orElse("Unbekannte Altersgruppe");
 
             GameDTO gameDTO = new GameDTO(game.getId(), game.getGameNumber(), teamADTO, teamBDTO, pitchDTO, leagueName, ageGroupName);
             groupedGames.computeIfAbsent(startTime, k -> new ArrayList<>()).add(gameDTO);
@@ -164,12 +187,24 @@ public class GameController {
         return result;
     }
 
+    // Hilfsmethode zum Runden auf Minute
+    private LocalDateTime roundToMinute(LocalDateTime dateTime) {
+        return LocalDateTime.of(
+                dateTime.getYear(),
+                dateTime.getMonth(),
+                dateTime.getDayOfMonth(),
+                dateTime.getHour(),
+                dateTime.getMinute()
+        );
+    }
+
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public class ExtendedGameDTO {
         private UUID id;
+        private LocalDateTime startTime;
         private long gameNumber;
         private String teamA;
         private String teamB;
