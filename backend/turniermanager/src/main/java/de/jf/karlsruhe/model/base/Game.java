@@ -52,4 +52,9 @@ public class Game {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Round round;
+
+    @ManyToOne
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private League league;
 }

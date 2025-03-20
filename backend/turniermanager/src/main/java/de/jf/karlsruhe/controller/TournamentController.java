@@ -4,6 +4,7 @@ import de.jf.karlsruhe.model.base.*;
 import de.jf.karlsruhe.model.repos.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -102,7 +103,7 @@ public class TournamentController {
 
     @Transactional
     @PostMapping("/create/round")
-    public Tournament createTournamentRound() {
+    public Tournament createTournamentRound(@RequestParam int maxTeamsPerLeague) {
         if (ageGroupRepository.count() == 0 && pitchRepository.count() == 0 && teamRepository.count() == 0)
             return tournamentRepository.findAll().getFirst();
         List<Round> all = roundRepository.findAll();
@@ -123,7 +124,7 @@ public class TournamentController {
             List<Game> allGames = gameRepository.findAll();
             List<Team> sortedTeams = !allGames.isEmpty() ? getTeamsSortedByPerformance(allGames, teams) : teams;
 
-            List<League> leagues = createBalancedLeaguesForAgeGroup(sortedTeams, 6, "Turnier", tournament);
+            List<League> leagues = createBalancedLeaguesForAgeGroup(sortedTeams, maxTeamsPerLeague, "Turnier", tournament);
 
             // Erstelle eine Kopie der League-Liste
             List<League> leaguesCopy = new ArrayList<>(leagues);
@@ -139,6 +140,19 @@ public class TournamentController {
                 allRounds.add(league.getRound());
             });
         }
+
+        Map<League, Integer> gameCountPerLeague = getGameCountPerLeague(allGamesToSchedule);
+        int maxGamesPlayed = gameCountPerLeague.values().stream().max(Integer::compareTo).orElse(0);
+
+        for (Round round : allRounds) {
+            if (round.getGames().size() < maxGamesPlayed) {
+                int difference = maxGamesPlayed - round.getGames().size();
+                allGamesToSchedule.addAll(distributeGamesEvenly(round, gameCountPerLeague, difference));
+
+            }
+        }
+
+
         Collections.shuffle(allGamesToSchedule); // Zufällige Reihenfolge aller Spiele.
         List<Game> scheduledGames = setGameTags(pitchScheduler.scheduleGames(allGamesToSchedule));
         gameRepository.saveAll(scheduledGames);
@@ -195,6 +209,24 @@ public class TournamentController {
         return null;
     }
 
+    @Transactional
+    @PostMapping("/add/{leagueId}/{additionalGamesNeeded}")
+    public ResponseEntity<String> addGamesManually(
+            @PathVariable("leagueId") UUID leagueId,
+            @PathVariable("additionalGamesNeeded") int additionalGamesNeeded) {
+
+        Optional<League> optionalLeague = leagueRepository.findById(leagueId);
+
+        if (optionalLeague.isPresent()) {
+            League league = optionalLeague.get();
+            List<Game> additionalGames = generateAdditionalGames(league, additionalGamesNeeded);
+            List<Game> scheduledAdditionalGames = setGameTags(pitchScheduler.scheduleGames(additionalGames));
+            gameRepository.saveAll(scheduledAdditionalGames);
+            return ResponseEntity.ok().body("Added games manually");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     // <------------------- Helper Methods --------------------->
 
@@ -233,6 +265,7 @@ public class TournamentController {
                         .teamA(teamA)
                         .teamB(teamB)
                         .round(league.getRound())
+                        .league(league)
                         .build();
 
                 games.add(game);
@@ -327,6 +360,85 @@ public class TournamentController {
         tournament.addRound(round);
         return leagues;
     }
+
+    public Map<League, Integer> getGameCountPerLeague(List<Game> games) {
+        Map<League, Integer> gameCountPerLeague = new HashMap<>();
+
+        if (games != null) {
+            for (Game game : games) {
+                League league = game.getLeague();
+                if (league != null) {
+                    gameCountPerLeague.merge(league, 1, Integer::sum);
+                }
+            }
+        }
+
+        return gameCountPerLeague;
+    }
+
+    public static List<Game> distributeGamesEvenly(Round round, Map<League, Integer> gameCountPerLeague, int difference) {
+        List<Game> gamesToSchedule = new ArrayList<>();
+        List<League> leagues = round.getLeagues();
+
+        if (leagues == null || leagues.isEmpty() || difference <= 0) {
+            return gamesToSchedule;
+        }
+
+        // Sortiere Ligen nach Anzahl der bereits gespielten Spiele (aufsteigend)
+        List<League> sortedLeagues = leagues.stream()
+                .sorted(Comparator.comparingInt(league -> gameCountPerLeague.getOrDefault(league, 0)))
+                .collect(Collectors.toList());
+
+        int leagueIndex = 0;
+        int gamesDistributed = 0; // Zähler für verteilte Spiele
+
+        while (gamesDistributed < difference) {
+            League currentLeague = sortedLeagues.get(leagueIndex);
+            int gamesNeededForCurrentLeague = 1; // Füge 1 Spiel pro Liga hinzu
+
+            // Wenn noch mehr Spiele benötigt werden, berechne die Anzahl
+            if (difference - gamesDistributed > sortedLeagues.size() - leagueIndex) {
+                gamesNeededForCurrentLeague = Math.min(difference - gamesDistributed, (difference - gamesDistributed) / (sortedLeagues.size() - leagueIndex));
+            }
+
+            List<Game> additionalGames = generateAdditionalGames(currentLeague, gamesNeededForCurrentLeague);
+            gamesToSchedule.addAll(additionalGames);
+
+            gameCountPerLeague.merge(currentLeague, additionalGames.size(), Integer::sum); // Aktualisiere die Spielanzahl
+            gamesDistributed += additionalGames.size(); // Aktualisiere den Zähler
+
+            leagueIndex = (leagueIndex + 1) % sortedLeagues.size(); // Wechsle zur nächsten Liga
+        }
+
+        return gamesToSchedule;
+    }
+
+    private static List<Game> generateAdditionalGames(League league, int additionalGamesNeeded) {
+        List<Game> additionalGames = new ArrayList<>();
+        List<Team> teams = league.getTeams();
+        java.util.Random random = new java.util.Random();
+
+        for (int i = 0; i < additionalGamesNeeded; i++) {
+            de.jf.karlsruhe.model.base.Team teamA = teams.get(random.nextInt(teams.size()));
+            de.jf.karlsruhe.model.base.Team teamB = teams.get(random.nextInt(teams.size()));
+
+            // Stelle sicher, dass teamA und teamB nicht dasselbe Team sind
+            while (teamA.equals(teamB)) {
+                teamB = teams.get(random.nextInt(teams.size()));
+            }
+
+            Game game = new Game();
+            game.setLeague(league);
+            game.setTeamA(teamA);
+            game.setTeamB(teamB);
+            game.setRound(league.getRound());
+            game.setGameNumber(0); // Setze die Spielnummer auf 0 oder einen anderen Wert, um anzuzeigen, dass es sich um ein zusätzliches Spiel handelt
+            additionalGames.add(game);
+        }
+
+        return additionalGames;
+    }
+
 
     @Data
     public static class BreakRequest {
