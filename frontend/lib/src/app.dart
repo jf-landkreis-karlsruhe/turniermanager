@@ -80,7 +80,7 @@ class MainWidget extends StatelessWidget {
               final GameManager gameManager = di<GameManager>();
               gameManager.getCurrentRoundCommand();
 
-              return const RefereeView();
+              return RefereeView();
             },
           ),
           GoRoute(

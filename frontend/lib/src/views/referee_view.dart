@@ -11,9 +11,10 @@ import 'package:watch_it/watch_it.dart';
 import 'package:intl/intl.dart';
 
 class RefereeView extends StatelessWidget with WatchItMixin {
-  const RefereeView({super.key});
+  RefereeView({super.key});
 
   static const routeName = '/referee';
+  final maxTeamsController = TextEditingController(text: '6');
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +32,11 @@ class RefereeView extends StatelessWidget with WatchItMixin {
         ),
         leadingWidth: 200,
         actions: [
-          const SizedBox(
+          SizedBox(
             width: 200,
             child: TextField(
-              //TODO: use value from textfield in call to start next round
-              decoration: InputDecoration(
+              controller: maxTeamsController,
+              decoration: const InputDecoration(
                   label: Text(
                 'max. # Teams / Runde',
                 style: Constants.standardTextStyle,
@@ -75,6 +76,11 @@ class RefereeView extends StatelessWidget with WatchItMixin {
                           }
 
                           GoRouter.of(dialogContext).pop();
+
+                          if (!result) {
+                            showError(context,
+                                'Nächste Runde konnte nicht gestartet werden!');
+                          }
                         },
                         child: const Text('OK'),
                       ),
