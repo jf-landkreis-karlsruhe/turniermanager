@@ -51,8 +51,16 @@ class PitchPrinter extends StatelessWidget with WatchItMixin {
           children: [
             Text('${pitch.name} (ID: ${pitch.id})'),
             IconButton(
-              onPressed: () {
-                _gameManager.printPitchCommand(pitch.id);
+              onPressed: () async {
+                var result = await _gameManager.printPitchCommand
+                    .executeWithFuture(pitch.id);
+
+                if (result) {
+                  return;
+                }
+
+                showError(context,
+                    'Schiedrichterzettel für Platz #${pitch.id} konnte nicht erstellt werden!');
               },
               icon: const Icon(Icons.print),
             ),
@@ -73,9 +81,17 @@ class PitchPrinter extends StatelessWidget with WatchItMixin {
               style: Constants.mediumHeaderTextStyle,
             ),
             IconButton(
-              onPressed: () {
+              onPressed: () async {
                 for (var pitch in pitches) {
-                  _gameManager.printPitchCommand(pitch.id);
+                  var result = await _gameManager.printPitchCommand
+                      .executeWithFuture(pitch.id);
+
+                  if (result) {
+                    continue;
+                  }
+
+                  showError(context,
+                      'Schiedrichterzettel für Platz #${pitch.id} konnte nicht erstellt werden!');
                 }
               },
               icon: const Icon(Icons.print),

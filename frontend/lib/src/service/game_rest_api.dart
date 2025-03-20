@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:download/download.dart';
 import 'package:tournament_manager/src/serialization/admin/extended_game_dto.dart';
 import 'package:tournament_manager/src/serialization/age_group_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/break_request_dto.dart';
@@ -40,7 +41,7 @@ abstract class GameRestApi {
   Future<bool> addBreak(DateTime start, int durationInMinutes);
 
   Future<List<PitchDto>> getAllPitches();
-  Future printPitch(String pitchId);
+  Future<bool> printPitch(String pitchId);
 }
 
 class GameRestApiImplementation extends RestClient implements GameRestApi {
@@ -250,13 +251,31 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   }
 
   @override
-  Future printPitch(String pitchId) async {
-    final uri = Uri.parse(printPitchPath + pitchId);
+  Future<bool> printPitch(String pitchId) async {
+    try {
+      final uri = Uri.parse(printPitchPath + pitchId);
 
-    final response = await client.get(uri, headers: headers);
+      final response = await client.get(uri, headers: headers);
 
-    if (response.statusCode == 200) {
-      //TODO: print / save pdf
+      if (response.statusCode == 200) {
+        String fileName = 'Schiedsrichterzettel_Platz_$pitchId.pdf';
+
+        // remove quotes to make it a valid base64 string
+        var result = response.body.replaceAll('"', '');
+        var deecoded = base64Decode(result);
+
+        if (deecoded.isEmpty) {
+          return false;
+        }
+
+        final stream = Stream.fromIterable(deecoded);
+        await download(stream, fileName);
+        return true;
+      }
+
+      return false;
+    } on Exception {
+      return false;
     }
   }
 }
@@ -493,5 +512,7 @@ class GameTestRestApi extends GameRestApi {
   }
 
   @override
-  Future printPitch(String pitchId) async {}
+  Future<bool> printPitch(String pitchId) async {
+    return true;
+  }
 }

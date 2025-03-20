@@ -23,6 +23,7 @@ dependencies:
   audioplayers: ^6.4.0
   separated_row: ^3.0.4
   separated_column: ^3.0.4
+  download: ^1.0.1
 
 dev_dependencies:
   flutter_test:
