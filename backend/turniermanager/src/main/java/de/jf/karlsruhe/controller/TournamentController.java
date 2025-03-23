@@ -104,6 +104,7 @@ public class TournamentController {
     @Transactional
     @PostMapping("/create/round")
     public Tournament createTournamentRound(@RequestParam int maxTeamsPerLeague) {
+        clearScheduledPitches();
         if (ageGroupRepository.count() == 0 && pitchRepository.count() == 0 && teamRepository.count() == 0)
             return tournamentRepository.findAll().getFirst();
         List<Round> all = roundRepository.findAll();

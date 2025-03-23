@@ -64,13 +64,13 @@ public class DataInitializer {
             Tournament tournament;
             // Test-Turnier erstellen
             if (true) {
-                tournament = tournamentController.createTournament("Test-Tournier", LocalDateTime.now(), 10, 1);
+                tournament = tournamentController.createTournament("Test-Tournier", LocalDateTime.now(), 2, 1);
                 tournamentController.createQualificationTournament();
 
                 // Zufällige Scores für alle Spiele setzen
                 updateAllGamesWithRandomScores(gameRepository);
             }
-            if(false)return;
+            if(true)return;
 
             if (true) {
                 UUID id = tournament.getId();
