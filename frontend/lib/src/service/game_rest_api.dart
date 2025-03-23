@@ -265,15 +265,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
       if (response.statusCode == 200) {
         String fileName = 'Schiedsrichterzettel_Platz_$pitchId.pdf';
 
-        // remove quotes to make it a valid base64 string
-        var result = response.body.replaceAll('"', '');
-        var deecoded = base64Decode(result);
-
-        if (deecoded.isEmpty) {
-          return false;
-        }
-
-        final stream = Stream.fromIterable(deecoded);
+        final stream = Stream.fromIterable(response.bodyBytes);
         await download(stream, fileName);
         return true;
       }
