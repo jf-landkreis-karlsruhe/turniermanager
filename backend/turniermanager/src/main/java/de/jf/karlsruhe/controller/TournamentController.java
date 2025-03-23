@@ -209,6 +209,11 @@ public class TournamentController {
         return null;
     }
 
+    @DeleteMapping("clear-scheduled-pitches")
+    public void clearScheduledPitches() {
+        this.pitchScheduler.reset();
+    }
+
     @Transactional
     @PostMapping("/add/{leagueId}/{additionalGamesNeeded}")
     public ResponseEntity<String> addGamesManually(

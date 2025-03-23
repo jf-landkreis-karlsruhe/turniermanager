@@ -157,6 +157,7 @@ public class GameController {
             if (game.getActualStartTime() != null && game.getActualEndTime() != null) {
                 continue;
             }
+            if (!game.getRound().isActive()) continue;
 
             LocalDateTime startTime = roundToMinute(game.getStartTime()); // Auf Minute runden
             TeamDTO teamADTO = new TeamDTO(game.getTeamA().getId(), game.getTeamA().getName());

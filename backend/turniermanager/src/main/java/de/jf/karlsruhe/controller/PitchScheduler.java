@@ -258,5 +258,7 @@ public class PitchScheduler {
     }
 
 
-
+    public void reset() {
+        pitchSchedules.clear();
+    }
 }
