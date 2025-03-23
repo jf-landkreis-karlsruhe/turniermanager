@@ -59,6 +59,10 @@ class PitchPrinter extends StatelessWidget with WatchItMixin {
                   return;
                 }
 
+                if (!context.mounted) {
+                  return;
+                }
+
                 showError(context,
                     'Schiedrichterzettel für Platz #${pitch.id} konnte nicht erstellt werden!');
               },
@@ -88,6 +92,10 @@ class PitchPrinter extends StatelessWidget with WatchItMixin {
 
                   if (result) {
                     continue;
+                  }
+
+                  if (!context.mounted) {
+                    return;
                   }
 
                   showError(context,
