@@ -67,7 +67,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
     endGamesUri = Uri.parse('$baseUri/games/refreshTimings');
     getAllGamesUri = Uri.parse('$baseUri/games/getAll');
     saveGamePath = '$baseUri/games/update/';
-    addBreakUri = Uri.parse('/turniersetup/addBreak');
+    addBreakUri = Uri.parse('$baseUri/turniersetup/addBreak');
     getAllPitchesUri = Uri.parse('$baseUri/turniersetup/pitches');
     printPitchPath = '$baseUri/turniersetup/pitches/result-card/';
   }
