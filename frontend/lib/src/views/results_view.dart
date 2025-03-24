@@ -141,7 +141,7 @@ class LeagueView extends StatelessWidget {
   final League league;
   final double width;
 
-  final Color textColor = Colors.black;
+  final Color textColor = Colors.white;
 
   @override
   Widget build(BuildContext context) {
@@ -329,7 +329,7 @@ class LeagueView extends StatelessWidget {
           ),
           Expanded(
             child: Container(
-              color: Colors.indigo,
+              color: Colors.grey[800],
               width: width,
               child: Padding(
                 padding: const EdgeInsets.all(10),
