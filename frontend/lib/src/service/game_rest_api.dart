@@ -45,6 +45,8 @@ abstract class GameRestApi {
 }
 
 class GameRestApiImplementation extends RestClient implements GameRestApi {
+  late final String _baseUri;
+
   late final String getSchedulePath;
   late final String getResultsPath;
   late final Uri getAllAgeGroupsUri;
@@ -57,19 +59,21 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   late final Uri getAllPitchesUri;
   late final String printPitchPath;
 
-  GameRestApiImplementation() {
-    getSchedulePath = '$baseUri/gameplan/agegroup/';
-    getResultsPath = '$baseUri/stats/agegroup/';
-    getAllAgeGroupsUri = Uri.parse('$baseUri/turniersetup/agegroups/getAll');
+  GameRestApiImplementation(String baseUri) {
+    _baseUri = baseUri;
+
+    getSchedulePath = '$_baseUri/gameplan/agegroup/';
+    getResultsPath = '$_baseUri/stats/agegroup/';
+    getAllAgeGroupsUri = Uri.parse('$_baseUri/turniersetup/agegroups/getAll');
     getAllGameGroupsUri =
-        Uri.parse('$baseUri/games/activeGamesSortedDateTimeList');
-    createRoundUri = Uri.parse('$baseUri/turniersetup/create/round');
-    endGamesUri = Uri.parse('$baseUri/games/refreshTimings');
-    getAllGamesUri = Uri.parse('$baseUri/games/getAll');
-    saveGamePath = '$baseUri/games/update/';
-    addBreakUri = Uri.parse('$baseUri/turniersetup/addBreak');
-    getAllPitchesUri = Uri.parse('$baseUri/turniersetup/pitches');
-    printPitchPath = '$baseUri/turniersetup/pitches/result-card/';
+        Uri.parse('$_baseUri/games/activeGamesSortedDateTimeList');
+    createRoundUri = Uri.parse('$_baseUri/turniersetup/create/round');
+    endGamesUri = Uri.parse('$_baseUri/games/refreshTimings');
+    getAllGamesUri = Uri.parse('$_baseUri/games/getAll');
+    saveGamePath = '$_baseUri/games/update/';
+    addBreakUri = Uri.parse('$_baseUri/turniersetup/addBreak');
+    getAllPitchesUri = Uri.parse('$_baseUri/turniersetup/pitches');
+    printPitchPath = '$_baseUri/turniersetup/pitches/result-card/';
   }
 
   @override
