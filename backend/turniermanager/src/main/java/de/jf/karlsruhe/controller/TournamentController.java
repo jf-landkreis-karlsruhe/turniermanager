@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -183,10 +184,29 @@ public class TournamentController {
         }
     }
 
+    @DeleteMapping("/remove-games-after-time")
+    @Transactional
+    public ResponseEntity<String> removeGamesAfterTime(@RequestBody TimeRequest timeRequest) {
+        try {
+            LocalDateTime maxTime = timeRequest.getMaxTime();
+
+            List<Game> gamesToRemove = gameRepository.findAll().stream()
+                    .filter(game -> game.getStartTime().isAfter(maxTime))
+                    .collect(Collectors.toList());
+
+            gameRepository.deleteAll(gamesToRemove);
+            pitchScheduler.updatePitchSchedules(); // Aktualisiere die Zeitpläne nach dem Löschen
+
+            return ResponseEntity.ok("Spiele nach " + maxTime + " wurden entfernt.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Fehler beim Entfernen der Spiele: " + e.getMessage());
+        }
+    }
+
+
     @PostMapping("/addBreak")
     public void addBreakViaApi(@RequestBody BreakRequest breakRequest) {
         pitchScheduler.delayGamesAfter(breakRequest.getBreakTime(), breakRequest.getDuration());
-
     }
 
     @PostMapping("/advanceAfter")
@@ -464,5 +484,9 @@ public class TournamentController {
         private int duration;
     }
 
+    @Data
+    public class TimeRequest {
+        private LocalDateTime maxTime;
+    }
 
 }

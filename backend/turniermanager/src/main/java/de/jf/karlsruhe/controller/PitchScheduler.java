@@ -245,7 +245,7 @@ public class PitchScheduler {
         updatePitchSchedules();
     }
 
-    private void updatePitchSchedules() {
+    public void updatePitchSchedules() {
         pitchSchedules.clear();
         List<Game> allGames = gameRepository.findAll();
         for (Game game : allGames) {
