@@ -286,11 +286,11 @@ public class TournamentController {
             return new ArrayList<>();  // No games or teams available
         }
 
-        Map<Team, Integer> teamPointsMap = new HashMap<>();
+        Map<Team, Float> teamPointsMap = new HashMap<>();
 
         for (Team team : teams) {
             int totalPoints = 0;
-
+            int gamesPlayed = 0;
             for (Game g : games) {
                 int teamAScore = g.getTeamAScore();
                 int teamBScore = g.getTeamBScore();
@@ -306,13 +306,15 @@ public class TournamentController {
                     } else if (ownGoals == opponentGoals) {
                         totalPoints += 1;
                     }
+                    gamesPlayed++;
                 }
             }
-            teamPointsMap.put(team, totalPoints);
+            float avgPoints = (float) totalPoints / (float) gamesPlayed;
+            teamPointsMap.put(team, avgPoints);
         }
 
         return teams.stream()
-                .sorted((t1, t2) -> Integer.compare(teamPointsMap.get(t2), teamPointsMap.get(t1)))
+                .sorted((t1, t2) -> Float.compare(teamPointsMap.get(t2), teamPointsMap.get(t1)))
                 .collect(Collectors.toList());
     }
 
