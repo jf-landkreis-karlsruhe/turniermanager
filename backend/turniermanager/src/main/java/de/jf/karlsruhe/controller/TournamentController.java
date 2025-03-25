@@ -103,7 +103,7 @@ public class TournamentController {
 
     @Transactional
     @PostMapping("/create/round")
-    public Tournament createTournamentRound(@RequestParam int maxTeamsPerLeague) {
+    public Tournament createTournamentRound(@RequestParam Map<UUID, Integer> numberPerRounds) {
         clearScheduledPitches();
         if (ageGroupRepository.count() == 0 && pitchRepository.count() == 0 && teamRepository.count() == 0)
             return tournamentRepository.findAll().getFirst();
@@ -124,8 +124,11 @@ public class TournamentController {
             List<Team> teams = teamRepository.findByAgeGroupId(ageGroup.getId());
             List<Game> allGames = gameRepository.findAll();
             List<Team> sortedTeams = !allGames.isEmpty() ? getTeamsSortedByPerformance(allGames, teams) : teams;
-
-            List<League> leagues = createBalancedLeaguesForAgeGroup(sortedTeams, maxTeamsPerLeague, "Turnier", tournament);
+            Integer amountOfMaxTeamsPerAgeGroup = 6;
+            if(numberPerRounds.containsKey(ageGroup.getId())) {
+                amountOfMaxTeamsPerAgeGroup = numberPerRounds.get(ageGroup.getId());
+            }
+            List<League> leagues = createBalancedLeaguesForAgeGroup(sortedTeams, amountOfMaxTeamsPerAgeGroup, "Turnier", tournament);
 
             // Erstelle eine Kopie der League-Liste
             List<League> leaguesCopy = new ArrayList<>(leagues);

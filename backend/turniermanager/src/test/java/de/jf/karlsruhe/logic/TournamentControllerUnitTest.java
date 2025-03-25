@@ -115,7 +115,7 @@ class TournamentControllerUnitTest {
 
         // *** Schritt 3: Erste zusätzliche Runde erstellen (z. B. Zwischenrunde) ***
         String firstRoundName = "Qualifikationsrunde";
-        Tournament firstRoundTournament = tournamentController.createTournamentRound(6);
+        Tournament firstRoundTournament = tournamentController.createTournamentRound(null);
 
         // Verifizieren, dass die erste neue Runde erfolgreich erstellt wurde
         assertNotNull(firstRoundTournament);
@@ -133,7 +133,7 @@ class TournamentControllerUnitTest {
 
         // *** Schritt 4: Zweite zusätzliche Runde erstellen (Finalrunde) ***
         String finalRoundName = "Finalrunde";
-        Tournament finalRoundTournament = tournamentController.createTournamentRound(6);
+        Tournament finalRoundTournament = tournamentController.createTournamentRound(null);
 
         // Verifizieren, dass die finale Runde erfolgreich erstellt wurde
         assertNotNull(finalRoundTournament);

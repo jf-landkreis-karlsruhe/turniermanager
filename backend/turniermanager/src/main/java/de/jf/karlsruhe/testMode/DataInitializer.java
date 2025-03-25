@@ -74,7 +74,7 @@ public class DataInitializer {
 
             if (true) {
                 UUID id = tournament.getId();
-                tournamentController.createTournamentRound(6);
+                tournamentController.createTournamentRound(null);
                 updateAllGamesWithRandomScores(gameRepository);
             }
 
