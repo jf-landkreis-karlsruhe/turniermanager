@@ -84,6 +84,12 @@ class RefereeView extends StatelessWidget with WatchItMixin {
                         itemCount: ageGroups.length,
                       ),
                     ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => GoRouter.of(dialogContext).pop(),
+                        child: const Text('OK'),
+                      ),
+                    ],
                   );
                 },
               );
