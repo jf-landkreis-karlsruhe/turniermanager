@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -10,7 +9,7 @@ import 'package:tournament_manager/src/model/schedule/league.dart';
 import 'package:tournament_manager/src/model/schedule/match_schedule_entry.dart';
 import 'package:watch_it/watch_it.dart';
 
-class ScheduleView extends StatefulWidget with WatchItStatefulWidgetMixin {
+class ScheduleView extends StatelessWidget with WatchItMixin {
   const ScheduleView(
     this.ageGroup, {
     super.key,
@@ -22,10 +21,56 @@ class ScheduleView extends StatefulWidget with WatchItStatefulWidgetMixin {
   static const ageGroupQueryParam = 'ageGroup';
 
   @override
-  State<ScheduleView> createState() => _ScheduleViewState();
+  Widget build(BuildContext context) {
+    var schedule =
+        watchPropertyValue((GameManager manager) => manager.schedule);
+
+    return Scaffold(
+      appBar: AppBar(
+        leading: const Center(
+          child: Text(
+            'Spielplan',
+            style: Constants.largeHeaderTextStyle,
+          ),
+        ),
+        leadingWidth: 150,
+        actions: [
+          Text(
+            ageGroup.name,
+            style: Constants.largeHeaderTextStyle,
+          ),
+          const SizedBox(width: 5),
+          const Text(
+            '|',
+            style: Constants.largeHeaderTextStyle,
+          ),
+          const SizedBox(width: 5),
+          Text(
+            schedule.roundName,
+            style: Constants.largeHeaderTextStyle,
+          ),
+          const SizedBox(width: 10),
+        ],
+      ),
+      body: ScheduleContentView(ageGroup: ageGroup),
+    );
+  }
 }
 
-class _ScheduleViewState extends State<ScheduleView> {
+class ScheduleContentView extends StatefulWidget
+    with WatchItStatefulWidgetMixin {
+  const ScheduleContentView({
+    super.key,
+    required this.ageGroup,
+  });
+
+  final AgeGroup ageGroup;
+
+  @override
+  State<ScheduleContentView> createState() => _ScheduleContentViewState();
+}
+
+class _ScheduleContentViewState extends State<ScheduleContentView> {
   Timer? refreshTimer;
 
   final ItemScrollController itemScrollController = ItemScrollController();
@@ -82,48 +127,19 @@ class _ScheduleViewState extends State<ScheduleView> {
     leagueWidgetSize = leagueWidgetSize < 500
         ? screenSize.width - enclosingPadding
         : leagueWidgetSize;
-
-    return Scaffold(
-      appBar: AppBar(
-        leading: const Center(
-          child: Text(
-            'Spielplan',
-            style: Constants.largeHeaderTextStyle,
-          ),
-        ),
-        leadingWidth: 150,
-        actions: [
-          Text(
-            widget.ageGroup.name,
-            style: Constants.largeHeaderTextStyle,
-          ),
-          const SizedBox(width: 5),
-          const Text(
-            '|',
-            style: Constants.largeHeaderTextStyle,
-          ),
-          const SizedBox(width: 5),
-          Text(
-            schedule.roundName,
-            style: Constants.largeHeaderTextStyle,
-          ),
-          const SizedBox(width: 10),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: ScrollablePositionedList.builder(
-          itemScrollController: itemScrollController,
-          scrollDirection: Axis.horizontal,
-          itemCount: schedule.leagueSchedules.length,
-          itemBuilder: (context, index) {
-            var entry = schedule.leagueSchedules[index];
-            return LeagueView(
-              league: entry,
-              width: leagueWidgetSize,
-            );
-          },
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: ScrollablePositionedList.builder(
+        itemScrollController: itemScrollController,
+        scrollDirection: Axis.horizontal,
+        itemCount: schedule.leagueSchedules.length,
+        itemBuilder: (context, index) {
+          var entry = schedule.leagueSchedules[index];
+          return LeagueView(
+            league: entry,
+            width: leagueWidgetSize,
+          );
+        },
       ),
     );
   }
