@@ -7,7 +7,7 @@ import 'package:tournament_manager/src/model/age_group.dart';
 import 'package:tournament_manager/src/model/results/league.dart';
 import 'package:watch_it/watch_it.dart';
 
-class ResultsView extends StatefulWidget with WatchItStatefulWidgetMixin {
+class ResultsView extends StatelessWidget with WatchItMixin {
   const ResultsView(
     this.ageGroup, {
     super.key,
@@ -19,10 +19,55 @@ class ResultsView extends StatefulWidget with WatchItStatefulWidgetMixin {
   static const ageGroupQueryParam = 'ageGroup';
 
   @override
-  State<ResultsView> createState() => _ResultsViewState();
+  Widget build(BuildContext context) {
+    var results = watchPropertyValue((GameManager manager) => manager.results);
+
+    return Scaffold(
+      appBar: AppBar(
+        leading: const Center(
+          child: Text(
+            'Ergebnisse',
+            style: Constants.largeHeaderTextStyle,
+          ),
+        ),
+        leadingWidth: 150,
+        actions: [
+          Text(
+            ageGroup.name,
+            style: Constants.largeHeaderTextStyle,
+          ),
+          const SizedBox(width: 5),
+          const Text(
+            '|',
+            style: Constants.largeHeaderTextStyle,
+          ),
+          const SizedBox(width: 5),
+          Text(
+            results.roundName,
+            style: Constants.largeHeaderTextStyle,
+          ),
+          const SizedBox(width: 10),
+        ],
+      ),
+      body: ResultsContentView(ageGroup: ageGroup),
+    );
+  }
 }
 
-class _ResultsViewState extends State<ResultsView> {
+class ResultsContentView extends StatefulWidget
+    with WatchItStatefulWidgetMixin {
+  const ResultsContentView({
+    super.key,
+    required this.ageGroup,
+  });
+
+  final AgeGroup ageGroup;
+
+  @override
+  State<ResultsContentView> createState() => _ResultsContentViewState();
+}
+
+class _ResultsContentViewState extends State<ResultsContentView> {
   Timer? refreshTimer;
 
   final ItemScrollController itemScrollController = ItemScrollController();
@@ -79,47 +124,19 @@ class _ResultsViewState extends State<ResultsView> {
         ? screenSize.width - enclosingPadding
         : leagueWidgetSize;
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: const Center(
-          child: Text(
-            'Ergebnisse',
-            style: Constants.largeHeaderTextStyle,
-          ),
-        ),
-        leadingWidth: 150,
-        actions: [
-          Text(
-            widget.ageGroup.name,
-            style: Constants.largeHeaderTextStyle,
-          ),
-          const SizedBox(width: 5),
-          const Text(
-            '|',
-            style: Constants.largeHeaderTextStyle,
-          ),
-          const SizedBox(width: 5),
-          Text(
-            results.roundName,
-            style: Constants.largeHeaderTextStyle,
-          ),
-          const SizedBox(width: 10),
-        ],
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(enclosingPadding / 2),
-        child: ScrollablePositionedList.builder(
-          itemScrollController: itemScrollController,
-          scrollDirection: Axis.horizontal,
-          itemCount: results.leagueTables.length,
-          itemBuilder: (context, index) {
-            var entry = results.leagueTables[index];
-            return LeagueView(
-              league: entry,
-              width: leagueWidgetSize,
-            );
-          },
-        ),
+    return Padding(
+      padding: EdgeInsets.all(enclosingPadding / 2),
+      child: ScrollablePositionedList.builder(
+        itemScrollController: itemScrollController,
+        scrollDirection: Axis.horizontal,
+        itemCount: results.leagueTables.length,
+        itemBuilder: (context, index) {
+          var entry = results.leagueTables[index];
+          return LeagueView(
+            league: entry,
+            width: leagueWidgetSize,
+          );
+        },
       ),
     );
   }
