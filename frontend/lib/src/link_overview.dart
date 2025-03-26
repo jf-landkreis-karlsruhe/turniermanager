@@ -4,6 +4,7 @@ import 'package:tournament_manager/src/Constants.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/model/age_group.dart';
 import 'package:tournament_manager/src/views/admin_view.dart';
+import 'package:tournament_manager/src/views/age_group_view.dart';
 import 'package:tournament_manager/src/views/referee_view.dart';
 import 'package:tournament_manager/src/views/results_view.dart';
 import 'package:tournament_manager/src/views/schedule_view.dart';
@@ -56,7 +57,7 @@ class LinkContentView extends StatelessWidget with WatchItMixin {
                   ),
                   const SizedBox(height: 10),
                   SizedBox(
-                    height: 120,
+                    height: 140,
                     child: ListView.builder(
                       itemBuilder: (context, index) {
                         var ageGroup = ageGroups[index];
@@ -190,47 +191,71 @@ class ScheduleAndResultsLinkView extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Expanded(
-                  child: Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              context.go(
+                                ".${Uri(
+                                  path: ScheduleView.routeName,
+                                  queryParameters: {
+                                    ScheduleView.ageGroupQueryParam:
+                                        ageGroup.name
+                                  },
+                                )}",
+                              );
+                            },
+                            child: const Text(
+                              'Spielübersicht',
+                              style: Constants.standardTextStyle,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              context.go(
+                                ".${Uri(
+                                  path: ResultsView.routeName,
+                                  queryParameters: {
+                                    ResultsView.ageGroupQueryParam:
+                                        ageGroup.name
+                                  },
+                                )}",
+                              );
+                            },
+                            child: const Text(
+                              'Ergebnisse',
+                              style: Constants.standardTextStyle,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
                       onPressed: () {
                         context.go(
                           ".${Uri(
-                            path: ScheduleView.routeName,
+                            path: AgeGroupView.routeName,
                             queryParameters: {
-                              ScheduleView.ageGroupQueryParam: ageGroup.name
+                              AgeGroupView.ageGroupQueryParam: ageGroup.name
                             },
                           )}",
                         );
                       },
                       child: const Text(
-                        'Spielübersicht',
+                        'Spielplan & Ergebnisse',
                         style: Constants.standardTextStyle,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        context.go(
-                          ".${Uri(
-                            path: ResultsView.routeName,
-                            queryParameters: {
-                              ResultsView.ageGroupQueryParam: ageGroup.name
-                            },
-                          )}",
-                        );
-                      },
-                      child: const Text(
-                        'Ergebnisse',
-                        style: Constants.standardTextStyle,
-                      ),
-                    ),
-                  ),
-                ],
-              )),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

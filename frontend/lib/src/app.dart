@@ -6,6 +6,7 @@ import 'package:tournament_manager/src/service/config_service.dart';
 import 'package:tournament_manager/src/service/game_rest_api.dart';
 import 'package:tournament_manager/src/service/sound_player_service.dart';
 import 'package:tournament_manager/src/views/admin_view.dart';
+import 'package:tournament_manager/src/views/age_group_view.dart';
 import 'package:tournament_manager/src/views/referee_view.dart';
 import 'package:tournament_manager/src/views/results_view.dart';
 import 'package:tournament_manager/src/views/schedule_view.dart';
@@ -75,6 +76,28 @@ class MainWidget extends StatelessWidget {
               gameManager.getResultsCommand(ageGroup.id);
 
               return ResultsView(ageGroup);
+            },
+          ),
+          GoRoute(
+            path: AgeGroupView.routeName,
+            builder: (context, state) {
+              var ageGroupParam =
+                  state.uri.queryParameters[AgeGroupView.ageGroupQueryParam] ??
+                      "Altersklasse ??";
+
+              final GameManager gameManager = di<GameManager>();
+              var ageGroup = gameManager.getAgeGroupByName(ageGroupParam);
+
+              if (ageGroup == null) {
+                return Center(
+                  child: Text('Altersklasse "$ageGroupParam" nicht vorhanden!'),
+                );
+              }
+
+              gameManager.getScheduleCommand(ageGroup.id);
+              gameManager.getResultsCommand(ageGroup.id);
+
+              return AgeGroupView(ageGroup: ageGroup);
             },
           ),
           GoRoute(

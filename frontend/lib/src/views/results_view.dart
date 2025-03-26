@@ -350,7 +350,8 @@ class LeagueView extends StatelessWidget {
               width: width,
               child: Padding(
                 padding: const EdgeInsets.all(10),
-                child: DataTable(columns: columns, rows: rows),
+                child: SingleChildScrollView(
+                    child: DataTable(columns: columns, rows: rows)),
               ),
             ),
           )
