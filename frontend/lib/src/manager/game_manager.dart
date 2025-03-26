@@ -20,7 +20,7 @@ abstract class GameManager extends ChangeNotifier {
 
   late Command<(DateTime originalStart, DateTime actualStart, DateTime end),
       bool> endCurrentGamesCommand;
-  late Command<int, bool> startNextRoundCommand;
+  late Command<Map<String, int>, bool> startNextRoundCommand;
   late Command<void, void> getCurrentRoundCommand;
 
   late Command<void, void> getAgeGroupsCommand;
@@ -63,7 +63,7 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
   late Command<(DateTime originalStart, DateTime actualStart, DateTime end),
       bool> endCurrentGamesCommand;
   @override
-  late Command<int, bool> startNextRoundCommand;
+  late Command<Map<String, int>, bool> startNextRoundCommand;
   @override
   late Command<void, void> getCurrentRoundCommand;
 

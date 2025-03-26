@@ -29,7 +29,7 @@ abstract class GameRestApi {
     DateTime end,
   );
 
-  Future<bool> startNextRound(int maxTeams);
+  Future<bool> startNextRound(Map<String, int> maxTeams);
 
   Future<List<GameGroupDto>> getCurrentRound();
 
@@ -136,10 +136,10 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   }
 
   @override
-  Future<bool> startNextRound(int maxTeams) async {
+  Future<bool> startNextRound(Map<String, int> maxTeams) async {
     try {
       var uri = createRoundUri.replace(queryParameters: {
-        "maxTeamsPerLeague": maxTeams.toString(),
+        "numberPerRounds": maxTeams.toString(),
       });
 
       final response = await client.post(uri, headers: headers);
@@ -294,9 +294,9 @@ class GameTestRestApi extends GameRestApi {
   @override
   Future<List<AgeGroupDto>> getAllAgeGroups() async {
     return [
-      AgeGroupDto('', 'Altersklasse 1'),
-      AgeGroupDto('', 'Altersklasse 2'),
-      AgeGroupDto('', 'Altersklasse 3'),
+      AgeGroupDto('1', 'Altersklasse 1'),
+      AgeGroupDto('2', 'Altersklasse 2'),
+      AgeGroupDto('3', 'Altersklasse 3'),
     ];
   }
 
@@ -452,7 +452,7 @@ class GameTestRestApi extends GameRestApi {
   }
 
   @override
-  Future<bool> startNextRound(int maxTeams) async {
+  Future<bool> startNextRound(Map<String, int> maxTeams) async {
     return true;
   }
 

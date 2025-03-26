@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
-import 'package:tournament_manager/src/Constants.dart';
+import 'package:tournament_manager/src/constants.dart';
 import 'package:tournament_manager/src/helper/error_helper.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/model/referee/game.dart';
@@ -14,13 +14,23 @@ class RefereeView extends StatelessWidget with WatchItMixin {
   RefereeView({super.key});
 
   static const routeName = '/referee';
-  final maxTeamsController = TextEditingController(text: '6');
+  final Map<String, int> ageGroupIdToMaxTeams = {};
 
   @override
   Widget build(BuildContext context) {
     var gameManager = di<GameManager>();
     var gameGroups =
         watchPropertyValue((GameManager manager) => manager.gameGroups);
+    var ageGroups =
+        watchPropertyValue((GameManager manager) => manager.ageGroups);
+
+    for (var ageGroup in ageGroups) {
+      ageGroupIdToMaxTeams.update(
+        ageGroup.id,
+        (value) => 6,
+        ifAbsent: () => 6,
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -32,26 +42,58 @@ class RefereeView extends StatelessWidget with WatchItMixin {
         ),
         leadingWidth: 200,
         actions: [
-          SizedBox(
-            width: 200,
-            child: TextField(
-              controller: maxTeamsController,
-              decoration: const InputDecoration(
-                  label: Text(
-                'max. # Teams / Runde',
-                style: Constants.standardTextStyle,
-              )),
-            ),
+          IconButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (dialogContext) {
+                  return AlertDialog(
+                    title: const Text('Max. Anzahl Teams / Runde'),
+                    content: SizedBox(
+                      height: MediaQuery.of(context).size.height / 2,
+                      width: 300,
+                      child: ListView.separated(
+                        itemBuilder: (_, index) {
+                          var ageGroup = ageGroups[index];
+
+                          return TextField(
+                            controller: TextEditingController(
+                              text:
+                                  Constants.maxNumberOfTeamsDefault.toString(),
+                            ),
+                            decoration: InputDecoration(
+                              label: Text(ageGroup.name),
+                            ),
+                            onChanged: (userInput) {
+                              var result = int.tryParse(userInput);
+                              if (result == null) {
+                                return;
+                              }
+
+                              ageGroupIdToMaxTeams.update(
+                                ageGroup.id,
+                                (value) => result,
+                                ifAbsent: () => 6,
+                              );
+                            },
+                          );
+                        },
+                        separatorBuilder: (_, index) {
+                          return const SizedBox(height: 10);
+                        },
+                        itemCount: ageGroups.length,
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+            icon: const Icon(Icons.groups),
+            tooltip: "Max # Teams / Runde ändern",
           ),
           const SizedBox(width: 10),
           ElevatedButton(
             onPressed: () async {
-              var maxTeams = int.tryParse(maxTeamsController.text);
-              if (maxTeams == null) {
-                showError(context, 'Ungültiges Zahlenformat!');
-                return;
-              }
-
               showDialog(
                 context: context,
                 builder: (dialogContext) {
@@ -72,7 +114,7 @@ class RefereeView extends StatelessWidget with WatchItMixin {
                       ElevatedButton(
                         onPressed: () async {
                           var result = await gameManager.startNextRoundCommand
-                              .executeWithFuture(maxTeams);
+                              .executeWithFuture(ageGroupIdToMaxTeams);
                           if (result) {
                             gameManager.getCurrentRoundCommand();
                           }
