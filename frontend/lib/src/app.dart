@@ -168,8 +168,9 @@ Future setup() async {
     di.registerSingleton<GameRestApi>(
         GameTestRestApi()); // this is for local tests
   } else {
-    di.registerSingleton<GameRestApi>(
-        GameRestApiImplementation(backend)); // this is for the real world
+    var url = Uri.http(backend);
+    di.registerSingleton<GameRestApi>(GameRestApiImplementation(
+        url.toString())); // this is for the real world
   }
 
   // register managers
