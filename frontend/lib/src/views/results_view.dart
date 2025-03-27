@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:tournament_manager/src/Constants.dart';
+import 'package:tournament_manager/src/constants.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/model/age_group.dart';
 import 'package:tournament_manager/src/model/results/league.dart';
@@ -81,7 +81,8 @@ class _ResultsContentViewState extends State<ResultsContentView> {
       refreshTimer = null;
     }
 
-    refreshTimer ??= Timer.periodic(const Duration(seconds: 10), (timer) {
+    refreshTimer ??= Timer.periodic(
+        const Duration(seconds: Constants.refreshDurationInSeconds), (timer) {
       final GameManager gameManager = di<GameManager>();
       gameManager.getResultsCommand(widget.ageGroup.id);
 
@@ -148,7 +149,7 @@ enum LeagueWidgetSize {
   large,
 }
 
-class LeagueView extends StatelessWidget {
+class LeagueView extends StatefulWidget {
   const LeagueView({
     super.key,
     required this.league,
@@ -158,14 +159,63 @@ class LeagueView extends StatelessWidget {
   final League league;
   final double width;
 
+  @override
+  State<LeagueView> createState() => _LeagueViewState();
+}
+
+class _LeagueViewState extends State<LeagueView> {
+  Timer? refreshTimer;
+  var controller = ScrollController();
+
   final Color textColor = Colors.white;
+
+  @override
+  void initState() {
+    if (refreshTimer != null) {
+      refreshTimer?.cancel();
+      refreshTimer = null;
+    }
+
+    var refreshDurationInSecondsInternal =
+        Constants.refreshDurationInSeconds / 2;
+
+    refreshTimer ??= Timer.periodic(
+      Duration(seconds: refreshDurationInSecondsInternal.round()),
+      (timer) {
+        if (controller.offset <= controller.position.minScrollExtent) {
+          controller.animateTo(
+            controller.position.maxScrollExtent,
+            duration: Duration(
+                seconds: (refreshDurationInSecondsInternal / 2).round()),
+            curve: Curves.linear,
+          );
+        } else {
+          controller.animateTo(
+            controller.position.minScrollExtent,
+            duration: Duration(
+                seconds: (refreshDurationInSecondsInternal / 2).round()),
+            curve: Curves.linear,
+          );
+        }
+      },
+    );
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    refreshTimer?.cancel();
+    refreshTimer = null;
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     LeagueWidgetSize leagueWidgetSize = LeagueWidgetSize.large;
-    if (width < 750 && width > 500) {
+    if (widget.width < 750 && widget.width > 500) {
       leagueWidgetSize = LeagueWidgetSize.medium;
-    } else if (width <= 500) {
+    } else if (widget.width <= 500) {
       leagueWidgetSize = LeagueWidgetSize.small;
     }
 
@@ -240,8 +290,8 @@ class LeagueView extends StatelessWidget {
     ));
 
     List<DataRow> rows = [];
-    for (var result in league.teams) {
-      var index = league.teams.indexOf(result) + 1;
+    for (var result in widget.league.teams) {
+      var index = widget.league.teams.indexOf(result) + 1;
       List<DataCell> cells = [];
 
       cells.add(
@@ -335,7 +385,7 @@ class LeagueView extends StatelessWidget {
               child: Row(
                 children: [
                   Text(
-                    league.leagueName,
+                    widget.league.leagueName,
                     style: Constants.mediumHeaderTextStyle,
                   ),
                   const SizedBox(width: 10),
@@ -347,10 +397,11 @@ class LeagueView extends StatelessWidget {
           Expanded(
             child: Container(
               color: Colors.grey[800],
-              width: width,
+              width: widget.width,
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: SingleChildScrollView(
+                    controller: controller,
                     child: DataTable(columns: columns, rows: rows)),
               ),
             ),

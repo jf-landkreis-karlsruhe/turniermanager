@@ -24,4 +24,5 @@ class Constants {
 
   // miscellaneaous
   static const int maxNumberOfTeamsDefault = 6;
+  static const int refreshDurationInSeconds = 20;
 }

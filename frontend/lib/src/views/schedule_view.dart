@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:tournament_manager/src/Constants.dart';
+import 'package:tournament_manager/src/constants.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/model/age_group.dart';
 import 'package:tournament_manager/src/model/schedule/league.dart';
@@ -84,7 +84,8 @@ class _ScheduleContentViewState extends State<ScheduleContentView> {
       refreshTimer = null;
     }
 
-    refreshTimer ??= Timer.periodic(const Duration(seconds: 10), (timer) {
+    refreshTimer ??= Timer.periodic(
+        const Duration(seconds: Constants.refreshDurationInSeconds), (timer) {
       final GameManager gameManager = di<GameManager>();
       gameManager.getScheduleCommand(widget.ageGroup.id);
 
