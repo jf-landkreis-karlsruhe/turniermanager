@@ -213,6 +213,8 @@ class _GameViewState extends State<GameView> {
 
   final soundPlayerService = di<SoundPlayerService>();
 
+  bool gameTimeEnded = false;
+
   @override
   Widget build(BuildContext context) {
     var gameManager = di<GameManager>();
@@ -286,6 +288,11 @@ class _GameViewState extends State<GameView> {
                             currentlyRunning = false;
                           });
                         },
+                        onEnded: () {
+                          setState(() {
+                            gameTimeEnded = true;
+                          });
+                        },
                       ),
                       const SizedBox(width: 5),
                       if (widget.first)
@@ -354,6 +361,46 @@ class _GameViewState extends State<GameView> {
                           showError(context,
                               'Spiele wurden nicht gestartet und konnten daher nicht beendet werden');
                           return;
+                        }
+
+                        if (!gameTimeEnded) {
+                          bool? dialogResult = await showDialog<bool>(
+                            context: context,
+                            builder: (dialogContext) {
+                              return AlertDialog(
+                                icon: const Icon(Icons.warning),
+                                iconColor: Colors.yellow,
+                                title: const Text('Wechsel zur nächsten Runde'),
+                                content: const SizedBox(
+                                  height: 100,
+                                  child: Center(
+                                    child: Text(
+                                      'Spielzeit ist noch nicht abgelaufen. Spiele wirklich beenden?',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                                actions: [
+                                  ElevatedButton(
+                                    onPressed: () async {
+                                      GoRouter.of(dialogContext).pop(true);
+                                    },
+                                    child: const Text('OK'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      GoRouter.of(dialogContext).pop(false);
+                                    },
+                                    child: const Text('Abbrechen'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+
+                          if (dialogResult != null && !dialogResult) {
+                            return;
+                          }
                         }
 
                         var result = await gameManager.endCurrentGamesCommand
