@@ -70,7 +70,7 @@ public class DataInitializer {
                 // Zufällige Scores für alle Spiele setzen
                 updateAllGamesWithRandomScores(gameRepository);
             }
-            if(false)return;
+            if(true)return;
 
             if (true) {
                 UUID id = tournament.getId();

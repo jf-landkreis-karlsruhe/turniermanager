@@ -108,7 +108,7 @@ public class TournamentController {
 
     @Transactional
     @PostMapping("/create/round")
-    public Tournament createTournamentRound(@RequestParam Map<UUID, Integer> numberPerRounds) {
+    public Tournament createTournamentRound(@RequestBody Map<UUID, Integer> numberPerRounds) {
         clearScheduledPitches();
         if (ageGroupRepository.count() == 0 && pitchRepository.count() == 0 && teamRepository.count() == 0)
             return tournamentRepository.findAll().getFirst();
