@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tournament_manager/src/Constants.dart';
+import 'package:tournament_manager/src/constants.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/model/age_group.dart';
 import 'package:tournament_manager/src/views/admin_view.dart';
