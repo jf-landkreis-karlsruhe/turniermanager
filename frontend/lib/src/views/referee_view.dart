@@ -10,11 +10,19 @@ import 'package:tournament_manager/src/service/sound_player_service.dart';
 import 'package:watch_it/watch_it.dart';
 import 'package:intl/intl.dart';
 
-class RefereeView extends StatelessWidget with WatchItMixin {
+class RefereeView extends StatefulWidget with WatchItStatefulWidgetMixin {
   RefereeView({super.key});
 
   static const routeName = '/referee';
+
+  @override
+  State<RefereeView> createState() => _RefereeViewState();
+}
+
+class _RefereeViewState extends State<RefereeView> {
   final Map<String, int> ageGroupIdToMaxTeams = {};
+
+  bool canPauseGames = false;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +50,19 @@ class RefereeView extends StatelessWidget with WatchItMixin {
         ),
         leadingWidth: 200,
         actions: [
+          Tooltip(
+            message: 'Umschalten: Spiele können pausiert werden',
+            child: Switch(
+              value: canPauseGames,
+              onChanged: (value) {
+                setState(() {
+                  canPauseGames = !canPauseGames;
+                });
+              },
+              activeColor: Colors.blue,
+            ),
+          ),
+          const SizedBox(width: 10),
           IconButton(
             onPressed: () {
               showDialog(
@@ -180,6 +201,7 @@ class RefereeView extends StatelessWidget with WatchItMixin {
             return GameView(
               first: index == 0,
               gameGroup: gameGroup,
+              canPauseGames: canPauseGames,
             );
           },
           itemCount: gameGroups.length,
@@ -194,9 +216,11 @@ class GameView extends StatefulWidget {
     super.key,
     required this.first,
     required this.gameGroup,
+    this.canPauseGames = false,
   });
 
   final bool first;
+  final bool canPauseGames;
   final GameGroup gameGroup;
 
   @override
@@ -239,6 +263,26 @@ class _GameViewState extends State<GameView> {
       color: color,
     );
 
+    Future startOrPauseGames() async {
+      if (!currentlyRunning && currentGamesActualStart == null) {
+        currentGamesActualStart = DateTime.now();
+      }
+
+      if (!widget.canPauseGames) {
+        setState(() {
+          reset = false;
+          currentlyRunning = true;
+        });
+
+        return;
+      }
+
+      setState(() {
+        reset = false;
+        currentlyRunning = !currentlyRunning;
+      });
+    }
+
     return Card(
       color: currentlyRunning ? Colors.blue : null,
       child: Column(
@@ -260,17 +304,11 @@ class _GameViewState extends State<GameView> {
                       const SizedBox(width: 10),
                       if (widget.first)
                         IconButton(
-                          onPressed: () async {
-                            if (!currentlyRunning &&
-                                currentGamesActualStart == null) {
-                              currentGamesActualStart = DateTime.now();
-                            }
-
-                            setState(() {
-                              reset = false;
-                              currentlyRunning = !currentlyRunning;
-                            });
-                          },
+                          onPressed: !widget.canPauseGames
+                              ? currentlyRunning
+                                  ? null
+                                  : startOrPauseGames
+                              : startOrPauseGames,
                           icon: Icon(currentlyRunning
                               ? Icons.pause
                               : Icons.play_arrow),
@@ -284,6 +322,10 @@ class _GameViewState extends State<GameView> {
                         start: currentlyRunning,
                         refresh: reset,
                         onHalftime: () {
+                          if (!widget.canPauseGames) {
+                            return;
+                          }
+
                           setState(() {
                             currentlyRunning = false;
                           });
