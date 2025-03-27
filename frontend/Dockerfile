@@ -2,7 +2,7 @@
 FROM dart:stable AS build
 
 # Install Flutter SDK
-RUN git clone https://github.com/flutter/flutter.git -b stable /flutter
+RUN git clone https://github.com/flutter/flutter.git -b 3.22.3 /flutter
 ENV PATH="/flutter/bin:/flutter/bin/cache/dart-sdk/bin:${PATH}"
 
 # Set the working directory
@@ -17,7 +17,7 @@ COPY . .
 
 # Enable web support and build the Flutter web application
 RUN flutter config --enable-web
-RUN flutter build web
+RUN flutter build web --release --source-maps
 
 # Use an Nginx image to serve the Flutter web application
 FROM nginx:stable-alpine
