@@ -41,6 +41,7 @@ class AgeGroupView extends StatelessWidget {
             child: ScheduleContentView(ageGroup: ageGroup),
           ),
           Expanded(
+            flex: 2,
             child: ResultsContentView(ageGroup: ageGroup),
           ),
         ],
