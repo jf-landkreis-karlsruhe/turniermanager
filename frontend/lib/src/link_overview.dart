@@ -13,7 +13,7 @@ import 'package:watch_it/watch_it.dart';
 class LinkOverview extends StatelessWidget {
   const LinkOverview({super.key});
 
-  static const routeName = '/tournament';
+  static const routeName = '/';
 
   @override
   Widget build(BuildContext context) {

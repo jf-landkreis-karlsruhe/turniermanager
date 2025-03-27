@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tournament_manager/src/home_view.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/service/config_service.dart';
 import 'package:tournament_manager/src/service/game_rest_api.dart';
@@ -20,13 +19,7 @@ class MainWidget extends StatelessWidget {
   });
 
   final _router = GoRouter(
-    initialLocation: LinkOverview.routeName,
     routes: [
-      GoRoute(
-        // TODO: Home view is left in for now. Future features to load different tournaments might need this
-        path: HomeView.routeName,
-        builder: (context, state) => HomeView(),
-      ),
       GoRoute(
         path: LinkOverview.routeName,
         builder: (context, state) {
