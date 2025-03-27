@@ -2,7 +2,9 @@ package de.jf.karlsruhe.controller;
 
 import de.jf.karlsruhe.model.base.*;
 import de.jf.karlsruhe.model.repos.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*")
@@ -126,7 +130,7 @@ public class TournamentController {
             List<Game> allGames = gameRepository.findAll();
             List<Team> sortedTeams = !allGames.isEmpty() ? getTeamsSortedByPerformance(allGames, teams) : teams;
             Integer amountOfMaxTeamsPerAgeGroup = 6;
-            if(numberPerRounds.containsKey(ageGroup.getId())) {
+            if(numberPerRounds != null && numberPerRounds.containsKey(ageGroup.getId())) {
                 amountOfMaxTeamsPerAgeGroup = numberPerRounds.get(ageGroup.getId());
             }
             List<League> leagues = createBalancedLeaguesForAgeGroup(sortedTeams, amountOfMaxTeamsPerAgeGroup, "Turnier", tournament);
@@ -471,12 +475,16 @@ public class TournamentController {
     }
 
 
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Data
     public static class BreakRequest {
         private LocalDateTime breakTime;
         private int duration;
     }
 
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Data
     public static class ShiftRequest {
         private LocalDateTime breakTime;
@@ -484,8 +492,10 @@ public class TournamentController {
         private int duration;
     }
 
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Data
-    public class TimeRequest {
+    public static class TimeRequest {
         private LocalDateTime maxTime;
     }
 
