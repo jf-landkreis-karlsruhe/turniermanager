@@ -57,7 +57,7 @@ public class GamePlanController {
             LeagueSchedule leagueSchedule = new LeagueSchedule();
             leagueSchedule.setLeagueName(league.getName());
 
-            List<GamePlanEntry> entries = league.getRound().getGames().stream()
+            List<GamePlanEntry> entries = league.getRound().getGames().stream().filter(game -> game.getActualStartTime() == null || game.getActualEndTime() == null )
                     .filter(game -> league.getTeams().contains(game.getTeamA()) && league.getTeams().contains(game.getTeamB()))
                     .sorted(Comparator.comparing(Game::getStartTime))
                     .map(this::mapGameToGamePlanEntry)
