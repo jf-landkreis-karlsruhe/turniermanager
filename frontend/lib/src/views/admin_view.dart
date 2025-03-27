@@ -86,21 +86,19 @@ class PitchPrinter extends StatelessWidget with WatchItMixin {
             ),
             IconButton(
               onPressed: () async {
-                for (var pitch in pitches) {
-                  var result = await _gameManager.printPitchCommand
-                      .executeWithFuture(pitch.id);
+                var result = await _gameManager.printAllPitchesCommand
+                    .executeWithFuture();
 
-                  if (result) {
-                    continue;
-                  }
-
-                  if (!context.mounted) {
-                    return;
-                  }
-
-                  showError(context,
-                      'Schiedrichterzettel für Platz #${pitch.id} konnte nicht erstellt werden!');
+                if (result) {
+                  return;
                 }
+
+                if (!context.mounted) {
+                  return;
+                }
+
+                showError(context,
+                    'Ein oder mehrere Schiedrichterzettel konnten nicht erstellt werden!');
               },
               icon: const Icon(Icons.print),
               tooltip: 'Alles drucken',
