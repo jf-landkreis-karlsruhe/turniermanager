@@ -138,11 +138,13 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   @override
   Future<bool> startNextRound(Map<String, int> maxTeams) async {
     try {
-      var uri = createRoundUri.replace(queryParameters: {
-        "numberPerRounds": maxTeams.toString(),
-      });
+      var json = jsonEncode(maxTeams);
 
-      final response = await client.post(uri, headers: headers);
+      final response = await client.post(
+        createRoundUri,
+        body: json,
+        headers: headers,
+      );
 
       if (response.statusCode == 200) {
         return true;
