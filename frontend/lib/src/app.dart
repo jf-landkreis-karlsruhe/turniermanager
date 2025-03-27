@@ -32,11 +32,13 @@ class MainWidget extends StatelessWidget {
           GoRoute(
             path: ScheduleView.routeName,
             builder: (context, state) {
+              final GameManager gameManager = di<GameManager>();
+              gameManager.getAgeGroupsCommand();
+
               var ageGroupParam =
                   state.uri.queryParameters[ScheduleView.ageGroupQueryParam] ??
                       "Altersklasse ??";
 
-              final GameManager gameManager = di<GameManager>();
               var ageGroup = gameManager.getAgeGroupByName(ageGroupParam);
 
               if (ageGroup == null) {
@@ -53,11 +55,13 @@ class MainWidget extends StatelessWidget {
           GoRoute(
             path: ResultsView.routeName,
             builder: (context, state) {
+              final GameManager gameManager = di<GameManager>();
+              gameManager.getAgeGroupsCommand();
+
               var ageGroupParam =
                   state.uri.queryParameters[ResultsView.ageGroupQueryParam] ??
                       "Altersklasse ??";
 
-              final GameManager gameManager = di<GameManager>();
               var ageGroup = gameManager.getAgeGroupByName(ageGroupParam);
 
               if (ageGroup == null) {
@@ -74,11 +78,13 @@ class MainWidget extends StatelessWidget {
           GoRoute(
             path: AgeGroupView.routeName,
             builder: (context, state) {
+              final GameManager gameManager = di<GameManager>();
+              gameManager.getAgeGroupsCommand();
+
               var ageGroupParam =
                   state.uri.queryParameters[AgeGroupView.ageGroupQueryParam] ??
                       "Altersklasse ??";
 
-              final GameManager gameManager = di<GameManager>();
               var ageGroup = gameManager.getAgeGroupByName(ageGroupParam);
 
               if (ageGroup == null) {
