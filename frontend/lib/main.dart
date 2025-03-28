@@ -7,7 +7,7 @@ import 'package:watch_it/watch_it.dart';
 import 'src/app.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
-Future setup() async {
+setup() {
   // register services
   var configService = ConfigServiceImplementation();
   di.registerSingleton<ConfigService>(configService);
@@ -29,10 +29,15 @@ Future setup() async {
   );
 
   // register managers
-  di.registerSingleton<GameManager>(GameManagerImplementation());
+  di.registerSingletonAsync<GameManager>(
+    () async => GameManagerImplementation(),
+    dependsOn: [GameRestApi],
+  );
 }
 
 void main() async {
+  setup();
+
   usePathUrlStrategy();
   // Run the app.
   runApp(MainWidget());

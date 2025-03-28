@@ -122,15 +122,24 @@ class MainWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      // Providing a restorationScopeId allows the Navigator built by the
-      // MaterialApp to restore the navigation stack when a user leaves and
-      // returns to the app after it has been killed while running in the
-      // background.
-      restorationScopeId: 'app',
-      title: "Turniermanager",
-      theme: ThemeData.dark(),
-      routerConfig: _router,
+    return FutureBuilder(
+      future: di.allReady(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        return MaterialApp.router(
+          // Providing a restorationScopeId allows the Navigator built by the
+          // MaterialApp to restore the navigation stack when a user leaves and
+          // returns to the app after it has been killed while running in the
+          // background.
+          restorationScopeId: 'app',
+          title: "Turniermanager",
+          theme: ThemeData.dark(),
+          routerConfig: _router,
+        );
+      },
     );
   }
 }
