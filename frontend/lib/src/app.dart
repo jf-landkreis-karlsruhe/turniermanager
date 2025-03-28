@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
-import 'package:tournament_manager/src/service/config_service.dart';
-import 'package:tournament_manager/src/service/game_rest_api.dart';
-import 'package:tournament_manager/src/service/sound_player_service.dart';
 import 'package:tournament_manager/src/views/admin_view.dart';
 import 'package:tournament_manager/src/views/age_group_view.dart';
 import 'package:tournament_manager/src/views/referee_view.dart';
@@ -125,53 +122,15 @@ class MainWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: setup(),
-      builder: (_, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (snapshot.hasError) {
-          return const Center(
-            child:
-                Text('Beim Starten der Anwendung ist ein Fehler aufgetreten'),
-          );
-        }
-
-        return MaterialApp.router(
-          // Providing a restorationScopeId allows the Navigator built by the
-          // MaterialApp to restore the navigation stack when a user leaves and
-          // returns to the app after it has been killed while running in the
-          // background.
-          restorationScopeId: 'app',
-          title: "Turniermanager",
-          theme: ThemeData.dark(),
-          routerConfig: _router,
-        );
-      },
+    return MaterialApp.router(
+      // Providing a restorationScopeId allows the Navigator built by the
+      // MaterialApp to restore the navigation stack when a user leaves and
+      // returns to the app after it has been killed while running in the
+      // background.
+      restorationScopeId: 'app',
+      title: "Turniermanager",
+      theme: ThemeData.dark(),
+      routerConfig: _router,
     );
   }
-}
-
-Future setup() async {
-  // register services
-  var configService = ConfigServiceImplementation();
-  di.registerSingleton<ConfigService>(configService);
-  di.registerSingleton<SoundPlayerService>(SoundPlayerServiceImplementation());
-
-  // register REST API services
-  var backend = await configService.getBackendUrl();
-
-  if (backend.toLowerCase().trim() == 'local') {
-    di.registerSingleton<GameRestApi>(
-        GameTestRestApi()); // this is for local tests
-  } else {
-    var url = Uri.http(backend);
-    di.registerSingleton<GameRestApi>(GameRestApiImplementation(
-        url.toString())); // this is for the real world
-  }
-
-  // register managers
-  di.registerSingleton<GameManager>(GameManagerImplementation());
 }
