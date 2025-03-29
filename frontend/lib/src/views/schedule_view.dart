@@ -11,19 +11,30 @@ import 'package:watch_it/watch_it.dart';
 
 class ScheduleView extends StatelessWidget with WatchItMixin {
   const ScheduleView(
-    this.ageGroup, {
+    this.ageGroupName, {
     super.key,
   });
 
-  final AgeGroup ageGroup;
+  final String ageGroupName;
 
   static const routeName = '/schedule';
   static const ageGroupQueryParam = 'ageGroup';
 
   @override
   Widget build(BuildContext context) {
+    final GameManager gameManager = di<GameManager>();
+
     var schedule =
         watchPropertyValue((GameManager manager) => manager.schedule);
+    watchPropertyValue((GameManager manager) =>
+        manager.ageGroups); // listen to updates for agegroups
+    var ageGroup = gameManager.getAgeGroupByName(ageGroupName);
+
+    if (ageGroup == null) {
+      return Center(
+        child: Text('Altersklasse "$ageGroupName" nicht vorhanden!'),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(

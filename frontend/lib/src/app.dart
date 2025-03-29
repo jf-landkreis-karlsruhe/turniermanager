@@ -36,17 +36,9 @@ class MainWidget extends StatelessWidget {
                   state.uri.queryParameters[ScheduleView.ageGroupQueryParam] ??
                       "Altersklasse ??";
 
-              var ageGroup = gameManager.getAgeGroupByName(ageGroupParam);
+              gameManager.getScheduleByAgeGroupNameCommand(ageGroupParam);
 
-              if (ageGroup == null) {
-                return Center(
-                  child: Text('Altersklasse "$ageGroupParam" nicht vorhanden!'),
-                );
-              }
-
-              gameManager.getScheduleCommand(ageGroup.id);
-
-              return ScheduleView(ageGroup);
+              return ScheduleView(ageGroupParam);
             },
           ),
           GoRoute(
