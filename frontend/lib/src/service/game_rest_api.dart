@@ -17,6 +17,7 @@ import 'package:tournament_manager/src/serialization/results/league_dto.dart'
 import 'package:tournament_manager/src/serialization/schedule/match_schedule_dto.dart';
 import 'package:tournament_manager/src/serialization/schedule/match_schedule_entry_dto.dart';
 import 'package:tournament_manager/src/service/rest_client.dart';
+import 'package:collection/collection.dart';
 
 abstract class GameRestApi {
   Future<MatchScheduleDto?> getSchedule(String ageGroupId);
@@ -34,6 +35,7 @@ abstract class GameRestApi {
   Future<List<GameGroupDto>> getCurrentRound();
 
   Future<List<AgeGroupDto>> getAllAgeGroups();
+  Future<AgeGroupDto?> getAgeGroup(String ageGroupName);
 
   Future<List<ExtendedGameDto>> getAllGames();
   Future<bool> saveGame(int gameNumber, int teamAScore, int teamBScore);
@@ -172,6 +174,15 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   }
 
   @override
+  Future<AgeGroupDto?> getAgeGroup(String ageGroupName) async {
+    var ageGroups = await getAllAgeGroups();
+    var ageGroup =
+        ageGroups.firstWhereOrNull((element) => element.name == ageGroupName);
+
+    return ageGroup;
+  }
+
+  @override
   Future<List<GameGroupDto>> getCurrentRound() async {
     final response = await client.get(getAllGameGroupsUri, headers: headers);
 
@@ -284,6 +295,12 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
 }
 
 class GameTestRestApi extends GameRestApi {
+  var ageGroups = [
+    AgeGroupDto('1', 'Altersklasse 1'),
+    AgeGroupDto('2', 'Altersklasse 2'),
+    AgeGroupDto('3', 'Altersklasse 3'),
+  ];
+
   @override
   Future<bool> endCurrentGames(
     DateTime originalStart,
@@ -295,11 +312,13 @@ class GameTestRestApi extends GameRestApi {
 
   @override
   Future<List<AgeGroupDto>> getAllAgeGroups() async {
-    return [
-      AgeGroupDto('1', 'Altersklasse 1'),
-      AgeGroupDto('2', 'Altersklasse 2'),
-      AgeGroupDto('3', 'Altersklasse 3'),
-    ];
+    return ageGroups;
+  }
+
+  @override
+  Future<AgeGroupDto?> getAgeGroup(String ageGroupName) async {
+    return ageGroups
+        .firstWhereOrNull((element) => element.name == ageGroupName);
   }
 
   @override

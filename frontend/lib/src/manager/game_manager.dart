@@ -17,6 +17,7 @@ import 'package:watch_it/watch_it.dart';
 abstract class GameManager extends ChangeNotifier {
   late Command<String, void> getScheduleCommand;
   late Command<String, void> getResultsCommand;
+  late Command<String, void> getResultsByAgeGroupNameCommand;
 
   late Command<(DateTime originalStart, DateTime actualStart, DateTime end),
       bool> endCurrentGamesCommand;
@@ -59,6 +60,8 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
   late Command<String, void> getScheduleCommand;
   @override
   late Command<String, void> getResultsCommand;
+  @override
+  late Command<String, void> getResultsByAgeGroupNameCommand;
 
   @override
   late Command<(DateTime originalStart, DateTime actualStart, DateTime end),
@@ -157,6 +160,23 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
     getResultsCommand = Command.createAsyncNoResult(
       (input) async {
         var result = await _gameRestApi.getResults(input);
+        if (result == null) {
+          return; //TODO: error handling
+        }
+
+        results = _resultsMapper.map(result);
+      },
+    );
+
+    getResultsByAgeGroupNameCommand = Command.createAsyncNoResult(
+      (ageGroupName) async {
+        var agegroup = await _gameRestApi.getAgeGroup(ageGroupName);
+
+        if (agegroup == null) {
+          return;
+        }
+
+        var result = await _gameRestApi.getResults(agegroup.id);
         if (result == null) {
           return; //TODO: error handling
         }
