@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
+import 'package:tournament_manager/src/manager/settings_manager.dart';
 import 'package:tournament_manager/src/views/admin_view.dart';
 import 'package:tournament_manager/src/views/age_group_view.dart';
 import 'package:tournament_manager/src/views/referee_view.dart';
@@ -76,7 +77,10 @@ class MainWidget extends StatelessWidget {
             path: RefereeView.routeName,
             builder: (context, state) {
               final GameManager gameManager = di<GameManager>();
+              final SettingsManager settingsManager = di<SettingsManager>();
+
               gameManager.getCurrentRoundCommand();
+              settingsManager.getCanPauseCommand();
 
               return RefereeView();
             },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
+import 'package:tournament_manager/src/manager/settings_manager.dart';
 import 'package:tournament_manager/src/service/config_service.dart';
 import 'package:tournament_manager/src/service/game_rest_api.dart';
 import 'package:tournament_manager/src/service/sound_player_service.dart';
@@ -8,6 +9,8 @@ import 'src/app.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
 setup() {
+  di.registerSingleton<SettingsManager>(SettingsManagerImplementation());
+
   // register services
   var configService = ConfigServiceImplementation();
   di.registerSingleton<ConfigService>(configService);

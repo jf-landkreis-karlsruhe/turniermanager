@@ -4,6 +4,7 @@ import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:tournament_manager/src/constants.dart';
 import 'package:tournament_manager/src/helper/error_helper.dart';
 import 'package:tournament_manager/src/manager/game_manager.dart';
+import 'package:tournament_manager/src/manager/settings_manager.dart';
 import 'package:tournament_manager/src/model/referee/game.dart';
 import 'package:tournament_manager/src/model/referee/game_group.dart';
 import 'package:tournament_manager/src/service/sound_player_service.dart';
@@ -22,15 +23,19 @@ class RefereeView extends StatefulWidget with WatchItStatefulWidgetMixin {
 class _RefereeViewState extends State<RefereeView> {
   final Map<String, int> ageGroupIdToMaxTeams = {};
 
-  bool canPauseGames = false;
-
   @override
   Widget build(BuildContext context) {
     var gameManager = di<GameManager>();
+    var settingsManager = di<SettingsManager>();
+
     var gameGroups =
         watchPropertyValue((GameManager manager) => manager.gameGroups);
     var ageGroups =
         watchPropertyValue((GameManager manager) => manager.ageGroups);
+
+    bool canPauseGames =
+        watchPropertyValue((SettingsManager manager) => manager.canPause);
+    ;
 
     for (var ageGroup in ageGroups) {
       ageGroupIdToMaxTeams.update(
@@ -55,9 +60,7 @@ class _RefereeViewState extends State<RefereeView> {
             child: Switch(
               value: canPauseGames,
               onChanged: (value) {
-                setState(() {
-                  canPauseGames = !canPauseGames;
-                });
+                settingsManager.setCanPauseCommand(!canPauseGames);
               },
               activeColor: Colors.blue,
             ),
