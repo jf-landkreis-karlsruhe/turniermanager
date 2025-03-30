@@ -5,6 +5,8 @@ services:
     image: ghcr.io/jf-landkreis-karlsruhe/turnier-frontend:latest
     ports:
       - "8081:80"  # Mapping port 8081 on the host to port 80 on the container
+    environment:
+      - BACKEND_URL=localhost:8080
     depends_on:
       - turnier-backend
 
