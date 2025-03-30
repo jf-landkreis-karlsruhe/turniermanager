@@ -24,6 +24,7 @@ FROM nginx:stable-alpine
 
 # Copy the built web files to the Nginx html directory
 COPY --from=build /app/build/web /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80 to the outside world
 EXPOSE 80
