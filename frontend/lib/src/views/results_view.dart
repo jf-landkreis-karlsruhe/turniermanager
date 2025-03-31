@@ -7,7 +7,7 @@ import 'package:tournament_manager/src/model/age_group.dart';
 import 'package:tournament_manager/src/model/results/league.dart';
 import 'package:watch_it/watch_it.dart';
 
-class ResultsView extends StatelessWidget with WatchItMixin {
+class ResultsView extends StatefulWidget with WatchItStatefulWidgetMixin {
   const ResultsView(
     this.ageGroupName, {
     super.key,
@@ -19,17 +19,54 @@ class ResultsView extends StatelessWidget with WatchItMixin {
   static const ageGroupQueryParam = 'ageGroup';
 
   @override
+  State<ResultsView> createState() => _ResultsViewState();
+}
+
+class _ResultsViewState extends State<ResultsView> {
+  var refreshTimerIsRunning = false;
+  var timerWasStarted = false;
+
+  @override
   Widget build(BuildContext context) {
     final GameManager gameManager = di<GameManager>();
 
     var results = watchPropertyValue((GameManager manager) => manager.results);
     watchPropertyValue((GameManager manager) =>
         manager.ageGroups); // listen to updates for agegroups
-    var ageGroup = gameManager.getAgeGroupByName(ageGroupName);
+    var ageGroup = gameManager.getAgeGroupByName(widget.ageGroupName);
 
     if (ageGroup == null) {
+      if (!timerWasStarted) {
+        timerWasStarted = true;
+
+        Timer(
+          const Duration(seconds: 1),
+          () {
+            setState(
+              () {
+                refreshTimerIsRunning = false;
+              },
+            );
+          },
+        );
+
+        setState(
+          () {
+            refreshTimerIsRunning = true;
+          },
+        );
+      }
+
+      if (refreshTimerIsRunning) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+
+      timerWasStarted = false;
+
       return Center(
-        child: Text('Altersklasse "$ageGroupName" nicht vorhanden!'),
+        child: Text('Altersklasse "${widget.ageGroupName}" nicht vorhanden!'),
       );
     }
 
