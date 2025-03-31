@@ -214,7 +214,7 @@ class _RefereeViewState extends State<RefereeView> {
   }
 }
 
-class GameView extends StatefulWidget {
+class GameView extends StatefulWidget with WatchItStatefulWidgetMixin {
   const GameView({
     super.key,
     required this.first,
@@ -239,12 +239,47 @@ class _GameViewState extends State<GameView> {
   Color standardTextColor = Colors.white;
 
   final soundPlayerService = di<SoundPlayerService>();
+  var settingsManager = di<SettingsManager>();
 
   bool gameTimeEnded = false;
 
   @override
   Widget build(BuildContext context) {
     var gameManager = di<GameManager>();
+    settingsManager.getCurrentTimeInMillisecondsCommand();
+
+    void startOrPauseGames() {
+      if (!currentlyRunning && currentGamesActualStart == null) {
+        currentGamesActualStart = DateTime.now();
+        settingsManager
+            .setCurrentlyRunningGamesCommand(widget.gameGroup.startTime);
+      }
+
+      if (!widget.canPauseGames) {
+        setState(() {
+          reset = false;
+          currentlyRunning = true;
+        });
+
+        return;
+      }
+
+      setState(() {
+        reset = false;
+        currentlyRunning = !currentlyRunning;
+      });
+    }
+
+    var currentlyRunningGames = watchPropertyValue(
+        (SettingsManager manager) => manager.currentlyRunningGames);
+
+    if (currentlyRunningGames != null &&
+        currentlyRunningGames == widget.gameGroup.startTime &&
+        !currentlyRunning &&
+        !reset) {
+      settingsManager.getCurrentTimeInMillisecondsCommand();
+      startOrPauseGames();
+    }
 
     List<Widget> rows = [];
 
@@ -265,26 +300,6 @@ class _GameViewState extends State<GameView> {
     var headerTextStyle = Constants.mediumHeaderTextStyle.copyWith(
       color: color,
     );
-
-    Future startOrPauseGames() async {
-      if (!currentlyRunning && currentGamesActualStart == null) {
-        currentGamesActualStart = DateTime.now();
-      }
-
-      if (!widget.canPauseGames) {
-        setState(() {
-          reset = false;
-          currentlyRunning = true;
-        });
-
-        return;
-      }
-
-      setState(() {
-        reset = false;
-        currentlyRunning = !currentlyRunning;
-      });
-    }
 
     return Card(
       color: currentlyRunning ? Colors.blue : null,
@@ -343,6 +358,11 @@ class _GameViewState extends State<GameView> {
                       if (widget.first)
                         IconButton(
                           onPressed: () {
+                            settingsManager
+                                .setCurrentlyRunningGamesCommand(null);
+                            settingsManager
+                                .setCurrentTimeInMillisecondsCommand(null);
+
                             setState(() {
                               currentlyRunning = false;
                               reset = true;
@@ -465,6 +485,9 @@ class _GameViewState extends State<GameView> {
 
                         if (result) {
                           gameManager.getCurrentRoundCommand();
+                          settingsManager.setCurrentlyRunningGamesCommand(null);
+                          settingsManager
+                              .setCurrentTimeInMillisecondsCommand(null);
                           return;
                         }
 
@@ -529,20 +552,24 @@ class _CountDownViewState extends State<CountDownView> {
   bool halfTimeSoundPlayed = false;
 
   final soundPlayerService = di<SoundPlayerService>();
+  var settingsManager = di<SettingsManager>();
 
   late final StopWatchTimer _stopWatchTimer;
 
   @override
   void initState() {
     currentTime = '00:${widget.timeInMinutes}:00.00';
-    var totalTimeInMilliSeconds =
+    var startValue = settingsManager.currentTimeInMilliseconds;
+    var totalTimeInMilliSeconds = startValue ??
         StopWatchTimer.getMilliSecFromMinute(widget.timeInMinutes);
 
     _stopWatchTimer = StopWatchTimer(
       mode: StopWatchMode.countDown,
       presetMillisecond: totalTimeInMilliSeconds,
       onChange: (value) {
+        settingsManager.setCurrentTimeInMillisecondsCommand(value);
         final displayTime = StopWatchTimer.getDisplayTime(value);
+
         setState(() {
           currentTime = displayTime;
         });
@@ -597,7 +624,16 @@ class _CountDownViewState extends State<CountDownView> {
   @override
   Widget build(BuildContext context) {
     if (widget.refresh) {
-      _stopWatchTimer.onResetTimer();
+      if (_stopWatchTimer.isRunning) {
+        _stopWatchTimer.onResetTimer();
+
+        var timeInMilliseconds = widget.timeInMinutes * 60 * 1000;
+        _stopWatchTimer.setPresetTime(
+          mSec: timeInMilliseconds,
+          add: false,
+        );
+      }
+
       setState(() {
         onEndedCalled = false;
         halfTimeSoundPlayed = false;

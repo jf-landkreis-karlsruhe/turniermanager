@@ -79,8 +79,11 @@ class MainWidget extends StatelessWidget {
               final GameManager gameManager = di<GameManager>();
               final SettingsManager settingsManager = di<SettingsManager>();
 
+              settingsManager.getCurrentTimeInMillisecondsCommand();
+
               gameManager.getCurrentRoundCommand();
               settingsManager.getCanPauseCommand();
+              settingsManager.getCurrentlyRunningGamesCommand();
 
               return RefereeView();
             },
