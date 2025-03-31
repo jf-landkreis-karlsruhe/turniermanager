@@ -350,6 +350,9 @@ class _GameViewState extends State<GameView> {
                         textColor: color,
                         start: currentlyRunning,
                         refresh: reset,
+                        startTimeInMilliSeconds: currentlyRunningGames == null
+                            ? null
+                            : settingsManager.currentTimeInMilliseconds,
                         onHalftime: () {
                           if (!widget.canPauseGames) {
                             return;
@@ -544,6 +547,7 @@ class CountDownView extends StatefulWidget {
     required this.refresh,
     this.onEnded,
     this.onHalftime,
+    this.startTimeInMilliSeconds,
   });
 
   final int timeInMinutes;
@@ -552,6 +556,8 @@ class CountDownView extends StatefulWidget {
   final bool refresh;
   final void Function()? onEnded;
   final void Function()? onHalftime;
+
+  final int? startTimeInMilliSeconds;
 
   @override
   State<CountDownView> createState() => _CountDownViewState();
@@ -570,8 +576,7 @@ class _CountDownViewState extends State<CountDownView> {
   @override
   void initState() {
     currentTime = '00:${widget.timeInMinutes}:00.00';
-    var startValue = settingsManager.currentTimeInMilliseconds;
-    var totalTimeInMilliSeconds = startValue ??
+    var totalTimeInMilliSeconds =
         StopWatchTimer.getMilliSecFromMinute(widget.timeInMinutes);
 
     _stopWatchTimer = StopWatchTimer(
@@ -638,11 +643,7 @@ class _CountDownViewState extends State<CountDownView> {
       if (_stopWatchTimer.isRunning) {
         _stopWatchTimer.onResetTimer();
 
-        var timeInMilliseconds = widget.timeInMinutes * 60 * 1000;
-        _stopWatchTimer.setPresetTime(
-          mSec: timeInMilliseconds,
-          add: false,
-        );
+        _stopWatchTimer.clearPresetTime();
       }
 
       setState(() {
@@ -651,9 +652,17 @@ class _CountDownViewState extends State<CountDownView> {
       });
     } else {
       if (widget.start) {
-        _stopWatchTimer.onStartTimer();
+        if (!_stopWatchTimer.isRunning) {
+          if (widget.startTimeInMilliSeconds != null) {
+            _stopWatchTimer.setPresetTime(
+                mSec: widget.startTimeInMilliSeconds!);
+          }
+          _stopWatchTimer.onStartTimer();
+        }
       } else {
-        _stopWatchTimer.onStopTimer();
+        if (_stopWatchTimer.isRunning) {
+          _stopWatchTimer.onStopTimer();
+        }
       }
     }
 
