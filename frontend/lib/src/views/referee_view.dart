@@ -655,7 +655,9 @@ class _CountDownViewState extends State<CountDownView> {
         if (!_stopWatchTimer.isRunning) {
           if (widget.startTimeInMilliSeconds != null) {
             _stopWatchTimer.setPresetTime(
-                mSec: widget.startTimeInMilliSeconds!);
+              mSec: widget.startTimeInMilliSeconds!,
+              add: false,
+            );
           }
           _stopWatchTimer.onStartTimer();
         }
