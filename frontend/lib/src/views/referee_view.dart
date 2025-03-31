@@ -35,7 +35,8 @@ class _RefereeViewState extends State<RefereeView> {
 
     bool canPauseGames =
         watchPropertyValue((SettingsManager manager) => manager.canPause);
-    ;
+    var currentlyRunningGames = watchPropertyValue(
+        (SettingsManager manager) => manager.currentlyRunningGames);
 
     for (var ageGroup in ageGroups) {
       ageGroupIdToMaxTeams.update(
@@ -124,6 +125,12 @@ class _RefereeViewState extends State<RefereeView> {
           const SizedBox(width: 10),
           ElevatedButton(
             onPressed: () async {
+              if (currentlyRunningGames != null) {
+                showError(context,
+                    'Runde konnte nicht gewechselt werden, es laufen noch Spiele!');
+                return;
+              }
+
               showDialog(
                 context: context,
                 builder: (dialogContext) {
@@ -147,6 +154,10 @@ class _RefereeViewState extends State<RefereeView> {
                               .executeWithFuture(ageGroupIdToMaxTeams);
                           if (result) {
                             gameManager.getCurrentRoundCommand();
+                            settingsManager
+                                .setCurrentlyRunningGamesCommand(null);
+                            settingsManager
+                                .setCurrentTimeInMillisecondsCommand(null);
                           }
 
                           if (!dialogContext.mounted) {
