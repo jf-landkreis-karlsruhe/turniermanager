@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:watch_it/watch_it.dart';
 
-abstract class SoundPlayerService {
+abstract class SoundPlayerService implements Disposable {
   void playSound(Sounds sound);
 }
 
@@ -32,7 +34,17 @@ class SoundPlayerServiceImplementation implements SoundPlayerService {
       return;
     }
 
-    await _player.play(AssetSource(soundPath));
+    try {
+      await _player.play(AssetSource(soundPath));
+    } on Exception {
+      return;
+    }
+  }
+
+  @override
+  FutureOr onDispose() async {
+    await _player.stop();
+    await _player.dispose();
   }
 }
 
