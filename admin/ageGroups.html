@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Groups Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-8 text-center text-blue-800">Age Groups Management</h1>
+        
+        <!-- Age Group Creation Form -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-blue-700">Create New Age Group</h2>
+            <form id="ageGroupForm" class="space-y-4">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                    <input type="text" id="name" name="name" required 
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+                    <p class="mt-1 text-sm text-gray-500">e.g., "Under 15", "Senior Division"</p>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" 
+                        class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Create Age Group
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Age Groups List -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-blue-700">Age Groups List</h2>
+                <button id="refreshBtn" class="text-blue-600 hover:text-blue-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ageGroupsTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Age groups will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="noAgeGroups" class="text-center py-4 text-gray-500 hidden">
+                No age groups found. Create your first one using the form above.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/turniersetup/agegroups';
+        
+        // Load age groups when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAgeGroups();
+            
+            // Setup event listeners
+            document.getElementById('ageGroupForm').addEventListener('submit', handleFormSubmit);
+            document.getElementById('refreshBtn').addEventListener('click', loadAgeGroups);
+        });
+        
+        // Load age groups from the API
+        async function loadAgeGroups() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/getAll`);
+                const ageGroups = await response.json();
+                
+                const tableBody = document.getElementById('ageGroupsTableBody');
+                const noAgeGroupsMsg = document.getElementById('noAgeGroups');
+                
+                // Clear existing table content
+                tableBody.innerHTML = '';
+                
+                if (ageGroups.length === 0) {
+                    noAgeGroupsMsg.classList.remove('hidden');
+                } else {
+                    noAgeGroupsMsg.classList.add('hidden');
+                    
+                    // Add each age group to the table
+                    ageGroups.forEach(ageGroup => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${ageGroup.id}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${ageGroup.name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button 
+                                    data-id="${ageGroup.id}" 
+                                    class="delete-btn text-red-600 hover:text-red-900"
+                                >
+                                    Delete
+                                </button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                    
+                    // Add event listeners to delete buttons
+                    document.querySelectorAll('.delete-btn').forEach(btn => {
+                        btn.addEventListener('click', handleDelete);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading age groups:', error);
+                alert('Failed to load age groups. Please try again later.');
+            }
+        }
+        
+        // Handle form submission
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                if (response.ok) {
+                    // Reset the form and reload the age groups
+                    document.getElementById('ageGroupForm').reset();
+                    loadAgeGroups();
+                } else {
+                    throw new Error('Failed to create age group');
+                }
+            } catch (error) {
+                console.error('Error creating age group:', error);
+                alert('Failed to create age group. Please try again.');
+            }
+        }
+        
+        // Handle deletion of an age group
+        async function handleDelete(event) {
+            const id = event.target.dataset.id;
+            
+            if (confirm('Are you sure you want to delete this age group?')) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        loadAgeGroups();
+                    } else {
+                        throw new Error('Failed to delete age group');
+                    }
+                } catch (error) {
+                    console.error('Error deleting age group:', error);
+                    alert('Failed to delete age group. Please try again.');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
