@@ -628,7 +628,8 @@ class _CountDownViewState extends State<CountDownView> {
 
   @override
   void initState() {
-    currentTime = '00:${widget.timeInMinutes}:00.00';
+    currentTime =
+        '00:${widget.timeInMinutes < 10 ? '0' : ''}${widget.timeInMinutes}:00.00';
     var totalTimeInMilliSeconds =
         StopWatchTimer.getMilliSecFromMinute(widget.timeInMinutes);
 
