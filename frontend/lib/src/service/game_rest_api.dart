@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:download/download.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tournament_manager/src/serialization/admin/extended_game_dto.dart';
 import 'package:tournament_manager/src/serialization/age_group_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/break_request_dto.dart';
@@ -414,6 +415,17 @@ class GameTestRestApi extends GameRestApi {
 
   @override
   Future<List<GameGroupDto>> getCurrentRound() async {
+    var prefs = await SharedPreferences.getInstance();
+    var result = prefs.getString('currentlyRunningGames');
+
+    if (result != null) {
+      var converted = DateTime.tryParse(result);
+
+      if (converted != null) {
+        gameGroups[0].startTime = converted;
+      }
+    }
+
     return gameGroups;
   }
 
