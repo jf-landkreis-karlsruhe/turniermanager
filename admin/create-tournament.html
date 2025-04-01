@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Tournament</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .btn-container {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Create Tournament</h1>
+        
+        <form id="createTournamentForm">
+            <div class="form-group">
+                <label for="name">Tournament Name:</label>
+                <input type="text" class="form-control" id="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="startDate">Start Date:</label>
+                <input type="date" class="form-control" id="startDate" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="startTime">Start Time:</label>
+                <input type="time" class="form-control" id="startTime" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="playTime">Play Time (minutes):</label>
+                <input type="number" class="form-control" id="playTime" required min="1" value="10">
+            </div>
+            
+            <div class="form-group">
+                <label for="breakTime">Break Time (minutes):</label>
+                <input type="number" class="form-control" id="breakTime" required min="1" value="5">
+            </div>
+            
+            <div class="btn-container">
+                <button type="submit" class="btn btn-primary w-100">Create Tournament</button>
+            </div>
+        </form>
+        
+        <div class="mt-4" id="response"></div>
+    </div>
+    
+    <script>
+        document.getElementById('createTournamentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const startDate = document.getElementById('startDate').value;
+            const startTime = document.getElementById('startTime').value;
+            const playTime = document.getElementById('playTime').value;
+            const breakTime = document.getElementById('breakTime').value;
+            
+            // Format the date and time in the format that Spring can parse to LocalDateTime
+            // This format doesn't include timezone information which is what LocalDateTime expects
+            const dateTimeString = `${startDate}T${startTime}`;
+            
+            const url = new URL('http://localhost:8080/turniersetup/create', window.location.origin);
+            url.searchParams.append('name', name);
+            url.searchParams.append('startTime', dateTimeString);
+            url.searchParams.append('playTime', playTime);
+            url.searchParams.append('breakTime', breakTime);
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('response').innerHTML = 
+                    `<div class="alert alert-success">
+                        Tournament "${data.name}" created successfully!
+                    </div>`;
+            })
+            .catch(error => {
+                document.getElementById('response').innerHTML = 
+                    `<div class="alert alert-danger">
+                        Error creating tournament: ${error.message}
+                    </div>`;
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
