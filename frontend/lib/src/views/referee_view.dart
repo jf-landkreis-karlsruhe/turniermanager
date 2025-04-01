@@ -22,6 +22,7 @@ class RefereeView extends StatefulWidget with WatchItStatefulWidgetMixin {
 
 class _RefereeViewState extends State<RefereeView> {
   final Map<String, int> ageGroupIdToMaxTeams = {};
+  var barrierDissmissed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +47,7 @@ class _RefereeViewState extends State<RefereeView> {
       );
     }
 
-    return Scaffold(
+    var mainContent = Scaffold(
       appBar: AppBar(
         leading: const Center(
           child: Text(
@@ -216,11 +217,50 @@ class _RefereeViewState extends State<RefereeView> {
               first: index == 0,
               gameGroup: gameGroup,
               canPauseGames: canPauseGames,
+              onStart: () {
+                setState(
+                  () {
+                    barrierDissmissed = true;
+                  },
+                );
+              },
             );
           },
           itemCount: gameGroups.length,
         ),
       ),
+    );
+
+    List<Widget> unmuteBarrier = [
+      ModalBarrier(
+        color: Colors.white.withOpacity(0.3),
+        onDismiss: () {
+          setState(() {
+            barrierDissmissed = true;
+          });
+        },
+      ),
+      Center(
+        child: IconButton(
+          onPressed: () {
+            setState(() {
+              barrierDissmissed = true;
+            });
+          },
+          icon: const Icon(
+            Icons.volume_up,
+            size: 100,
+          ),
+        ),
+      )
+    ];
+
+    return Stack(
+      children: [
+        mainContent,
+        if (currentlyRunningGames != null && !barrierDissmissed)
+          ...unmuteBarrier,
+      ],
     );
   }
 }
@@ -231,11 +271,13 @@ class GameView extends StatefulWidget with WatchItStatefulWidgetMixin {
     required this.first,
     required this.gameGroup,
     this.canPauseGames = false,
+    this.onStart,
   });
 
   final bool first;
   final bool canPauseGames;
   final GameGroup gameGroup;
+  final void Function()? onStart;
 
   @override
   State<GameView> createState() => _GameViewState();
@@ -336,8 +378,18 @@ class _GameViewState extends State<GameView> {
                           onPressed: !widget.canPauseGames
                               ? currentlyRunning
                                   ? null
-                                  : startOrPauseGames
-                              : startOrPauseGames,
+                                  : () {
+                                      startOrPauseGames();
+                                      if (widget.onStart != null) {
+                                        widget.onStart!();
+                                      }
+                                    }
+                              : () {
+                                  startOrPauseGames();
+                                  if (widget.onStart != null) {
+                                    widget.onStart!();
+                                  }
+                                },
                           icon: Icon(currentlyRunning
                               ? Icons.pause
                               : Icons.play_arrow),
