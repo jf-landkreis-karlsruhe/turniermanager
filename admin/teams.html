@@ -187,23 +187,32 @@
         
         // Populate all age group dropdowns
         function populateAgeGroupDropdowns() {
-            const dropdowns = ['ageGroup', 'bulkAgeGroup', 'editAgeGroup', 'filterAgeGroup'];
+            const dropdowns = ['ageGroup', 'bulkAgeGroup', 'editAgeGroup'];//, 'filterAgeGroup'];
             
             dropdowns.forEach(dropdownId => {
-                const dropdown = document.getElementById(dropdownId);
-                
-                // Clear existing options (except the first one)
-                while (dropdown.options.length > 1) {
-                    dropdown.remove(1);
-                }
-                
-                // Add age group options
-                allAgeGroups.forEach(ageGroup => {
-                    const option = document.createElement('option');
-                    option.value = ageGroup.id;
-                    option.textContent = ageGroup.name;
-                    dropdown.appendChild(option);
-                });
+                populateDropdown(dropdownId, allAgeGroups);
+            });
+
+            populateDropdown('filterAgeGroup', allAgeGroups.map(ag => ({
+                id: ag.name,
+                name: ag.name
+            })));
+        }
+
+        function populateDropdown(dropdownId, options) {
+            const dropdown = document.getElementById(dropdownId);
+            
+            // Clear existing options (except the first one)
+            while (dropdown.options.length > 1) {
+                dropdown.remove(1);
+            }
+            
+            // Add options
+            options.forEach(option => {
+                const opt = document.createElement('option');
+                opt.value = option.id;
+                opt.textContent = option.name;
+                dropdown.appendChild(opt);
             });
         }
         
@@ -226,15 +235,15 @@
 
         // Filter teams by age group
         function filterTeams() {
-            const ageGroupId = document.getElementById('filterAgeGroup').value;
+            const ageGroupName = document.getElementById('filterAgeGroup').value;
             
-            if (!ageGroupId) {
+            if (!ageGroupName) {
                 // Show all teams if no filter is selected
                 displayTeams(allTeams);
             } else {
                 // Filter teams by the selected age group
                 const filteredTeams = allTeams.filter(team => 
-                    team.ageGroup && team.ageGroup.id === ageGroupId
+                    team.ageGroup && team.ageGroup === ageGroupName
                 );
                 displayTeams(filteredTeams);
             }
@@ -261,7 +270,7 @@
                     row.innerHTML = `
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${team.id}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${team.name}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${ageGroupName}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${team.ageGroup}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex justify-end space-x-2">
                                 <button 
