@@ -325,7 +325,7 @@ class GameTestRestApi extends GameRestApi {
   Future<List<GameGroupDto>> getCurrentRound() async {
     return [
       GameGroupDto(
-        DateTime.now(),
+        DateTime(2025, 4, 1, 15, 30, 0),
         10,
       )..games = [
           GameDto(
@@ -362,7 +362,7 @@ class GameTestRestApi extends GameRestApi {
           ),
         ],
       GameGroupDto(
-        DateTime.now(),
+        DateTime(2025, 4, 1, 15, 45, 0),
         12,
       )..games = [
           GameDto(

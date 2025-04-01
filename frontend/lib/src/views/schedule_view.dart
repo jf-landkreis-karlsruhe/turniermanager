@@ -9,7 +9,7 @@ import 'package:tournament_manager/src/model/schedule/league.dart';
 import 'package:tournament_manager/src/model/schedule/match_schedule_entry.dart';
 import 'package:watch_it/watch_it.dart';
 
-class ScheduleView extends StatelessWidget with WatchItMixin {
+class ScheduleView extends StatefulWidget with WatchItStatefulWidgetMixin {
   const ScheduleView(
     this.ageGroupName, {
     super.key,
@@ -21,6 +21,14 @@ class ScheduleView extends StatelessWidget with WatchItMixin {
   static const ageGroupQueryParam = 'ageGroup';
 
   @override
+  State<ScheduleView> createState() => _ScheduleViewState();
+}
+
+class _ScheduleViewState extends State<ScheduleView> {
+  var refreshTimerIsRunning = false;
+  var timerWasStarted = false;
+
+  @override
   Widget build(BuildContext context) {
     final GameManager gameManager = di<GameManager>();
 
@@ -28,11 +36,40 @@ class ScheduleView extends StatelessWidget with WatchItMixin {
         watchPropertyValue((GameManager manager) => manager.schedule);
     watchPropertyValue((GameManager manager) =>
         manager.ageGroups); // listen to updates for agegroups
-    var ageGroup = gameManager.getAgeGroupByName(ageGroupName);
+    var ageGroup = gameManager.getAgeGroupByName(widget.ageGroupName);
 
     if (ageGroup == null) {
+      if (!timerWasStarted) {
+        timerWasStarted = true;
+
+        Timer(
+          const Duration(seconds: 1),
+          () {
+            setState(
+              () {
+                refreshTimerIsRunning = false;
+              },
+            );
+          },
+        );
+
+        setState(
+          () {
+            refreshTimerIsRunning = true;
+          },
+        );
+      }
+
+      if (refreshTimerIsRunning) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+
+      timerWasStarted = false;
+
       return Center(
-        child: Text('Altersklasse "$ageGroupName" nicht vorhanden!'),
+        child: Text('Altersklasse "${widget.ageGroupName}" nicht vorhanden!'),
       );
     }
 

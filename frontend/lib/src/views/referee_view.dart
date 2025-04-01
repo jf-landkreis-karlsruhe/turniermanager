@@ -22,6 +22,7 @@ class RefereeView extends StatefulWidget with WatchItStatefulWidgetMixin {
 
 class _RefereeViewState extends State<RefereeView> {
   final Map<String, int> ageGroupIdToMaxTeams = {};
+  var barrierDissmissed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,8 @@ class _RefereeViewState extends State<RefereeView> {
 
     bool canPauseGames =
         watchPropertyValue((SettingsManager manager) => manager.canPause);
-    ;
+    var currentlyRunningGames = watchPropertyValue(
+        (SettingsManager manager) => manager.currentlyRunningGames);
 
     for (var ageGroup in ageGroups) {
       ageGroupIdToMaxTeams.update(
@@ -45,7 +47,7 @@ class _RefereeViewState extends State<RefereeView> {
       );
     }
 
-    return Scaffold(
+    var mainContent = Scaffold(
       appBar: AppBar(
         leading: const Center(
           child: Text(
@@ -124,6 +126,12 @@ class _RefereeViewState extends State<RefereeView> {
           const SizedBox(width: 10),
           ElevatedButton(
             onPressed: () async {
+              if (currentlyRunningGames != null) {
+                showError(context,
+                    'Runde konnte nicht gewechselt werden, es laufen noch Spiele!');
+                return;
+              }
+
               showDialog(
                 context: context,
                 builder: (dialogContext) {
@@ -147,6 +155,10 @@ class _RefereeViewState extends State<RefereeView> {
                               .executeWithFuture(ageGroupIdToMaxTeams);
                           if (result) {
                             gameManager.getCurrentRoundCommand();
+                            settingsManager
+                                .setCurrentlyRunningGamesCommand(null);
+                            settingsManager
+                                .setCurrentTimeInMillisecondsCommand(null);
                           }
 
                           if (!dialogContext.mounted) {
@@ -205,26 +217,67 @@ class _RefereeViewState extends State<RefereeView> {
               first: index == 0,
               gameGroup: gameGroup,
               canPauseGames: canPauseGames,
+              onStart: () {
+                setState(
+                  () {
+                    barrierDissmissed = true;
+                  },
+                );
+              },
             );
           },
           itemCount: gameGroups.length,
         ),
       ),
     );
+
+    List<Widget> unmuteBarrier = [
+      ModalBarrier(
+        color: Colors.white.withOpacity(0.3),
+        onDismiss: () {
+          setState(() {
+            barrierDissmissed = true;
+          });
+        },
+      ),
+      Center(
+        child: IconButton(
+          onPressed: () {
+            setState(() {
+              barrierDissmissed = true;
+            });
+          },
+          icon: const Icon(
+            Icons.volume_up,
+            size: 100,
+          ),
+        ),
+      )
+    ];
+
+    return Stack(
+      children: [
+        mainContent,
+        if (currentlyRunningGames != null && !barrierDissmissed)
+          ...unmuteBarrier,
+      ],
+    );
   }
 }
 
-class GameView extends StatefulWidget {
+class GameView extends StatefulWidget with WatchItStatefulWidgetMixin {
   const GameView({
     super.key,
     required this.first,
     required this.gameGroup,
     this.canPauseGames = false,
+    this.onStart,
   });
 
   final bool first;
   final bool canPauseGames;
   final GameGroup gameGroup;
+  final void Function()? onStart;
 
   @override
   State<GameView> createState() => _GameViewState();
@@ -239,12 +292,47 @@ class _GameViewState extends State<GameView> {
   Color standardTextColor = Colors.white;
 
   final soundPlayerService = di<SoundPlayerService>();
+  var settingsManager = di<SettingsManager>();
 
   bool gameTimeEnded = false;
 
   @override
   Widget build(BuildContext context) {
     var gameManager = di<GameManager>();
+    settingsManager.getCurrentTimeInMillisecondsCommand();
+
+    void startOrPauseGames() {
+      if (!currentlyRunning && currentGamesActualStart == null) {
+        currentGamesActualStart = DateTime.now();
+        settingsManager
+            .setCurrentlyRunningGamesCommand(widget.gameGroup.startTime);
+      }
+
+      if (!widget.canPauseGames) {
+        setState(() {
+          reset = false;
+          currentlyRunning = true;
+        });
+
+        return;
+      }
+
+      setState(() {
+        reset = false;
+        currentlyRunning = !currentlyRunning;
+      });
+    }
+
+    var currentlyRunningGames = watchPropertyValue(
+        (SettingsManager manager) => manager.currentlyRunningGames);
+
+    if (currentlyRunningGames != null &&
+        currentlyRunningGames == widget.gameGroup.startTime &&
+        !currentlyRunning &&
+        !reset) {
+      settingsManager.getCurrentTimeInMillisecondsCommand();
+      startOrPauseGames();
+    }
 
     List<Widget> rows = [];
 
@@ -265,26 +353,6 @@ class _GameViewState extends State<GameView> {
     var headerTextStyle = Constants.mediumHeaderTextStyle.copyWith(
       color: color,
     );
-
-    Future startOrPauseGames() async {
-      if (!currentlyRunning && currentGamesActualStart == null) {
-        currentGamesActualStart = DateTime.now();
-      }
-
-      if (!widget.canPauseGames) {
-        setState(() {
-          reset = false;
-          currentlyRunning = true;
-        });
-
-        return;
-      }
-
-      setState(() {
-        reset = false;
-        currentlyRunning = !currentlyRunning;
-      });
-    }
 
     return Card(
       color: currentlyRunning ? Colors.blue : null,
@@ -310,8 +378,18 @@ class _GameViewState extends State<GameView> {
                           onPressed: !widget.canPauseGames
                               ? currentlyRunning
                                   ? null
-                                  : startOrPauseGames
-                              : startOrPauseGames,
+                                  : () {
+                                      startOrPauseGames();
+                                      if (widget.onStart != null) {
+                                        widget.onStart!();
+                                      }
+                                    }
+                              : () {
+                                  startOrPauseGames();
+                                  if (widget.onStart != null) {
+                                    widget.onStart!();
+                                  }
+                                },
                           icon: Icon(currentlyRunning
                               ? Icons.pause
                               : Icons.play_arrow),
@@ -324,6 +402,9 @@ class _GameViewState extends State<GameView> {
                         textColor: color,
                         start: currentlyRunning,
                         refresh: reset,
+                        startTimeInMilliSeconds: currentlyRunningGames == null
+                            ? null
+                            : settingsManager.currentTimeInMilliseconds,
                         onHalftime: () {
                           if (!widget.canPauseGames) {
                             return;
@@ -343,6 +424,11 @@ class _GameViewState extends State<GameView> {
                       if (widget.first)
                         IconButton(
                           onPressed: () {
+                            settingsManager
+                                .setCurrentlyRunningGamesCommand(null);
+                            settingsManager
+                                .setCurrentTimeInMillisecondsCommand(null);
+
                             setState(() {
                               currentlyRunning = false;
                               reset = true;
@@ -465,6 +551,9 @@ class _GameViewState extends State<GameView> {
 
                         if (result) {
                           gameManager.getCurrentRoundCommand();
+                          settingsManager.setCurrentlyRunningGamesCommand(null);
+                          settingsManager
+                              .setCurrentTimeInMillisecondsCommand(null);
                           return;
                         }
 
@@ -510,6 +599,7 @@ class CountDownView extends StatefulWidget {
     required this.refresh,
     this.onEnded,
     this.onHalftime,
+    this.startTimeInMilliSeconds,
   });
 
   final int timeInMinutes;
@@ -518,6 +608,8 @@ class CountDownView extends StatefulWidget {
   final bool refresh;
   final void Function()? onEnded;
   final void Function()? onHalftime;
+
+  final int? startTimeInMilliSeconds;
 
   @override
   State<CountDownView> createState() => _CountDownViewState();
@@ -529,6 +621,7 @@ class _CountDownViewState extends State<CountDownView> {
   bool halfTimeSoundPlayed = false;
 
   final soundPlayerService = di<SoundPlayerService>();
+  var settingsManager = di<SettingsManager>();
 
   late final StopWatchTimer _stopWatchTimer;
 
@@ -542,7 +635,9 @@ class _CountDownViewState extends State<CountDownView> {
       mode: StopWatchMode.countDown,
       presetMillisecond: totalTimeInMilliSeconds,
       onChange: (value) {
+        settingsManager.setCurrentTimeInMillisecondsCommand(value);
         final displayTime = StopWatchTimer.getDisplayTime(value);
+
         setState(() {
           currentTime = displayTime;
         });
@@ -597,16 +692,31 @@ class _CountDownViewState extends State<CountDownView> {
   @override
   Widget build(BuildContext context) {
     if (widget.refresh) {
-      _stopWatchTimer.onResetTimer();
+      if (_stopWatchTimer.isRunning) {
+        _stopWatchTimer.onResetTimer();
+
+        _stopWatchTimer.clearPresetTime();
+      }
+
       setState(() {
         onEndedCalled = false;
         halfTimeSoundPlayed = false;
       });
     } else {
       if (widget.start) {
-        _stopWatchTimer.onStartTimer();
+        if (!_stopWatchTimer.isRunning) {
+          if (widget.startTimeInMilliSeconds != null) {
+            _stopWatchTimer.setPresetTime(
+              mSec: widget.startTimeInMilliSeconds!,
+              add: false,
+            );
+          }
+          _stopWatchTimer.onStartTimer();
+        }
       } else {
-        _stopWatchTimer.onStopTimer();
+        if (_stopWatchTimer.isRunning) {
+          _stopWatchTimer.onStopTimer();
+        }
       }
     }
 
