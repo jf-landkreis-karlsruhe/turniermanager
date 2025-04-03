@@ -33,3 +33,10 @@ services:
       MYSQL_DATABASE: turnier
     ports:
       - "3306:3306"
+
+  admin:
+    image: turnier-admin # ghcr.io/jf-landkreis-karlsruhe/turnier-admin:latest
+    ports:
+      - "8082:80"
+    environment:
+      - BACKEND_URL=localhost:8080
