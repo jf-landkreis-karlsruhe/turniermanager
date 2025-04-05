@@ -8,6 +8,7 @@ import de.jf.karlsruhe.model.repos.GameRepository;
 import de.jf.karlsruhe.model.repos.GameSettingsRepository;
 import de.jf.karlsruhe.model.repos.PitchRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ public class PitchScheduler {
     private final GameSettingsRepository gamesettingsRepository;
 
     private List<Pitch> pitches; // Liste der verfügbaren Spielfelder
+    @Setter
     private GameSettings gameSettings; // Spieleinstellungen (Dauer, Pausen...)
     private Map<Pitch, LocalDateTime> pitchSchedules = new HashMap<>(); // Nächste verfügbare Zeit für jedes Spielfeld
 
@@ -264,5 +266,18 @@ public class PitchScheduler {
 
     public void reset() {
         pitchSchedules.clear();
+    }
+
+
+    public void setPlayTime(int playTime) {
+        if (playTime < 0) return;
+        this.gameSettings.setPlayTime(playTime);
+        this.gamesettingsRepository.save(gameSettings);
+    }
+
+    public void setBreakTime(int breaktime) {
+        if(breaktime < 0)return;
+        this.gameSettings.setBreakTime(breaktime);
+        this.gamesettingsRepository.save(this.gameSettings);
     }
 }

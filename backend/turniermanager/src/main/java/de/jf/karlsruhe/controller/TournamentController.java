@@ -35,10 +35,10 @@ public class TournamentController {
 
 
     @PostMapping("/create")
-    public Tournament createTournament(@RequestParam String name,
-                                       @RequestParam LocalDateTime startTime,
-                                       @RequestParam int playTime,
-                                       @RequestParam int breakTime) {
+    public UUID createTournament(@RequestParam String name,
+                                 @RequestParam LocalDateTime startTime,
+                                 @RequestParam int playTime,
+                                 @RequestParam int breakTime) {
         Tournament tournament;
         if (tournamentRepository.count() == 0) {
 
@@ -63,14 +63,14 @@ public class TournamentController {
             pitchScheduler.initialize(pitches, gameSettings);
             tournamentRepository.save(tournament);
         }
-        return tournament;
+        return tournament.getId();
     }
 
     @Transactional
     @PostMapping("/create/qualification")
-    public Tournament createQualificationTournament() {
+    public UUID createQualificationTournament() {
         if (ageGroupRepository.count() == 0 && pitchRepository.count() == 0 && teamRepository.count() == 0)
-            return tournamentRepository.findAll().getFirst();
+            return tournamentRepository.findAll().getFirst().getId();
 
         Tournament tournament = tournamentRepository.findAll().getFirst();
         List<AgeGroup> ageGroups = ageGroupRepository.findAll();
@@ -103,19 +103,21 @@ public class TournamentController {
         roundRepository.flush();
         gameRepository.flush();
 
-        return tournament;
+        return tournament.getId();
     }
 
     @Transactional
     @PostMapping("/create/round")
-    public Tournament createTournamentRound(@RequestBody Map<UUID, Integer> numberPerRounds) {
+    public UUID createTournamentRound(@RequestBody Map<UUID, Integer> numberPerRounds, int breaktime, int playTime) {
         clearScheduledPitches();
         if (ageGroupRepository.count() == 0 && pitchRepository.count() == 0 && teamRepository.count() == 0)
-            return tournamentRepository.findAll().getFirst();
+            return tournamentRepository.findAll().getFirst().getId();
         List<Round> all = roundRepository.findAll();
-        all.forEach(round -> {
-            round.setActive(false);
-        });
+
+        this.pitchScheduler.setPlayTime(playTime);
+        this.pitchScheduler.setBreakTime(breaktime);
+
+        all.forEach(round -> round.setActive(false));
 
         Tournament tournament = tournamentRepository.findAll().getFirst();
         List<AgeGroup> ageGroups = new ArrayList<>(ageGroupRepository.findAll()); // Erstelle eine Kopie, um die Originaldaten nicht zu verändern
@@ -130,7 +132,7 @@ public class TournamentController {
             List<Game> allGames = gameRepository.findAll();
             List<Team> sortedTeams = !allGames.isEmpty() ? getTeamsSortedByPerformance(allGames, teams) : teams;
             Integer amountOfMaxTeamsPerAgeGroup = 6;
-            if(numberPerRounds != null && numberPerRounds.containsKey(ageGroup.getId())) {
+            if (numberPerRounds != null && numberPerRounds.containsKey(ageGroup.getId())) {
                 amountOfMaxTeamsPerAgeGroup = numberPerRounds.get(ageGroup.getId());
             }
             List<League> leagues = createBalancedLeaguesForAgeGroup(sortedTeams, amountOfMaxTeamsPerAgeGroup, "Turnier", tournament);
@@ -169,7 +171,7 @@ public class TournamentController {
         roundRepository.saveAll(allRounds);
         leagueRepository.saveAll(allLeagues);
 
-        return tournament;
+        return tournament.getId();
     }
 
     @PostMapping("/set-active-rounds")

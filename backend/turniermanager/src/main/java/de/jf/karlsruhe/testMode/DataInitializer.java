@@ -64,7 +64,7 @@ public class DataInitializer {
             Tournament tournament;
             // Test-Turnier erstellen
             if (true) {
-                tournament = tournamentController.createTournament("Test-Tournier", LocalDateTime.now(), 2, 1);
+                tournamentController.createTournament("Test-Tournier", LocalDateTime.now(), 2, 1);
                 tournamentController.createQualificationTournament();
 
                 // Zufällige Scores für alle Spiele setzen
@@ -74,7 +74,7 @@ public class DataInitializer {
 
             if (true) {
                 UUID id = tournament.getId();
-                tournamentController.createTournamentRound(null);
+                tournamentController.createTournamentRound(null, 0 , 0);
                 updateAllGamesWithRandomScores(gameRepository);
             }
 
