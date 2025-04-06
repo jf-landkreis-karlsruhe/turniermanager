@@ -1,6 +1,7 @@
 package de.jf.karlsruhe.controller;
 
 import de.jf.karlsruhe.model.base.Team;
+import de.jf.karlsruhe.model.dto.TeamsSmall;
 import de.jf.karlsruhe.model.repos.TeamRepository;
 
 import java.util.List;
@@ -40,4 +41,17 @@ public class TeamController {
         }
     }
 
+    @GetMapping("/getAll")
+    public ResponseEntity<List<TeamsSmall>> getTeams(
+            @RequestParam(required = false) String league,
+            @RequestParam(required = false) String ageGroup) {
+
+        List<Team> teams = teamRepository.findAll();
+
+        List<TeamsSmall> response = teams.stream()
+                .map(team -> new TeamsSmall(team.getId(), team.getName(), team.getAgeGroup().getName()))
+                .toList();
+
+        return ResponseEntity.ok(response);
+    }
 }
