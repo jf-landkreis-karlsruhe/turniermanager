@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:download/download.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tournament_manager/src/serialization/admin/extended_game_dto.dart';
 import 'package:tournament_manager/src/serialization/age_group_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/break_request_dto.dart';
@@ -307,6 +308,20 @@ class GameTestRestApi extends GameRestApi {
     DateTime actualStart,
     DateTime end,
   ) async {
+    var seedBase = DateTime.now();
+    var random = Random(seedBase.second + seedBase.millisecond);
+
+    for (var gameGroup in gameGroups) {
+      gameGroup.startTime = DateTime(
+        2025,
+        4,
+        1,
+        random.nextInt(25),
+        random.nextInt(61),
+        0,
+      );
+    }
+
     return true;
   }
 
@@ -321,84 +336,97 @@ class GameTestRestApi extends GameRestApi {
         .firstWhereOrNull((element) => element.name == ageGroupName);
   }
 
+  var gameGroups = [
+    GameGroupDto(
+      DateTime(2025, 4, 1, 15, 30, 0),
+      2,
+    )..games = [
+        GameDto(
+          1,
+          PitchDto('1', "Feld 1"),
+          TeamDto("Team A"),
+          TeamDto("Team B"),
+          'Liga 1',
+          'Altersklasse 1',
+        ),
+        GameDto(
+          1,
+          PitchDto('2', "Feld 2"),
+          TeamDto("Team A"),
+          TeamDto("Team B"),
+          'Liga 1',
+          'Altersklasse 2',
+        ),
+        GameDto(
+          2,
+          PitchDto('1', "Feld 1"),
+          TeamDto("Team A"),
+          TeamDto("Team B"),
+          'Liga 2',
+          'Altersklasse 1',
+        ),
+        GameDto(
+          2,
+          PitchDto('2', "Feld 2"),
+          TeamDto("Team A"),
+          TeamDto("Team B"),
+          'Liga 2',
+          'Altersklasse 2',
+        ),
+      ],
+    GameGroupDto(
+      DateTime(2025, 4, 1, 15, 45, 0),
+      12,
+    )..games = [
+        GameDto(
+          1,
+          PitchDto('1', "Feld 1"),
+          TeamDto("Team A"),
+          TeamDto("Team B"),
+          'Liga 1',
+          'Altersklasse 1',
+        ),
+        GameDto(
+          1,
+          PitchDto('2', "Feld 2"),
+          TeamDto("Team A"),
+          TeamDto("Team B"),
+          'Liga 3',
+          'Altersklasse 1',
+        ),
+        GameDto(
+          2,
+          PitchDto('1', "Feld 1"),
+          TeamDto("Team A"),
+          TeamDto("Team B"),
+          'Liga 1',
+          'Altersklasse 4',
+        ),
+        GameDto(
+          2,
+          PitchDto('2', "Feld 2"),
+          TeamDto("Team A"),
+          TeamDto("Team B"),
+          'Liga 5',
+          'Altersklasse 1',
+        ),
+      ],
+  ];
+
   @override
   Future<List<GameGroupDto>> getCurrentRound() async {
-    return [
-      GameGroupDto(
-        DateTime(2025, 4, 1, 15, 30, 0),
-        10,
-      )..games = [
-          GameDto(
-            1,
-            PitchDto('1', "Feld 1"),
-            TeamDto("Team A"),
-            TeamDto("Team B"),
-            'Liga 1',
-            'Altersklasse 1',
-          ),
-          GameDto(
-            1,
-            PitchDto('2', "Feld 2"),
-            TeamDto("Team A"),
-            TeamDto("Team B"),
-            'Liga 1',
-            'Altersklasse 2',
-          ),
-          GameDto(
-            2,
-            PitchDto('1', "Feld 1"),
-            TeamDto("Team A"),
-            TeamDto("Team B"),
-            'Liga 2',
-            'Altersklasse 1',
-          ),
-          GameDto(
-            2,
-            PitchDto('2', "Feld 2"),
-            TeamDto("Team A"),
-            TeamDto("Team B"),
-            'Liga 2',
-            'Altersklasse 2',
-          ),
-        ],
-      GameGroupDto(
-        DateTime(2025, 4, 1, 15, 45, 0),
-        12,
-      )..games = [
-          GameDto(
-            1,
-            PitchDto('1', "Feld 1"),
-            TeamDto("Team A"),
-            TeamDto("Team B"),
-            'Liga 1',
-            'Altersklasse 1',
-          ),
-          GameDto(
-            1,
-            PitchDto('2', "Feld 2"),
-            TeamDto("Team A"),
-            TeamDto("Team B"),
-            'Liga 3',
-            'Altersklasse 1',
-          ),
-          GameDto(
-            2,
-            PitchDto('1', "Feld 1"),
-            TeamDto("Team A"),
-            TeamDto("Team B"),
-            'Liga 1',
-            'Altersklasse 4',
-          ),
-          GameDto(
-            2,
-            PitchDto('2', "Feld 2"),
-            TeamDto("Team A"),
-            TeamDto("Team B"),
-            'Liga 5',
-            'Altersklasse 1',
-          ),
-        ],
-    ];
+    var prefs = await SharedPreferences.getInstance();
+    var result = prefs.getString('currentlyRunningGames');
+
+    if (result != null) {
+      var converted = DateTime.tryParse(result);
+
+      if (converted != null) {
+        gameGroups[0].startTime = converted;
+      }
+    }
+
+    return gameGroups;
   }
 
   @override

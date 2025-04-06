@@ -53,7 +53,6 @@ public class RoundController {
         List<Game> games = gameRepository.findByRound(round).stream()
                 .sorted(Comparator.comparing(Game::getGameNumber)).toList();
 
-        // TODO:
         if (games.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -171,7 +170,5 @@ public class RoundController {
         private String name;
         private UUID tournamentId;
         private boolean active;
-
-        // Getters and Setters
     }
 }

@@ -214,6 +214,7 @@ class _RefereeViewState extends State<RefereeView> {
           itemBuilder: (context, index) {
             var gameGroup = gameGroups[index];
             return GameView(
+              key: ValueKey('${index}_${gameGroup.startTime.toString()}'),
               first: index == 0,
               gameGroup: gameGroup,
               canPauseGames: canPauseGames,
@@ -550,10 +551,10 @@ class _GameViewState extends State<GameView> {
                         });
 
                         if (result) {
-                          gameManager.getCurrentRoundCommand();
                           settingsManager.setCurrentlyRunningGamesCommand(null);
                           settingsManager
                               .setCurrentTimeInMillisecondsCommand(null);
+                          gameManager.getCurrentRoundCommand();
                           return;
                         }
 
@@ -627,7 +628,8 @@ class _CountDownViewState extends State<CountDownView> {
 
   @override
   void initState() {
-    currentTime = '00:${widget.timeInMinutes}:00.00';
+    currentTime =
+        '00:${widget.timeInMinutes < 10 ? '0' : ''}${widget.timeInMinutes}:00.00';
     var totalTimeInMilliSeconds =
         StopWatchTimer.getMilliSecFromMinute(widget.timeInMinutes);
 
@@ -664,6 +666,9 @@ class _CountDownViewState extends State<CountDownView> {
         }
       },
       onEnded: () {
+        settingsManager.setCurrentlyRunningGamesCommand(null);
+        settingsManager.setCurrentTimeInMillisecondsCommand(null);
+
         if (widget.onEnded != null) {
           widget.onEnded!();
         }
