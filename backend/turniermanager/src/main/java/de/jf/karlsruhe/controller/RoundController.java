@@ -27,7 +27,7 @@ import java.util.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rounds")
+@RequestMapping("/turniersetup/rounds")
 @AllArgsConstructor
 public class RoundController {
 
@@ -35,7 +35,7 @@ public class RoundController {
     private final GameRepository gameRepository;
 
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<RoundDTO>> getAllRounds() {
         return ResponseEntity.ok(
             roundRepository.findAll().stream()
@@ -54,7 +54,6 @@ public class RoundController {
         List<Game> games = gameRepository.findByRound(round).stream()
                 .sorted(Comparator.comparing(Game::getGameNumber)).toList();
 
-        // TODO:
         if (games.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -103,8 +102,6 @@ public class RoundController {
                     if (gameNumber + 1 < bottomGames.size()) {
                         Game bottomgame = bottomGames.get(gameNumber + 1);
                         addGame(bottomgame, document);
-                    } else {
-                        addGame(topgame, document);
                     }
                     document.newPage();
 
