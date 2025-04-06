@@ -7,7 +7,8 @@ const CONFIG = {
         qualification: '/turniersetup/create/qualification',
         ageGroups: '/turniersetup/agegroups',
         teams: '/turniersetup/teams',
-        pitches: '/turniersetup/pitches'
+        pitches: '/turniersetup/pitches',
+        rounds: '/turniersetup/rounds'
     },
     
     // Get full API URL for an endpoint

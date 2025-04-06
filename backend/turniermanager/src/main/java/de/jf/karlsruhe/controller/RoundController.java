@@ -15,10 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
@@ -26,8 +23,10 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
+@CrossOrigin(origins = "*")
+
 @RestController
-@RequestMapping("/rounds")
+@RequestMapping("/turniersetup/rounds")
 @AllArgsConstructor
 public class RoundController {
 
@@ -35,7 +34,7 @@ public class RoundController {
     private final GameRepository gameRepository;
 
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<RoundDTO>> getAllRounds() {
         return ResponseEntity.ok(
             roundRepository.findAll().stream()
@@ -103,8 +102,6 @@ public class RoundController {
                     if (gameNumber + 1 < bottomGames.size()) {
                         Game bottomgame = bottomGames.get(gameNumber + 1);
                         addGame(bottomgame, document);
-                    } else {
-                        addGame(topgame, document);
                     }
                     document.newPage();
 
