@@ -171,7 +171,5 @@ public class RoundController {
         private String name;
         private UUID tournamentId;
         private boolean active;
-
-        // Getters and Setters
     }
 }
