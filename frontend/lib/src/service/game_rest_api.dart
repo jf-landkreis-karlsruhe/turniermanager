@@ -216,8 +216,8 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   @override
   Future<bool> saveGame(int gameNumber, int teamAScore, int teamBScore) async {
     try {
-      final uri = Uri.parse(saveGamePath + gameNumber.toString());
-      uri.replace(
+      var uri = Uri.parse(saveGamePath + gameNumber.toString());
+      uri = uri.replace(
         queryParameters: {
           'teamAScore': teamAScore.toString(),
           'teamBScore': teamBScore.toString(),
