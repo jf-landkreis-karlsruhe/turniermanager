@@ -89,55 +89,6 @@ public class PitchScheduler {
         pitches = pitchRepository.findAll(); // Sicherstellen, dass die Pitches und ihre Altersgruppen in der aktuellen Transaktion sind
     }
 
-
-    /**
-     * Plant die Spiele auf die verfügbaren Felder, sodass Felder gleichmäßig verteilt werden.
-     *
-     * @param games Liste der zu planenden Spiele
-     * @return Geplante Spiele mit zugewiesenen Feldern und Zeiten
-     */
-    /**
-     * public List<Game> scheduleGames(List<Game> games) {
-     * // Falls die Pitches nicht geladen sind, sicherstellen, dass sie vorab geladen werden
-     * if (pitches == null || pitches.isEmpty()) {
-     * preLoadPitchData();
-     * }
-     * <p>
-     * // Rotations-Index für die Felder
-     * Iterator<Pitch> pitchIterator = pitches.iterator();
-     * for (Game game : games) {
-     * // Suche nächstes Feld in Round-Robin-Manier
-     * if (!pitchIterator.hasNext()) {
-     * pitchIterator = pitches.iterator(); // Zurück zum ersten Feld
-     * }
-     * <p>
-     * // Nächstes Spielfeld aus der Rotation auswählen
-     * Pitch assignedPitch = pitchIterator.next();
-     * <p>
-     * // Erreiche die nächste verfügbare Zeit für dieses Spielfeld
-     * LocalDateTime assignedStartTime = pitchSchedules.get(assignedPitch);
-     * <p>
-     * // Prüfe, ob das Feld die Altersgruppe des Spiels unterstützt
-     * while (!supportsAgeGroup(assignedPitch, game)) {
-     * if (!pitchIterator.hasNext()) {
-     * pitchIterator = pitches.iterator(); // Zurück zum ersten Feld
-     * }
-     * assignedPitch = pitchIterator.next();
-     * assignedStartTime = pitchSchedules.get(assignedPitch); // Aktualisiere die Zeit
-     * }
-     * <p>
-     * // Setze die Startzeit und das Spielfeld für das Spiel
-     * game.setStartTime(assignedStartTime);
-     * game.setPitch(assignedPitch);
-     * <p>
-     * // Aktualisiere den Zeitplan für dieses Spielfeld
-     * pitchSchedules.put(assignedPitch, assignedStartTime.plusMinutes(gameSettings.getPlayTime() + gameSettings.getBreakTime()));
-     * }
-     * <p>
-     * return games;
-     * }
-     **/
-
     public List<Game> scheduleGames(List<Game> games) {
         if (pitches == null || pitches.isEmpty()) {
             preLoadPitchData();
@@ -149,7 +100,7 @@ public class PitchScheduler {
             LocalDateTime now = LocalDateTime.now();
 
             // Überprüfe, ob die aktuelle Zeit hinter der geplanten Zeit liegt
-            if ( assignedStartTime == null || now.isAfter(assignedStartTime)) {
+            if (assignedStartTime == null || now.isAfter(assignedStartTime)) {
                 assignedStartTime = now; // Verwende die aktuelle Zeit
             }
 
@@ -268,16 +219,10 @@ public class PitchScheduler {
         pitchSchedules.clear();
     }
 
-
-    public void setPlayTime(int playTime) {
-        if (playTime < 0) return;
-        this.gameSettings.setPlayTime(playTime);
-        this.gamesettingsRepository.save(gameSettings);
+    public void useOtherGameSettings(GameSettings gameSettings) {
+        gamesettingsRepository.deleteAll();
+        gamesettingsRepository.save(gameSettings);
+        this.gameSettings = gameSettings;
     }
 
-    public void setBreakTime(int breaktime) {
-        if(breaktime < 0)return;
-        this.gameSettings.setBreakTime(breaktime);
-        this.gamesettingsRepository.save(this.gameSettings);
-    }
 }

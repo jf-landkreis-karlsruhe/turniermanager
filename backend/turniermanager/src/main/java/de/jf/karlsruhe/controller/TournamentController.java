@@ -11,10 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*")
@@ -108,14 +105,13 @@ public class TournamentController {
 
     @Transactional
     @PostMapping("/create/round")
-    public UUID createTournamentRound(@RequestBody Map<UUID, Integer> numberPerRounds, int breaktime, int playTime) {
-        clearScheduledPitches();
-        if (ageGroupRepository.count() == 0 && pitchRepository.count() == 0 && teamRepository.count() == 0)
-            return tournamentRepository.findAll().getFirst().getId();
+    public UUID createTournamentRound(@RequestBody Map<UUID, Integer> numberPerRounds, @RequestBody GameSettings gameSettings) {
+        if (checkIfRoundCreationIsNotPossible()) return tournamentRepository.findAll().getFirst().getId();
         List<Round> all = roundRepository.findAll();
 
-        this.pitchScheduler.setPlayTime(playTime);
-        this.pitchScheduler.setBreakTime(breaktime);
+        if(gameSettings != null) {
+            pitchScheduler.useOtherGameSettings(gameSettings);
+        }
 
         all.forEach(round -> round.setActive(false));
 
@@ -173,6 +169,22 @@ public class TournamentController {
 
         return tournament.getId();
     }
+
+    private boolean checkIfRoundCreationIsNotPossible() {
+        clearScheduledPitches();
+        if (ageGroupRepository.count() == 0 && pitchRepository.count() == 0 && teamRepository.count() == 0)
+            return true;
+        return false;
+    }
+
+    @Transactional
+    @PostMapping("/create/roundEasy")
+    public UUID createTournamentRoundWithOutValue(@RequestBody Map<UUID, Integer> numberPerRounds) {
+        return createTournamentRound(numberPerRounds, null);
+    }
+
+
+
 
     @PostMapping("/set-active-rounds")
     @Transactional

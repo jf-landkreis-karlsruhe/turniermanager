@@ -1,6 +1,5 @@
 package de.jf.karlsruhe.model.base;
 
-import de.jf.karlsruhe.model.base.Tournament;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,12 +27,9 @@ public class GameSettings {
 	private int breakTime;
 	private int playTime;
 
-	private int greatBreakTime;
-	private LocalDateTime greatBreakStartTime;
-
 	// Beziehung zu Tournament (One-to-One)
-	@OneToOne(mappedBy = "gameSettings", cascade = CascadeType.ALL)
-	@ToString.Exclude // Verhindert rekursive Schleifen in toString()
-	@EqualsAndHashCode.Exclude // Beziehung wird von Equals/HashCode ausgeschlossen
-	private Tournament tournament;
+	//@OneToOne(mappedBy = "gameSettings", cascade = CascadeType.ALL)
+	//@ToString.Exclude // Verhindert rekursive Schleifen in toString()
+	//@EqualsAndHashCode.Exclude // Beziehung wird von Equals/HashCode ausgeschlossen
+	//private Tournament tournament;
 }
