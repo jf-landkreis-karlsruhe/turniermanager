@@ -22,4 +22,7 @@ public interface RoundRepository extends JpaRepository<Round, UUID> {
     @Query("SELECT r FROM Round r JOIN r.leagues l WHERE l.ageGroup = :ageGroup AND r.active = true")
     Optional<Round> findActiveRoundByAgeGroup(@Param("ageGroup") AgeGroup ageGroup);
 
+    @Query("SELECT r FROM Round r WHERE r.id IN :ids")
+    List<Round> findByIds(@Param("ids") List<UUID> ids);
+
 }

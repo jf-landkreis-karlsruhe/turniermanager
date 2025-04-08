@@ -43,14 +43,14 @@ public class RoundController {
         );
     }
 
-    @GetMapping(path = "/{id}/result-cards", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<byte[]> getResultCards(@PathVariable UUID id) {
-        Round round = roundRepository.findById(id).orElse(null);
-        if (round == null) {
+    @GetMapping(path = "/result-cards", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> getResultCards(@RequestParam List<UUID> roundIds) {
+        List<Round> rounds = roundRepository.findByIds(roundIds);
+        if (rounds.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        List<Game> games = gameRepository.findByRound(round).stream()
+        List<Game> games = gameRepository.findByRounds(rounds).stream()
                 .sorted(Comparator.comparing(Game::getGameNumber)).toList();
 
         if (games.isEmpty()) {
@@ -63,14 +63,14 @@ public class RoundController {
         }
 
         List<UUID> pitchByLength = gamesPerPitch.keySet().stream()
-                .sorted(Comparator.comparingInt(o -> gamesPerPitch.get(o).size()))
+                .sorted(Comparator.comparingInt(o -> gamesPerPitch.get(o).size()).reversed())
                 .toList();
 
 
         try {
             ByteArrayOutputStream out = createPdf(gamesPerPitch, pitchByLength);
             HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=spielfeld" + id + ".pdf");
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=result-card-rounds.pdf");
             return ResponseEntity.ok().headers(headers).body(out.toByteArray());
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -98,8 +98,8 @@ public class RoundController {
                     divider.setAlignment(Element.ALIGN_CENTER);
                     document.add(divider);
 
-                    if (gameNumber + 1 < bottomGames.size()) {
-                        Game bottomgame = bottomGames.get(gameNumber + 1);
+                    if (gameNumber < bottomGames.size()) {
+                        Game bottomgame = bottomGames.get(gameNumber);
                         addGame(bottomgame, document);
                     }
                     document.newPage();

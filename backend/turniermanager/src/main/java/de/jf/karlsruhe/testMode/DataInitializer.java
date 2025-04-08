@@ -61,10 +61,10 @@ public class DataInitializer {
                 }
                 System.out.println("20 Teams wurden initial gespeichert.");
             }
-            Tournament tournament;
+            UUID tournamentId;
             // Test-Turnier erstellen
             if (true) {
-                tournamentController.createTournament("Test-Tournier", LocalDateTime.now(), 2, 1);
+                tournamentId = tournamentController.createTournament("Test-Tournier", LocalDateTime.now(), 2, 1);
                 tournamentController.createQualificationTournament();
 
                 // Zufällige Scores für alle Spiele setzen
@@ -73,7 +73,6 @@ public class DataInitializer {
             if(true)return;
 
             if (true) {
-                UUID id = tournament.getId();
                 tournamentController.createTournamentRound(null, 0 , 0);
                 updateAllGamesWithRandomScores(gameRepository);
             }
