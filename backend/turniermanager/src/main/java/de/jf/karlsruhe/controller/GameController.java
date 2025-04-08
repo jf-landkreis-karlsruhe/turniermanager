@@ -135,12 +135,12 @@ public class GameController {
         if (actualStartTime.isBefore(startTime)) {
             Duration duration = Duration.between(actualStartTime, startTime);
             long minutes = duration.toMinutes();
-            pitchScheduler.advanceGamesAfter(startTime, (int) minutes + 1 + settings.getBreakTime());
+            pitchScheduler.advanceGamesAfter(startTime, (int) minutes + settings.getBreakTime());
             return ResponseEntity.ok("Actual start time was " + minutes + " minutes early.");
         } else if (actualStartTime.isAfter(startTime)) {
             Duration duration = Duration.between(startTime, actualStartTime);
             long minutes = duration.toMinutes();
-            pitchScheduler.delayGamesAfter(startTime, (int) minutes + 1 + settings.getBreakTime());
+            pitchScheduler.delayGamesAfter(startTime, (int) minutes + settings.getBreakTime());
             return ResponseEntity.ok("Actual start time was " + minutes + " minutes late.");
         } else {
             return ResponseEntity.ok("Actual start time was on time.");
