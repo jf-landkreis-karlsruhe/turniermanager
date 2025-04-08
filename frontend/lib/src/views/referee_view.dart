@@ -281,6 +281,21 @@ class _RefereeViewState extends State<RefereeView> {
           itemCount: gameGroups.length,
         ),
       ),
+      bottomNavigationBar: Container(
+        color: Colors.yellow.withOpacity(0.6),
+        child: const Padding(
+          padding: EdgeInsets.all(5),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Während Spiele laufen: Seite neu laden vermeiden!',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
 
     List<Widget> unmuteBarrier = [
@@ -475,19 +490,22 @@ class _GameViewState extends State<GameView> {
                       const SizedBox(width: 5),
                       if (widget.first)
                         IconButton(
-                          onPressed: () {
-                            settingsManager
-                                .setCurrentlyRunningGamesCommand(null);
-                            settingsManager
-                                .setCurrentTimeInMillisecondsCommand(null);
+                          onPressed: !widget.canPauseGames
+                              ? null
+                              : () {
+                                  settingsManager
+                                      .setCurrentlyRunningGamesCommand(null);
+                                  settingsManager
+                                      .setCurrentTimeInMillisecondsCommand(
+                                          null);
 
-                            setState(() {
-                              currentlyRunning = false;
-                              reset = true;
-                            });
+                                  setState(() {
+                                    currentlyRunning = false;
+                                    reset = true;
+                                  });
 
-                            currentGamesActualStart = null;
-                          },
+                                  currentGamesActualStart = null;
+                                },
                           icon: const Icon(Icons.refresh),
                           color: color,
                           tooltip: "Spiel zurücksetzen",
