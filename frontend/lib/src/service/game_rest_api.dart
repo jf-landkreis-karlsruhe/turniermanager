@@ -71,7 +71,7 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
     getAllAgeGroupsUri = Uri.parse('$_baseUri/turniersetup/agegroups/getAll');
     getAllGameGroupsUri =
         Uri.parse('$_baseUri/games/activeGamesSortedDateTimeList');
-    createRoundUri = Uri.parse('$_baseUri/turniersetup/create/round');
+    createRoundUri = Uri.parse('$_baseUri/turniersetup/create/round-custom');
     endGamesUri = Uri.parse('$_baseUri/games/refreshTimings');
     getAllGamesUri = Uri.parse('$_baseUri/games/getAll');
     saveGamePath = '$_baseUri/games/update/';
