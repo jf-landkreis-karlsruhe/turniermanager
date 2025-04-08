@@ -9,6 +9,7 @@ import 'package:tournament_manager/src/model/admin/extended_game.dart';
 import 'package:tournament_manager/src/model/age_group.dart';
 import 'package:tournament_manager/src/model/referee/game_group.dart';
 import 'package:tournament_manager/src/model/referee/pitch.dart';
+import 'package:tournament_manager/src/model/referee/round_settings.dart';
 import 'package:tournament_manager/src/model/results/results.dart';
 import 'package:tournament_manager/src/model/schedule/match_schedule.dart';
 import 'package:tournament_manager/src/service/game_rest_api.dart';
@@ -23,7 +24,7 @@ abstract class GameManager extends ChangeNotifier {
 
   late Command<(DateTime originalStart, DateTime actualStart, DateTime end),
       bool> endCurrentGamesCommand;
-  late Command<Map<String, int>, bool> startNextRoundCommand;
+  late Command<RoundSettings, bool> startNextRoundCommand;
   late Command<void, void> getCurrentRoundCommand;
 
   late Command<void, void> getAgeGroupsCommand;
@@ -72,7 +73,7 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
   late Command<(DateTime originalStart, DateTime actualStart, DateTime end),
       bool> endCurrentGamesCommand;
   @override
-  late Command<Map<String, int>, bool> startNextRoundCommand;
+  late Command<RoundSettings, bool> startNextRoundCommand;
   @override
   late Command<void, void> getCurrentRoundCommand;
 
@@ -215,8 +216,9 @@ class GameManagerImplementation extends ChangeNotifier implements GameManager {
     );
 
     startNextRoundCommand = Command.createAsync(
-      (maxTeams) async {
-        return await _gameRestApi.startNextRound(maxTeams);
+      (settings) async {
+        return await _gameRestApi
+            .startNextRound(_refereeMapper.reverseMapRoundSettings(settings));
       },
       initialValue: false,
     );

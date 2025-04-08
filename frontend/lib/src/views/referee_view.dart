@@ -7,6 +7,8 @@ import 'package:tournament_manager/src/manager/game_manager.dart';
 import 'package:tournament_manager/src/manager/settings_manager.dart';
 import 'package:tournament_manager/src/model/referee/game.dart';
 import 'package:tournament_manager/src/model/referee/game_group.dart';
+import 'package:tournament_manager/src/model/referee/game_settings.dart';
+import 'package:tournament_manager/src/model/referee/round_settings.dart';
 import 'package:tournament_manager/src/service/sound_player_service.dart';
 import 'package:watch_it/watch_it.dart';
 import 'package:intl/intl.dart';
@@ -21,7 +23,14 @@ class RefereeView extends StatefulWidget with WatchItStatefulWidgetMixin {
 }
 
 class _RefereeViewState extends State<RefereeView> {
-  final Map<String, int> ageGroupIdToMaxTeams = {};
+  // final Map<String, int> ageGroupIdToMaxTeams = {};
+  final roundSettings = RoundSettings(
+    GameSettings(
+      DateTime.now(),
+      1,
+      3,
+    ),
+  );
   var barrierDissmissed = false;
 
   @override
@@ -40,7 +49,7 @@ class _RefereeViewState extends State<RefereeView> {
         (SettingsManager manager) => manager.currentlyRunningGames);
 
     for (var ageGroup in ageGroups) {
-      ageGroupIdToMaxTeams.update(
+      roundSettings.numberPerRounds.update(
         ageGroup.id,
         (value) => 6,
         ifAbsent: () => 6,
@@ -74,21 +83,54 @@ class _RefereeViewState extends State<RefereeView> {
                 context: context,
                 builder: (dialogContext) {
                   return AlertDialog(
-                    title: const Text('Max. Anzahl Teams / Runde'),
+                    title: const Text('Einstellungen (nächste Runde)'),
                     content: SizedBox(
                       height: MediaQuery.of(context).size.height / 2,
                       width: 300,
-                      child: ListView.separated(
-                        itemBuilder: (_, index) {
-                          var ageGroup = ageGroups[index];
+                      child: Column(
+                        children: [
+                          const Text('Max. Anzahl Teams / Runde'),
+                          Expanded(
+                            child: ListView.separated(
+                              itemBuilder: (_, index) {
+                                var ageGroup = ageGroups[index];
 
-                          return TextField(
-                            controller: TextEditingController(
-                              text:
-                                  Constants.maxNumberOfTeamsDefault.toString(),
+                                return TextField(
+                                  controller: TextEditingController(
+                                    text: Constants.maxNumberOfTeamsDefault
+                                        .toString(),
+                                  ),
+                                  decoration: InputDecoration(
+                                    label: Text(ageGroup.name),
+                                  ),
+                                  onChanged: (userInput) {
+                                    var result = int.tryParse(userInput);
+                                    if (result == null) {
+                                      return;
+                                    }
+
+                                    roundSettings.numberPerRounds.update(
+                                      ageGroup.id,
+                                      (value) => result,
+                                      ifAbsent: () => 6,
+                                    );
+                                  },
+                                );
+                              },
+                              separatorBuilder: (_, index) {
+                                return const SizedBox(height: 10);
+                              },
+                              itemCount: ageGroups.length,
                             ),
-                            decoration: InputDecoration(
-                              label: Text(ageGroup.name),
+                          ),
+                          const Text('Sonstiges'),
+                          TextField(
+                            controller: TextEditingController(
+                              text: roundSettings.gameSettings.breakTime
+                                  .toString(),
+                            ),
+                            decoration: const InputDecoration(
+                              label: Text('Pausenzeit (min)'),
                             ),
                             onChanged: (userInput) {
                               var result = int.tryParse(userInput);
@@ -96,18 +138,27 @@ class _RefereeViewState extends State<RefereeView> {
                                 return;
                               }
 
-                              ageGroupIdToMaxTeams.update(
-                                ageGroup.id,
-                                (value) => result,
-                                ifAbsent: () => 6,
-                              );
+                              roundSettings.gameSettings.breakTime = result;
                             },
-                          );
-                        },
-                        separatorBuilder: (_, index) {
-                          return const SizedBox(height: 10);
-                        },
-                        itemCount: ageGroups.length,
+                          ),
+                          TextField(
+                            controller: TextEditingController(
+                              text: roundSettings.gameSettings.playTime
+                                  .toString(),
+                            ),
+                            decoration: const InputDecoration(
+                              label: Text('Spielzeit / Spiel (min)'),
+                            ),
+                            onChanged: (userInput) {
+                              var result = int.tryParse(userInput);
+                              if (result == null) {
+                                return;
+                              }
+
+                              roundSettings.gameSettings.playTime = result;
+                            },
+                          ),
+                        ],
                       ),
                     ),
                     actions: [
@@ -120,8 +171,8 @@ class _RefereeViewState extends State<RefereeView> {
                 },
               );
             },
-            icon: const Icon(Icons.groups),
-            tooltip: "Max # Teams / Runde ändern",
+            icon: const Icon(Icons.settings),
+            tooltip: "Einstellungen (nächste Runde)",
           ),
           const SizedBox(width: 10),
           ElevatedButton(
@@ -152,7 +203,7 @@ class _RefereeViewState extends State<RefereeView> {
                       ElevatedButton(
                         onPressed: () async {
                           var result = await gameManager.startNextRoundCommand
-                              .executeWithFuture(ageGroupIdToMaxTeams);
+                              .executeWithFuture(roundSettings);
                           if (result) {
                             gameManager.getCurrentRoundCommand();
                             settingsManager

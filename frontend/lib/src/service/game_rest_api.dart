@@ -8,6 +8,7 @@ import 'package:tournament_manager/src/serialization/referee/break_request_dto.d
 import 'package:tournament_manager/src/serialization/referee/game_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/game_group_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/pitch_dto.dart';
+import 'package:tournament_manager/src/serialization/referee/round_settings_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/team_dto.dart';
 import 'package:tournament_manager/src/serialization/referee/timing_request_dto.dart';
 import 'package:tournament_manager/src/serialization/results/result_entry_dto.dart';
@@ -31,7 +32,7 @@ abstract class GameRestApi {
     DateTime end,
   );
 
-  Future<bool> startNextRound(Map<String, int> maxTeams);
+  Future<bool> startNextRound(RoundSettingsDto settings);
 
   Future<List<GameGroupDto>> getCurrentRound();
 
@@ -139,9 +140,9 @@ class GameRestApiImplementation extends RestClient implements GameRestApi {
   }
 
   @override
-  Future<bool> startNextRound(Map<String, int> maxTeams) async {
+  Future<bool> startNextRound(RoundSettingsDto settings) async {
     try {
-      var json = jsonEncode(maxTeams);
+      var json = jsonEncode(settings);
 
       final response = await client.post(
         createRoundUri,
@@ -501,7 +502,7 @@ class GameTestRestApi extends GameRestApi {
   }
 
   @override
-  Future<bool> startNextRound(Map<String, int> maxTeams) async {
+  Future<bool> startNextRound(RoundSettingsDto settings) async {
     return true;
   }
 
