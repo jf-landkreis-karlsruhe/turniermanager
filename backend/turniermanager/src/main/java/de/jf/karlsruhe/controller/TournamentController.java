@@ -105,11 +105,14 @@ public class TournamentController {
 
     @Transactional
     @PostMapping("/create/round")
-    public UUID createTournamentRound(@RequestBody Map<UUID, Integer> numberPerRounds, @RequestBody GameSettings gameSettings) {
+    public UUID createTournamentRound(@RequestBody TournamentRoundRequest request) {
         if (checkIfRoundCreationIsNotPossible()) return tournamentRepository.findAll().getFirst().getId();
         List<Round> all = roundRepository.findAll();
 
-        if(gameSettings != null) {
+        Map<UUID, Integer> numberPerRounds = request.getNumberPerRounds();
+        GameSettings gameSettings = request.getGameSettings();
+
+        if (gameSettings != null) {
             pitchScheduler.useOtherGameSettings(gameSettings);
         }
 
@@ -178,12 +181,10 @@ public class TournamentController {
     }
 
     @Transactional
-    @PostMapping("/create/roundEasy")
+    @PostMapping("/create/round-easy")
     public UUID createTournamentRoundWithOutValue(@RequestBody Map<UUID, Integer> numberPerRounds) {
-        return createTournamentRound(numberPerRounds, null);
+        return createTournamentRound(new TournamentRoundRequest(numberPerRounds, null));
     }
-
-
 
 
     @PostMapping("/set-active-rounds")
@@ -511,6 +512,15 @@ public class TournamentController {
     @Data
     public static class TimeRequest {
         private LocalDateTime maxTime;
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Data
+    public class TournamentRoundRequest {
+
+        private Map<UUID, Integer> numberPerRounds;
+        private GameSettings gameSettings;
     }
 
 }
