@@ -73,7 +73,7 @@ public class DataInitializer {
             if(true)return;
 
             if (true) {
-                tournamentController.createTournamentRound(null, new GameSettings(UUID.randomUUID(), LocalDateTime.now().plusHours(4L), 2, 5));
+                tournamentController.createTournamentRound(new TournamentController.TournamentRoundRequest(null,null));
                 updateAllGamesWithRandomScores(gameRepository);
             }
 

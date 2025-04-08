@@ -517,7 +517,7 @@ public class TournamentController {
     @NoArgsConstructor
     @AllArgsConstructor
     @Data
-    public class TournamentRoundRequest {
+    public static class TournamentRoundRequest {
 
         private Map<UUID, Integer> numberPerRounds;
         private GameSettings gameSettings;
