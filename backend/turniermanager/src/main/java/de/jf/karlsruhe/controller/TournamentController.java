@@ -104,7 +104,7 @@ public class TournamentController {
     }
 
     @Transactional
-    @PostMapping("/create/round")
+    @PostMapping("/create/round-custom")
     public UUID createTournamentRound(@RequestBody TournamentRoundRequest request) {
         if (checkIfRoundCreationIsNotPossible()) return tournamentRepository.findAll().getFirst().getId();
         List<Round> all = roundRepository.findAll();
@@ -181,7 +181,7 @@ public class TournamentController {
     }
 
     @Transactional
-    @PostMapping("/create/round-easy")
+    @PostMapping("/create/round")
     public UUID createTournamentRoundWithOutValue(@RequestBody Map<UUID, Integer> numberPerRounds) {
         return createTournamentRound(new TournamentRoundRequest(numberPerRounds, null));
     }
