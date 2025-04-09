@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*")
@@ -88,12 +90,14 @@ public class TournamentController {
             roundRepository.save(round);  // save round
             leagueRepository.save(league);  // save league
 
-            List<Game> games = generateLeagueGames(league);
+            List<Game> games = generateLeagueGames(league).stream().toList();
             allGamesToSchedule.addAll(games); // Spiele zum Zwischenspeicher hinzufügen
             league.getRound().addGames(games);
         }
         //Collections.shuffle(allGamesToSchedule);
-        List<Game> scheduledGames = setGameTags(pitchScheduler.scheduleGames(allGamesToSchedule));
+
+        List<Game> games = pitchScheduler.scheduleGames(allGamesToSchedule);
+        List<Game> scheduledGames = setGameTags(games);
         gameRepository.saveAll(scheduledGames);
 
         // Hier werden alle Spiele, Ligen und Runden in einem einzigen Transaktionsblock gespeichert
@@ -102,6 +106,7 @@ public class TournamentController {
 
         return tournament.getId();
     }
+
 
     @Transactional
     @PostMapping("/create/round-custom")
@@ -142,8 +147,8 @@ public class TournamentController {
             leaguesCopy.forEach(league -> {
                 league.setAgeGroup(ageGroup);
 
-                List<Game> games = generateLeagueGames(league);
-                Collections.shuffle(games); // Zufällige Reihenfolge der Spiele innerhalb der Altersgruppe
+                List<Game> games = generateLeagueGames(league).stream().toList();
+                //Collections.shuffle(games); // Zufällige Reihenfolge der Spiele innerhalb der Altersgruppe
                 allGamesToSchedule.addAll(games); // Spiele zum Zwischenspeicher hinzufügen
                 league.getRound().addGames(games);
                 allLeagues.add(league);
@@ -163,7 +168,7 @@ public class TournamentController {
         }
 
 
-        Collections.shuffle(allGamesToSchedule); // Zufällige Reihenfolge aller Spiele.
+        //Collections.shuffle(allGamesToSchedule); // Zufällige Reihenfolge aller Spiele.
         List<Game> scheduledGames = setGameTags(pitchScheduler.scheduleGames(allGamesToSchedule));
         gameRepository.saveAll(scheduledGames);
 
@@ -175,9 +180,7 @@ public class TournamentController {
 
     private boolean checkIfRoundCreationIsNotPossible() {
         clearScheduledPitches();
-        if (ageGroupRepository.count() == 0 && pitchRepository.count() == 0 && teamRepository.count() == 0)
-            return true;
-        return false;
+        return ageGroupRepository.count() == 0 && pitchRepository.count() == 0 && teamRepository.count() == 0;
     }
 
     @Transactional
@@ -293,34 +296,54 @@ public class TournamentController {
         return games;
     }
 
-    @Transactional
-    public List<Game> generateLeagueGames(League league) {
-        List<Game> games = new ArrayList<>();
-        List<Team> teams = league.getTeams();
 
+
+    public ConcurrentLinkedQueue<Game> generateLeagueGames(League league) {
+        ConcurrentLinkedQueue<Game> plannedGames = new ConcurrentLinkedQueue<>();
+        List<Team> teams = league.getTeams();
         if (teams == null || teams.size() < 2) {
-            return games;  // No games if less than 2 teams
+            return plannedGames;
+        }
+        int numberOfTeams = teams.size();
+        ConcurrentHashMap<Team, Integer> gameCounts = new ConcurrentHashMap<>();
+        for (Team team : teams) {
+            gameCounts.put(team, 0);
         }
 
-        int numberOfTeams = teams.size();
-
+        List<Game> allPossibleGames = new ArrayList<>();
         for (int i = 0; i < numberOfTeams - 1; i++) {
             for (int j = i + 1; j < numberOfTeams; j++) {
-                Team teamA = teams.get(i);
-                Team teamB = teams.get(j);
-
-                Game game = Game.builder()
-                        .teamA(teamA)
-                        .teamB(teamB)
-                        .round(league.getRound())
-                        .league(league)
-                        .build();
-
-                games.add(game);
+                allPossibleGames.add(Game.builder().teamA(teams.get(i)).teamB(teams.get(j)).round(league.getRound()).league(league).build());
             }
         }
-        return games;
+
+        while (!allPossibleGames.isEmpty()) {
+            Game bestGame = null;
+            int minCountA = Integer.MAX_VALUE;
+            int minCountB = Integer.MAX_VALUE;
+
+            for (Game possibleGame : allPossibleGames) {
+                int countA = gameCounts.getOrDefault(possibleGame.getTeamA(), 0);
+                int countB = gameCounts.getOrDefault(possibleGame.getTeamB(), 0);
+
+                if (countA <= minCountA && countB <= minCountB) {
+                    if (countA < minCountA || countB < minCountB || bestGame == null) {
+                        minCountA = countA;
+                        minCountB = countB;
+                        bestGame = possibleGame;
+                    }
+                }
+            }
+
+            allPossibleGames.remove(bestGame);
+            plannedGames.offer(bestGame);
+            gameCounts.compute(bestGame.getTeamA(), (team, count) -> (count == null) ? 1 : count + 1);
+            gameCounts.compute(bestGame.getTeamB(), (team, count) -> (count == null) ? 1 : count + 1);
+        }
+
+        return plannedGames;
     }
+
 
     @Transactional
     public List<Team> getTeamsSortedByPerformance(List<Game> games, List<Team> teams) {
@@ -345,7 +368,7 @@ public class TournamentController {
 
                     if (ownGoals > opponentGoals) {
                         totalPoints += 3;
-                    } else if (ownGoals == opponentGoals) {
+                    } else if (ownGoals == opponentGoals && g.getActualStartTime() != null) {
                         totalPoints += 1;
                     }
                     gamesPlayed++;
@@ -426,7 +449,8 @@ public class TournamentController {
         return gameCountPerLeague;
     }
 
-    public static List<Game> distributeGamesEvenly(Round round, Map<League, Integer> gameCountPerLeague, int difference) {
+    public static List<Game> distributeGamesEvenly(Round round, Map<League, Integer> gameCountPerLeague,
+                                                   int difference) {
         List<Game> gamesToSchedule = new ArrayList<>();
         List<League> leagues = round.getLeagues();
 

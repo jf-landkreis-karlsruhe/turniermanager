@@ -7,6 +7,7 @@ import org.hibernate.annotations.GenericGenerator;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@EqualsAndHashCode
 @Entity
 @Data
 @NoArgsConstructor
@@ -40,21 +41,21 @@ public class Game {
 
     @ManyToOne
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     private Team teamA;
 
     @ManyToOne
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     private Team teamB;
 
     @ManyToOne
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     private Round round;
 
     @ManyToOne
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private League league;
+
+
+
 }
