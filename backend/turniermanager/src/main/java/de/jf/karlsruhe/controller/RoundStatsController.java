@@ -168,23 +168,25 @@ public class RoundStatsController {
             boolean isTeamA = Objects.equals(g.getTeamA(), team);
 
             // Tore und Gegentore je nach Perspektive
-            eigeneTore = isTeamA ? teamAScore : teamBScore;
-            gegnerischeTore = isTeamA ? teamBScore : teamAScore;
+            int eigeneTorePerGame = isTeamA ? teamAScore : teamBScore;
+            int gegnerischeTorePerGame = isTeamA ? teamBScore : teamAScore;
 
             // Sieg, Niederlage, Unentschieden
-            if (eigeneTore > gegnerischeTore) {
+            if (eigeneTorePerGame > gegnerischeTorePerGame) {
                 siege++;
                 gesamtPunkte += 3;
-            } else if (eigeneTore < gegnerischeTore) {
+            } else if (eigeneTorePerGame < gegnerischeTorePerGame) {
                 niederlagen++;
                 // 0 Punkte
-            } else if(eigeneTore == gegnerischeTore && g.getActualStartTime() != null) {
+            } else if (eigeneTorePerGame == gegnerischeTorePerGame && g.getActualStartTime() != null) {
                 unentschieden++;
                 gesamtPunkte += 1;
             }
 
             // Tordifferenz
-            punkteDifferenz += (eigeneTore - gegnerischeTore);
+            punkteDifferenz += (eigeneTorePerGame - gegnerischeTorePerGame);
+            eigeneTore += eigeneTorePerGame;
+            gegnerischeTore += gegnerischeTorePerGame;
         }
         return new TeamStatsDTO(team.getName(), siege, niederlagen, unentschieden, punkteDifferenz, gesamtPunkte, eigeneTore, gegnerischeTore);
     }
