@@ -178,7 +178,7 @@ public class RoundStatsController {
             } else if (eigeneTore < gegnerischeTore) {
                 niederlagen++;
                 // 0 Punkte
-            } else if(eigeneTore == gegnerischeTore && g.getActualStartTime() == null) {
+            } else if(eigeneTore == gegnerischeTore && g.getActualStartTime() != null) {
                 unentschieden++;
                 gesamtPunkte += 1;
             }

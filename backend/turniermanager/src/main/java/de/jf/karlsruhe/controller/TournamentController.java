@@ -127,7 +127,7 @@ public class TournamentController {
         List<AgeGroup> ageGroups = new ArrayList<>(ageGroupRepository.findAll()); // Erstelle eine Kopie, um die Originaldaten nicht zu verändern
         Collections.shuffle(ageGroups); // Zufällige Reihenfolge der Altersgruppen
 
-        List<Game> allGamesToSchedule = new ArrayList<>(); // Zwischenspeicher für alle Spiele
+        HashMap<League, List<Game>> allGamesMap = new HashMap<>();
         List<League> allLeagues = new ArrayList<>();
         List<Round> allRounds = new ArrayList<>();
 
@@ -149,12 +149,15 @@ public class TournamentController {
 
                 List<Game> games = generateLeagueGames(league).stream().toList();
                 //Collections.shuffle(games); // Zufällige Reihenfolge der Spiele innerhalb der Altersgruppe
-                allGamesToSchedule.addAll(games); // Spiele zum Zwischenspeicher hinzufügen
+                allGamesMap.put(league, games);
+                //allGamesToSchedule.addAll(games); // Spiele zum Zwischenspeicher hinzufügen
                 league.getRound().addGames(games);
                 allLeagues.add(league);
                 allRounds.add(league.getRound());
             });
         }
+
+        List<Game> allGamesToSchedule = roundRobinSchedule(allGamesMap);
 
         Map<League, Integer> gameCountPerLeague = getGameCountPerLeague(allGamesToSchedule);
         int maxGamesPlayed = gameCountPerLeague.values().stream().max(Integer::compareTo).orElse(0);
@@ -163,12 +166,10 @@ public class TournamentController {
             if (round.getGames().size() < maxGamesPlayed) {
                 int difference = maxGamesPlayed - round.getGames().size();
                 allGamesToSchedule.addAll(distributeGamesEvenly(round, gameCountPerLeague, difference));
-
             }
         }
 
 
-        //Collections.shuffle(allGamesToSchedule); // Zufällige Reihenfolge aller Spiele.
         List<Game> scheduledGames = setGameTags(pitchScheduler.scheduleGames(allGamesToSchedule));
         gameRepository.saveAll(scheduledGames);
 
@@ -176,6 +177,30 @@ public class TournamentController {
         leagueRepository.saveAll(allLeagues);
 
         return tournament.getId();
+    }
+
+    public static List<Game> roundRobinSchedule(Map<League, List<Game>> leagueGamesMap) {
+        List<Map.Entry<League, List<Game>>> entries = new ArrayList<>(leagueGamesMap.entrySet());
+        int[] indices = new int[entries.size()]; // Position in jeder Game-Liste
+        List<Game> result = new ArrayList<>();
+        boolean done = false;
+
+        while (!done) {
+            done = true;
+
+            for (int i = 0; i < entries.size(); i++) {
+                List<Game> games = entries.get(i).getValue();
+                int currentIndex = indices[i];
+
+                if (currentIndex < games.size()) {
+                    result.add(games.get(currentIndex));
+                    indices[i]++;
+                    done = false;
+                }
+            }
+        }
+
+        return result;
     }
 
     private boolean checkIfRoundCreationIsNotPossible() {
@@ -295,7 +320,6 @@ public class TournamentController {
         }
         return games;
     }
-
 
 
     public ConcurrentLinkedQueue<Game> generateLeagueGames(League league) {
@@ -461,7 +485,7 @@ public class TournamentController {
         // Sortiere Ligen nach Anzahl der bereits gespielten Spiele (aufsteigend)
         List<League> sortedLeagues = leagues.stream()
                 .sorted(Comparator.comparingInt(league -> gameCountPerLeague.getOrDefault(league, 0)))
-                .collect(Collectors.toList());
+                .toList();
 
         int leagueIndex = 0;
         int gamesDistributed = 0; // Zähler für verteilte Spiele

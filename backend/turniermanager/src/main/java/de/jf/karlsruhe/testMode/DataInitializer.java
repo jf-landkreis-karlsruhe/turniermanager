@@ -21,7 +21,7 @@ public class DataInitializer {
     @Bean
     CommandLineRunner initData(AgeGroupRepository ageGroupRepository, PitchRepository pitchRepository, TeamRepository teamRepository, GameRepository gameRepository, TournamentController tournamentController, RoundStatsController statsController, TournamentRepository tournamentRepository, RoundRepository roundRepository, GamePlanController gamePlanController) {
         return args -> {
-            if(false) return;
+            if (true) return;
             // Altersgruppen initialisieren
             if (ageGroupRepository.count() == 0) {
                 AgeGroup kinder = ageGroupRepository.save(AgeGroup.builder().name("Kinder").build());
@@ -43,24 +43,24 @@ public class DataInitializer {
 
             // Teams initialisieren
             if (teamRepository.count() == 0) {
-                for (int i = 1; i <= 20; i++) {
-                    int j = i % 3;
+                for (int i = 1; i <= 6; i++) {
                     AgeGroup ageGroup;
-                    if(j == 0) {
-                        ageGroup = ageGroupRepository.findAll().getFirst();
-                        teamRepository.save(Team.builder().name("Team " + i).ageGroup(ageGroup).build());
-                    }else if(j == 1) {
-                        ageGroup = ageGroupRepository.findAll().get(1);
-                        teamRepository.save(Team.builder().name("Team " + i).ageGroup(ageGroup).build());
-
-                    } else {
-                        ageGroup = ageGroupRepository.findAll().getLast();
-                        teamRepository.save(Team.builder().name("Team " + i).ageGroup(ageGroup).build());
-
-                    }
+                    ageGroup = ageGroupRepository.findAll().getFirst();
+                    teamRepository.save(Team.builder().name("Team " + i +  ageGroup.getName()).ageGroup(ageGroup).build());
                 }
-                System.out.println("20 Teams wurden initial gespeichert.");
+                for (int i = 1; i <= 16; i++) {
+                    AgeGroup ageGroup;
+                    ageGroup = ageGroupRepository.findAll().get(1);
+                    teamRepository.save(Team.builder().name("Team " + i +  ageGroup.getName()).ageGroup(ageGroup).build());
+                }
+                for (int i = 1; i <= 16; i++) {
+                    AgeGroup ageGroup;
+                    ageGroup = ageGroupRepository.findAll().getLast();
+                    teamRepository.save(Team.builder().name("Team " + i +  ageGroup.getName()).ageGroup(ageGroup).build());
+                }
+                System.out.println("XXX Teams wurden initial gespeichert.");
             }
+
             UUID tournamentId;
             // Test-Turnier erstellen
             if (true) {
@@ -70,10 +70,10 @@ public class DataInitializer {
                 // Zufällige Scores für alle Spiele setzen
                 updateAllGamesWithRandomScores(gameRepository);
             }
-            if(true)return;
+            if (true) return;
 
             if (true) {
-                tournamentController.createTournamentRound(new TournamentController.TournamentRoundRequest(null,null));
+                tournamentController.createTournamentRound(new TournamentController.TournamentRoundRequest(null, null));
                 updateAllGamesWithRandomScores(gameRepository);
             }
 
@@ -117,6 +117,9 @@ public class DataInitializer {
         // Durch jedes Spiel iterieren und zufällige Scores zuweisen
         int i = 0;
         for (Game game : games) {
+            i++;
+            //game.setActualStartTime(LocalDateTime.now().plusSeconds(i * 20));
+            //game.setActualStartTime(LocalDateTime.now().plusSeconds(i + 10));
             //if (i++ == 30) break;
             // Zufällige Scores für Team A und Team B generieren (zum Beispiel zwischen 0 und 5)
             int teamAScore = random.nextInt(6); // Zufallszahl zwischen 0 und 5
