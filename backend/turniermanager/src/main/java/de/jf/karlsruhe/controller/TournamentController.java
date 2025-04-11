@@ -9,11 +9,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*")
@@ -31,6 +33,7 @@ public class TournamentController {
     private final GameRepository gameRepository;
     private final PitchScheduler pitchScheduler;
     private final GameSettingsRepository gameSettingsRepository;
+    private final Logger log = Logger.getLogger(TournamentController.class.getName());
 
 
     @PostMapping("/create")
@@ -67,9 +70,16 @@ public class TournamentController {
 
     @Transactional
     @PostMapping("/create/qualification")
-    public UUID createQualificationTournament() {
+    public UUID createQualificationTournament() throws HttpClientErrorException.BadRequest {
         if (ageGroupRepository.count() == 0 && pitchRepository.count() == 0 && teamRepository.count() == 0)
             return tournamentRepository.findAll().getFirst().getId();
+
+        List<Round> rounds = roundRepository.findAll();
+        List<Game> existingGames = gameRepository.findAll();
+        if (!rounds.isEmpty() || !existingGames.isEmpty()) {
+            log.warning("Zweite Qualifikationsrunde kann nicht erstellt werden");
+            return null;
+        }
 
         Tournament tournament = tournamentRepository.findAll().getFirst();
         List<AgeGroup> ageGroups = ageGroupRepository.findAll();
