@@ -571,7 +571,7 @@ class _GameViewState extends State<GameView> {
                               return AlertDialog(
                                 icon: const Icon(Icons.warning),
                                 iconColor: Colors.yellow,
-                                title: const Text('Wechsel zur nächsten Runde'),
+                                title: const Text('Spiele beenden'),
                                 content: const SizedBox(
                                   height: 100,
                                   child: Center(
