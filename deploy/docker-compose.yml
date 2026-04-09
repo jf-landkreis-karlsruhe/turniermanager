@@ -40,3 +40,20 @@ services:
       - "8082:80"
     environment:
       - BACKEND_URL=localhost:8080
+
+  db-backup:
+    image: mariadb:latest
+    restart: always
+    depends_on:
+      - database
+    volumes:
+      - ./backups:/backups
+    environment:
+      - MYSQL_PWD=root
+    entrypoint: >
+      sh -c "while true; do
+        FILENAME=/backups/backup_$$(date +%Y-%m-%d_%H-%M).sql;
+        mysqldump -h turnier-maria -u root turnier > $$FILENAME;
+        echo \"Backup gespeichert: $$FILENAME\";
+        sleep 600;
+      done"
