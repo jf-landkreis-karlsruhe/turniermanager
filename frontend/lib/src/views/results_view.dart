@@ -324,6 +324,7 @@ class _LeagueViewState extends State<LeagueView> {
 
     if (leagueWidgetSize == LeagueWidgetSize.large) {
       columns.add(DataColumn(
+        numeric: true,
         label: Text(
           'Sätze',
           style: columnHeaderTextStyle,
@@ -343,14 +344,6 @@ class _LeagueViewState extends State<LeagueView> {
       numeric: true,
       label: Text(
         'Pkt.',
-        style: columnHeaderTextStyle,
-      ),
-    ));
-
-    columns.add(DataColumn(
-      numeric: true,
-      label: Text(
-        'Wertung',
         style: columnHeaderTextStyle,
       ),
     ));
