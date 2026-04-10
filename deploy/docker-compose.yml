@@ -1,10 +1,10 @@
-version: '3.8'
+version: "3.8"
 
 services:
   turnier-frontend:
     image: ghcr.io/jf-landkreis-karlsruhe/turnier-frontend:latest
     ports:
-      - "8081:80"  # Mapping port 8081 on the host to port 80 on the container
+      - "8081:80" # Mapping port 8081 on the host to port 80 on the container
     environment:
       - BACKEND_URL=localhost:8080
     depends_on:
@@ -13,12 +13,13 @@ services:
   turnier-backend:
     image: ghcr.io/jf-landkreis-karlsruhe/turnier-backend:latest
     ports:
-      - "8080:8080"  # Mapping port 8080 on the host to port 8080 on the container
+      - "8080:8080" # Mapping port 8080 on the host to port 8080 on the container
     environment:
       - SPRING_APPLICATION_NAME=turnier-backend
       - ADMIN_USERNAME=admin
       - ADMIN_PASSWORD=admin
       - SPRING_DATASOURCE_URL=jdbc:mariadb://turnier-maria:3306/turnier
+      - TZ=Europe/Berlin
     depends_on:
       - database
 
@@ -53,7 +54,7 @@ services:
     entrypoint: >
       sh -c "while true; do
         FILENAME=/backups/backup_$$(date +%Y-%m-%d_%H-%M).sql;
-        mysqldump -h turnier-maria -u root turnier > $$FILENAME;
+        mariadb-dump -h turnier-maria -u root turnier > $$FILENAME;
         echo \"Backup gespeichert: $$FILENAME\";
         sleep 600;
       done"
