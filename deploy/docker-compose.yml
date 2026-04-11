@@ -21,11 +21,13 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mariadb://turnier-maria:3306/turnier
       - TZ=Europe/Berlin
     depends_on:
-      - database
+      database:
+        condition: service_healthy
 
   database:
     image: mariadb:latest
     container_name: turnier-maria
+    user: "${UID}:${GID}"
     volumes:
       - ./data01:/var/lib/mysql
     restart: always
@@ -34,6 +36,11 @@ services:
       MYSQL_DATABASE: turnier
     ports:
       - "3306:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   admin-frontend:
     image: ghcr.io/jf-landkreis-karlsruhe/turnier-admin:latest
@@ -53,8 +60,8 @@ services:
       - MYSQL_PWD=root
     entrypoint: >
       sh -c "while true; do
+        sleep 600;
         FILENAME=/backups/backup_$$(date +%Y-%m-%d_%H-%M).sql;
         mariadb-dump -h turnier-maria -u root turnier > $$FILENAME;
         echo \"Backup gespeichert: $$FILENAME\";
-        sleep 600;
       done"

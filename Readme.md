@@ -19,15 +19,15 @@ Da das Format mit Datum und Uhrzeit beginnt, sind die Dateien **lexikografisch n
 Um ein Backup wiederherzustellen, folgenden Befehl aus dem Wurzelverzeichnis des Repositories ausführen (Dateiname entsprechend anpassen):
 
 ```bash
-docker exec -i turnier-maria mysql -u root -proot turnier < Deploy/backups/backup_YYYY-MM-DD_HH-MM.sql
+docker exec -i turnier-maria mariadb -u root -proot turnier < Deploy/backups/backup_YYYY-MM-DD_HH-MM.sql
 ```
 
 **Hinweis:** Vor dem Einspielen sollte der Backend-Service gestoppt werden, damit keine aktiven Datenbankverbindungen bestehen:
 
 ```bash
-docker compose -f Deploy/docker-compose.yml stop turnier-backend
-docker exec -i turnier-maria mysql -u root -proot turnier < Deploy/backups/backup_YYYY-MM-DD_HH-MM.sql
-docker compose -f Deploy/docker-compose.yml start turnier-backend
+docker compose -f deploy/docker-compose.yml stop turnier-backend
+docker exec -i turnier-maria mariadb -u root -proot turnier < deploy/backups/backup_YYYY-MM-DD_HH-MM.sql
+docker compose -f deploy/docker-compose.yml start turnier-backend
 ```
 
 ---
