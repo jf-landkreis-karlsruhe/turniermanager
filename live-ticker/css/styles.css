@@ -810,6 +810,18 @@ body {
   color: #fff;
 }
 
+/* ── App Footer ─────────────────────────────────── */
+.app-footer {
+  text-align: center;
+  padding: 1.5rem 1rem 2rem;
+  font-size: 0.75rem;
+  opacity: 0.5;
+}
+
+.app-footer a {
+  color: inherit;
+}
+
 /* ── iOS Install Banner ─────────────────────────── */
 .ios-banner {
   position: fixed;

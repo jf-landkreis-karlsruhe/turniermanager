@@ -49,7 +49,7 @@ async function init() {
   const savedTeams = localStorage.getItem('lt_selectedTeams');
   if (savedTeams) try { selectedTeams = new Set(JSON.parse(savedTeams)); } catch {}
 
-  const allTabs = [INFO_TAB, ...tournament.ageGroups];
+  const allTabs = [INFO_TAB, ...tournament.ageGroups.sort((g1, g2) => g1.label.localeCompare(g2.label))];
   if (allTabs.length > 0) {
     const saved = localStorage.getItem('tw_activeTab');
     activeGroupId = allTabs.find((t) => t.id === saved) ? saved : allTabs[0].id;
@@ -106,12 +106,13 @@ async function loadGroup(groupId) {
 
   if (isInfo) {
     renderInfoCards(data.infos);
+    renderLastUpdated(null);
   } else {
     currentMatches = data.matches;
     extractTeams(data.matches);
     renderMatches(filterMatches(data.matches, selectedTeams), data.pauseTimes);
+    renderLastUpdated(data.lastUpdated);
   }
-  renderLastUpdated(data.lastUpdated, isInfo);
 }
 
 function applyFilter(teams) {
@@ -152,12 +153,13 @@ async function refreshCurrent() {
   lastUpdatedStamp = data.lastUpdated;
   if (activeGroupId === '__info') {
     renderInfoCards(data.infos);
+    renderLastUpdated(null);
   } else {
     currentMatches = data.matches;
     extractTeams(data.matches);
     renderMatches(filterMatches(data.matches, selectedTeams), data.pauseTimes);
+    renderLastUpdated(data.lastUpdated);
   }
-  renderLastUpdated(data.lastUpdated, activeGroupId === '__info');
 }
 
 function setupVisibility() {
