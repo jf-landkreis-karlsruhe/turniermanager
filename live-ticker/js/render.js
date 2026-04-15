@@ -52,7 +52,7 @@ export function renderMatches(matches, pauseTimes) {
     return;
   }
 
-  const sorted = sortMatches(allItems);
+  const sorted = mergeConsecutivePauses(sortMatches(allItems));
   matchList.innerHTML = '';
 
   let currentSection = null;
@@ -74,19 +74,29 @@ export function renderMatches(matches, pauseTimes) {
 }
 
 function mergePauses(pauseTimes) {
-  const grouped = new Map();
-  for (const p of pauseTimes) {
-    const key = `${p.startTime}|${p.endTime}`;
-    if (grouped.has(key)) {
-      grouped.get(key).fields.push(p.field);
+  return (pauseTimes || []).map((p) => ({ ...p, fields: [p.field], _type: 'pause', status: 'pause' }));
+}
+
+function mergeConsecutivePauses(sorted) {
+  const out = [];
+  for (const item of sorted) {
+    const prev = out[out.length - 1];
+    const sameBlock =
+      item._type === 'pause' &&
+      prev?._type === 'pause' &&
+      (prev.description || '') === (item.description || '');
+
+    if (sameBlock) {
+      if (new Date(item.endTime) > new Date(prev.endTime)) {
+        prev.endTime = item.endTime;
+      }
+      for (const f of item.fields) prev.fields.push(f);
+      prev.fields = [...new Set(prev.fields)].sort((a, b) => a - b);
     } else {
-      grouped.set(key, { ...p, fields: [p.field], _type: 'pause', status: 'pause' });
+      out.push(item);
     }
   }
-  return [...grouped.values()].map((p) => {
-    p.fields.sort((a, b) => a - b);
-    return p;
-  });
+  return out;
 }
 
 function createPauseCard(pause) {
@@ -137,15 +147,14 @@ function createMatchCard(match) {
 
 let lastUpdatedISO = null;
 let lastUpdatedTimer = null;
-let hideStale = false;
 
-export function renderLastUpdated(isoString, isInfo = false) {
+export function renderLastUpdated(isoString) {
   const el = document.getElementById('last-updated');
   lastUpdatedISO = isoString;
-  hideStale = isInfo;
   if (lastUpdatedTimer) clearInterval(lastUpdatedTimer);
   if (!isoString) {
     el.textContent = '';
+    document.getElementById('stale-banner').hidden = true;
     return;
   }
   updateLastUpdatedText(el);
@@ -163,7 +172,7 @@ function updateLastUpdatedText(el) {
   const ago = timeAgo(lastUpdatedISO);
   el.textContent = `Aktualisiert: ${time} (${ago})`;
 
-  const stale = !hideStale && Date.now() - new Date(lastUpdatedISO).getTime() > STALE_THRESHOLD_MS;
+  const stale = Date.now() - new Date(lastUpdatedISO).getTime() > STALE_THRESHOLD_MS;
   document.getElementById('stale-banner').hidden = !stale;
 }
 
