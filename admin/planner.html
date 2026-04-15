@@ -167,9 +167,15 @@
         const teams = parseInt(document.getElementById(`teams-${i}`).value) || 0;
         const leagues = parseInt(document.getElementById(`leagues-${i}`).value) || 1;
 
-        const teamsPerLeague = Math.ceil(teams / leagues);
-        const gamesPerLeague = (teamsPerLeague * (teamsPerLeague - 1)) / 2;
-        const totalGames = gamesPerLeague * leagues;
+        // Korrekte Verteilung: remainder Ligen haben (base+1) Teams, der Rest hat base Teams
+        const baseTeams = Math.floor(teams / leagues);
+        const remainder = teams % leagues;
+
+        const largeLeagues = remainder;                                      // Ligen mit (base+1) Teams
+        const smallLeagues = leagues - remainder;                            // Ligen mit base Teams
+        const gamesLargeLeague = ((baseTeams + 1) * baseTeams) / 2;
+        const gamesSmallLeague = (baseTeams * (baseTeams - 1)) / 2;
+        const totalGames = (largeLeagues * gamesLargeLeague) + (smallLeagues * gamesSmallLeague);
         const totalTimeSec = totalGames * timePerGameSec;
 
         totalGamesAll += totalGames;
@@ -184,15 +190,22 @@
           ? `Passt &mdash; ${formatSeconds(Math.abs(bufferSec))} Puffer`
           : `Zu lang um ${formatSeconds(Math.abs(bufferSec))}`;
 
+        const teamsPerLeagueLabel = remainder === 0
+          ? `${baseTeams}`
+          : `${baseTeams}–${baseTeams + 1}`;
+        const gamesPerLeagueLabel = remainder === 0
+          ? `${gamesSmallLeague}`
+          : `${gamesSmallLeague}–${gamesLargeLeague}`;
+
         resultsHtml += `
           <div class="border rounded-md p-4 ${statusBg}">
             <h3 class="font-semibold text-gray-700 mb-3">Altersgruppe ${i}</h3>
             <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-              <span class="text-gray-500">Max. Mannschaften/Liga</span>
-              <span class="font-medium text-gray-800">${teamsPerLeague}</span>
+              <span class="text-gray-500">Mannschaften/Liga</span>
+              <span class="font-medium text-gray-800">${teamsPerLeagueLabel}</span>
 
               <span class="text-gray-500">Spiele pro Liga</span>
-              <span class="font-medium text-gray-800">${gamesPerLeague}</span>
+              <span class="font-medium text-gray-800">${gamesPerLeagueLabel}</span>
 
               <span class="text-gray-500">Spiele gesamt</span>
               <span class="font-medium text-gray-800">${totalGames}</span>
