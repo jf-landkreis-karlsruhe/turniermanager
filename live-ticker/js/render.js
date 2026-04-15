@@ -81,12 +81,17 @@ function mergeConsecutivePauses(sorted) {
   const out = [];
   for (const item of sorted) {
     const prev = out[out.length - 1];
-    if (item._type === 'pause' && prev?._type === 'pause') {
-      prev.endTime = item.endTime;
+    const sameBlock =
+      item._type === 'pause' &&
+      prev?._type === 'pause' &&
+      (prev.description || '') === (item.description || '');
+
+    if (sameBlock) {
+      if (new Date(item.endTime) > new Date(prev.endTime)) {
+        prev.endTime = item.endTime;
+      }
       for (const f of item.fields) prev.fields.push(f);
       prev.fields = [...new Set(prev.fields)].sort((a, b) => a - b);
-      const parts = [prev.description, item.description].filter(Boolean);
-      prev.description = [...new Set(parts)].join(' / ');
     } else {
       out.push(item);
     }
