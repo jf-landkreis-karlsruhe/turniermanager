@@ -37,7 +37,8 @@ export function renderTabs(ageGroups, activeId, onSwitch) {
 
 export function renderMatches(matches, pauseTimes) {
   hideLoading();
-  const mergedPauses = mergePauses(pauseTimes || []);
+  const now = Date.now();
+  const mergedPauses = mergePauses(pauseTimes || []).filter(p => p.endTime > now);
   const allItems = [...(matches || []), ...mergedPauses];
 
   if (allItems.length === 0) {
@@ -120,7 +121,7 @@ function createMatchCard(match) {
   const card = document.createElement('article');
   card.className = `match-card ${getStatusClass(match.status)}`;
 
-  const showScore = match.status === 'live' || match.status === 'completed';
+  const showScore = false
   const scoreHTML = showScore
     ? `<div class="match-card__score">${formatScore(match.scoreA, match.scoreB)}</div>`
     : `<div class="match-card__vs">vs</div>`;

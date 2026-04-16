@@ -47,12 +47,9 @@ async function init() {
 
   // Restore filter state
   const savedTeams = localStorage.getItem('lt_selectedTeams');
-  if (savedTeams) try { selectedTeams = new Set(JSON.parse(savedTeams)); } catch {}
+  if (savedTeams) try { selectedTeams = new Set(JSON.parse(savedTeams)); } catch { }
 
-  const sortedGroups = [...tournament.ageGroups].sort((g1, g2) =>
-      g1.label.localeCompare(g2.label, 'de', { numeric: true })
-    );
-  const allTabs = [INFO_TAB, ...sortedGroups];
+  const allTabs = [INFO_TAB, ...(tournament.ageGroups)];
 
   if (allTabs.length > 0) {
     const saved = localStorage.getItem('tw_activeTab');
@@ -120,7 +117,7 @@ async function loadGroup(groupId) {
 
 function applyFilter(teams) {
   selectedTeams = teams;
-  try { localStorage.setItem('lt_selectedTeams', JSON.stringify([...selectedTeams])); } catch {}
+  try { localStorage.setItem('lt_selectedTeams', JSON.stringify([...selectedTeams])); } catch { }
   renderFilterTags(selectedTeams, removeTeamFilter);
   if (currentMatches) {
     renderMatches(filterMatches(currentMatches, selectedTeams));
